@@ -1,0 +1,5 @@
+#! /bin/bash
+# Usage: ./run_jdb PORT where port is the debug port for the app in Dalvik Debug Monitor
+# You might need to change the line for the initial breakpoint in the file .jdbrc
+jdb -sourcepath $(pwd) -attach localhost:$1
+

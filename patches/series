@@ -1,0 +1,4 @@
+# This series applies on GIT commit 31559f4a0ae232cb11e70a505610eca09ee95eb5
+build-scripts
+android-ecl-gc-patch
+ecl-android

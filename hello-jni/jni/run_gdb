@@ -1,0 +1,13 @@
+#!/bin/bash
+/opt/android/android-ndk-r5/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gdb -x gdb.setup
+
+ANDROID_SDK=/opt/android/android-sdk-linux_86
+ANDROID_NDK=/opt/android/android-ndk-r5
+PATCHED_NDK_GDB=$ANDROID_NDK/ndk-gdb.patched
+PROJECT_ROOT=$HOME/workspace/hello-jni/jni
+
+PATH=$ANDROID_SDK/tools:$ANDROID_SDK/platform-tools:$ANDROID_NDK:$PATH
+
+#$PATCHED_NDK_GDB --verbose --force --project=$PROJECT_ROOT
+#$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gdb -q -nw --annotate=3 --cd=$PROJECT_ROOT --command=$PROJECT_ROOT/gdb.setup $PROJECT_ROOT/ecl
+$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gdb  --cd=$PROJECT_ROOT --command=$PROJECT_ROOT/gdb.setup $PROJECT_ROOT/ecl

@@ -1,0 +1,40 @@
+Files you might want to check before installing:
+ecl/configure_cross --> (GMP_INSTALL_DIR and ECL_INSTALL_DIR)
+ecl/configure_gmp_cross --> GMP_INSTALL_DIR
+ecl/platforms/android/config.sh --> path to your android SDK/NDK
+hello-jni/jni/Android.mk --> path to your ECL installation
+
+Install procedure:
+
+1. make --> will download and patch ECL in the ecl directory
+
+2. PROJECT_ROOT=$(pwd)
+
+3. cd $(PROJECT_ROOT)/ecl
+
+4. Compile a 32 bits host ecl to do the cross compilation. If you're running
+x86_64 linux, you'll need a multilib enabled gcc (aptitude install
+gcc-multilib on debian/ubuntu)
+4.1 cd $PROJECT_ROOT/ecl
+4.2 ./configure_cross host
+4.3 (cd $PROJECT_ROOT/ecl/build/host/ecl && make && make install)
+
+5. cross-compile the gmp library for android
+5.1 ./configure_gmp_cross android
+5.2 (cd $PROJECT_ROOT/ecl/build/android/gmp && make && make install)
+
+6. cross-compile ECL for android
+6.1 ./configure_cross android
+6.2 (cd $PROJECT_ROOT/ecl/build/android/ecl && make && make install)
+
+At this point you should have a working ecl executable in
+/opt/ecl/android/bin/ecl. You can "adb push" it to the android
+emulator and just execute it.
+
+To run ecl using JNI from an android app, use the hello-jni project.
+You can compile it using:
+1. ndk-build
+2. ant install
+
+
+

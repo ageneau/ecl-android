@@ -1,0 +1,65 @@
+ECL android gc patch
+
+From: Sylvain Ageneau <ageneau@gmail.com>
+
+
+---
+ src/gc/configure         |    6 ++++++
+ src/gc/configure.ac      |    4 ++++
+ src/gc/pthread_support.c |    4 ++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/src/gc/configure b/src/gc/configure
+index a06db04..41f6bb7 100755
+--- a/src/gc/configure
++++ b/src/gc/configure
+@@ -5082,6 +5082,12 @@ $as_echo "$as_me: WARNING: \"Explicit GC_INIT() calls may be required.\"" >&2;};
+         $as_echo "#define _REENTRANT 1" >>confdefs.h
+ 
+         ;;
++     *-*-eabi*)
++        $as_echo "#define GC_LINUX_THREADS 1" >>confdefs.h
++
++        $as_echo "#define _REENTRANT 1" >>confdefs.h
++
++        ;;
+      *-*-aix*)
+         $as_echo "#define GC_AIX_THREADS 1" >>confdefs.h
+ 
+diff --git a/src/gc/configure.ac b/src/gc/configure.ac
+index 6df2ea8..21d74b2 100644
+--- a/src/gc/configure.ac
++++ b/src/gc/configure.ac
+@@ -123,6 +123,10 @@ case "$THREADS" in
+         AC_DEFINE(GC_LINUX_THREADS)
+         AC_DEFINE(_REENTRANT)
+         ;;
++     *-*-eabi*)
++        AC_DEFINE(GC_LINUX_THREADS)
++        AC_DEFINE(_REENTRANT)
++        ;;
+      *-*-aix*)
+         AC_DEFINE(GC_AIX_THREADS)
+         AC_DEFINE(_REENTRANT)
+diff --git a/src/gc/pthread_support.c b/src/gc/pthread_support.c
+index 1167330..a0dd135 100644
+--- a/src/gc/pthread_support.c
++++ b/src/gc/pthread_support.c
+@@ -1266,7 +1266,7 @@ GC_API int WRAP_FUNC(pthread_detach)(pthread_t thread)
+   /* really have an option in that the process is not in a fully        */
+   /* functional state while a thread is exiting.                        */
+ 
+-# ifndef NACL
++# if !defined(NACL) && !defined(__BIONIC__)
+     GC_API int WRAP_FUNC(pthread_cancel)(pthread_t thread)
+     {
+ #     ifdef CANCEL_SAFE
+@@ -1290,7 +1290,7 @@ GC_API int WRAP_FUNC(pthread_detach)(pthread_t thread)
+ #     endif
+       return REAL_FUNC(pthread_cancel)(thread);
+     }
+-# endif /* !NACL */
++# endif /* !NACL && !__BIONIC__ */
+ 
+   GC_API GC_PTHREAD_EXIT_ATTRIBUTE void WRAP_FUNC(pthread_exit)(void *retval)
+   {

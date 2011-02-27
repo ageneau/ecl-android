@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Usage: 
+# First run:
+# 1. cp $ANDROID_NDK/ndk-gdb $ANDROID_NDK/ndk-gdb.patched
+# 2. Comment out the line $GDBCLIENT -x `native_path $GDBSETUP` in ndk-gdb.patched
+
+# Next:
+# 1. Set hello_jni as the app to debug in the android emulator (wait for debugger: yes)
+# 2. Start the app
+# 3. Check what port is used for debugging for this app in the Dalvik Debug Monitor
+# 4. ./run_jdb $PORT --> should hit a breakpoint
+# 5. From emacs (or directly running the script): Tools->debugger->Run gdb (like this): ~/workspace/hello-jni/gdb_wrapper
+# 6. In jdb: cont
+# 7. In GUD/gdb set a breakpoint (optional) and "continue" etc
+
+ANDROID_SDK=/opt/android/android-sdk-linux_86
+ANDROID_NDK=/opt/android/android-ndk-r5
+PATCHED_NDK_GDB=$ANDROID_NDK/ndk-gdb.patched
+PROJECT_ROOT=$(cd $(dirname ${0}) && pwd -P)
+
+PATH=$ANDROID_SDK/tools:$ANDROID_SDK/platform-tools:$ANDROID_NDK:$PATH
+
+$PATCHED_NDK_GDB --verbose --force --project=$PROJECT_ROOT
+$ANDROID_NDK/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86/bin/arm-linux-androideabi-gdb -q -nw --annotate=3 --cd=$PROJECT_ROOT -d $PROJECT_ROOT -d $ANDROID_NDK/platforms/android-9/arch-arm/usr/include -d $ANDROID_NDK/sources/cxx-stl/system --command=$PROJECT_ROOT/gdb.setup $PROJECT_ROOT/obj/local/armeabi/libecl.so
