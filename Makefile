@@ -21,4 +21,4 @@ patch-ecl:
 	cd ecl && patch -p1 < ../patches/android-ecl-gc-patch
 	cd ecl && patch -p1 < ../patches/build-scripts
 	cd ecl && patch -p1 < ../patches/ecl-android
-
+	chmod +x ecl/configure_cross ecl/configure_gmp_cross
