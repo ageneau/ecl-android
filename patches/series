@@ -1,4 +1,4 @@
-# This series applies on GIT commit 31559f4a0ae232cb11e70a505610eca09ee95eb5
+# This series applies on GIT commit d9bbfef982da1f0f7ffd263c8693ec328dd3d8f6
 build-scripts
 android-ecl-gc-patch
 ecl-android

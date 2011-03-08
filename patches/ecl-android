@@ -4,13 +4,97 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 
 
 ---
- src/aclocal.m4       |    8 ++
- src/c/tcp.d          |    4 +
- src/configure.in     |    9 ++
- src/gmp/configure    |  189 ++++++++++++++++++++++++++++++++++++++++++--------
- src/gmp/configure.in |   15 ++++
- 5 files changed, 191 insertions(+), 34 deletions(-)
+ contrib/sockets/sockets.lisp |   53 +++++++++++-
+ src/aclocal.m4               |    8 +-
+ src/bare.lsp.in              |    2 
+ src/c/tcp.d                  |    4 +
+ src/configure                |    9 ++
+ src/configure.in             |   13 +++
+ src/gmp/configure            |  189 +++++++++++++++++++++++++++++++++++-------
+ src/gmp/configure.in         |   15 +++
+ 8 files changed, 256 insertions(+), 37 deletions(-)
 
+diff --git a/contrib/sockets/sockets.lisp b/contrib/sockets/sockets.lisp
+index 593e4af..3baffb7 100755
+--- a/contrib/sockets/sockets.lisp
++++ b/contrib/sockets/sockets.lisp
+@@ -107,6 +107,28 @@
+   +eagain+ "EAGAIN"
+   +eintr+ "EINTR")
+ 
++#+:eabi
++(define-c-constants
++  +ipproto_ip+ "IPPROTO_IP"
++  +ipproto_icmp+ "IPPROTO_ICMP"
++  +ipproto_igmp+ "IPPROTO_IGMP"
++  +ipproto_ipip+ "IPPROTO_IPIP"
++  +ipproto_tcp+ "IPPROTO_TCP"
++  +ipproto_egp+ "IPPROTO_EGP"
++  +ipproto_pup+ "IPPROTO_PUP"
++  +ipproto_udp+ "IPPROTO_UDP"
++  +ipproto_idp+ "IPPROTO_IDP"
++  +ipproto_dccp+ "IPPROTO_DCCP"
++  +ipproto_rsvp+ "IPPROTO_RSVP"
++  +ipproto_gre+ "IPPROTO_GRE"
++  +ipproto_ipv6+ "IPPROTO_IPV6"
++  +ipproto_esp+ "IPPROTO_ESP"
++  +ipproto_ah+ "IPPROTO_AH"
++  +ipproto_pim+ "IPPROTO_PIM"
++  +ipproto_comp+ "IPPROTO_COMP"
++  +ipproto_sctp+ "IPPROTO_SCTP"
++  +ipproto_raw+ "IPPROTO_RAW")
++
+ #+:wsock
+ (defconstant +af-named-pipe+ -2)
+ 
+@@ -512,10 +534,37 @@ safe_buffer_pointer(cl_object x, cl_index size)
+ 
+ (defun get-protocol-by-name (string-or-symbol)
+   "Calls getprotobyname"
++  #-:eabi
+   (let ((string (string string-or-symbol)))
+     (c-inline (string) (:cstring) :int
+ 	      "getprotobyname(#0)->p_proto"
+-	      :one-liner t)))
++	      :one-liner t))
++
++  ;; getprotobyname is not yet implemented on bionic
++  #+:eabi
++  (let ((proto (string-downcase (if (symbolp string-or-symbol)
++				    (symbol-name string-or-symbol)
++				    string-or-symbol))))
++    (cond
++      ((string= proto "ip") +ipproto_ip+)
++      ((string= proto "icmp") +ipproto_icmp+)
++      ((string= proto "igmp") +ipproto_igmp+)
++      ((string= proto "ipip") +ipproto_ipip+)
++      ((string= proto "tcp") +ipproto_tcp+)
++      ((string= proto "egp") +ipproto_egp+)
++      ((string= proto "pup") +ipproto_pup+)
++      ((string= proto "udp") +ipproto_udp+)
++      ((string= proto "idp") +ipproto_idp+)
++      ((string= proto "dccp") +ipproto_dccp+)
++      ((string= proto "rsvp") +ipproto_rsvp+)
++      ((string= proto "gre") +ipproto_gre+)
++      ((string= proto "ipv6") +ipproto_ipv6+)
++      ((string= proto "esp") +ipproto_esp+)
++      ((string= proto "ah") +ipproto_ah+)
++      ((string= proto "pim") +ipproto_pim+)
++      ((string= proto "comp") +ipproto_comp+)
++      ((string= proto "sctp") +ipproto_sctp+)
++      ((string= proto "raw") +ipproto_raw+))))
+ 
+ (defun make-inet-address (dotted-quads)
+   "Return a vector of octets given a string DOTTED-QUADS in the format
+@@ -1636,7 +1685,7 @@ GET-NAME-SERVICE-ERRNO")
+ (define-sockopt sockopt-dont-route "SOL_SOCKET" "SO_DONTROUTE" bool)
+ (define-sockopt sockopt-linger "SOL_SOCKET" "SO_LINGER" linger)
+ 
+-#-(or :sun4sol2 :linux :wsock :cygwin)
++#-(or :sun4sol2 :linux :eabi :wsock :cygwin)
+ (define-sockopt sockopt-reuse-port "SOL_SOCKET" "SO_REUSEPORT" bool)
+ 
+ (define-sockopt sockopt-tcp-nodelay "IPPROTO_TCP" "TCP_NODELAY" bool)
 diff --git a/src/aclocal.m4 b/src/aclocal.m4
 index e1496d6..1b6effd 100644
 --- a/src/aclocal.m4
@@ -51,6 +135,19 @@ index e1496d6..1b6effd 100644
  fi
  AC_MSG_RESULT([$ECL_WORKING_ENVIRON])
  if test $ECL_WORKING_ENVIRON = yes ; then
+diff --git a/src/bare.lsp.in b/src/bare.lsp.in
+index cf42872..a919ae5 100644
+--- a/src/bare.lsp.in
++++ b/src/bare.lsp.in
+@@ -169,7 +169,7 @@
+         (push (intern name) *module-symbols*))
+       (unless (equalp name "asdf")
+         (push (build-fake-asdf name) *module-files*))
+-      #-:wants-dlopen
++      #-(or :wants-dlopen :eabi)
+       (push (build-fake-module name sources) *module-files*)
+       #+:wants-dlopen
+       (push (c::build-fasl name :lisp-files objects) *module-files*))))
 diff --git a/src/c/tcp.d b/src/c/tcp.d
 index e752e47..69e7468 100644
 --- a/src/c/tcp.d
@@ -67,8 +164,28 @@ index e752e47..69e7468 100644
  #include <sys/types.h>
  #include <sys/socket.h>
  #include <sys/un.h>
+diff --git a/src/configure b/src/configure
+index d814a78..60fe45d 100755
+--- a/src/configure
++++ b/src/configure
+@@ -15266,6 +15266,15 @@ else
+   CLX_INFO=""
+ fi
+ 
++if test "${with_tcp}" = "builtin"; then
++
++
++LSP_FEATURES="(cons :builtin-sockets ${LSP_FEATURES})"
++
++
++  with_tcp=yes
++fi
++
+ if test "${with_tcp}" = "yes"; then
+ 
+ cat >>confdefs.h <<\_ACEOF
 diff --git a/src/configure.in b/src/configure.in
-index a3033f1..c80f7fc 100644
+index a3033f1..e9acfe6 100644
 --- a/src/configure.in
 +++ b/src/configure.in
 @@ -594,9 +594,16 @@ AC_CHECK_HEADERS( [fcntl.h limits.h netdb.h netinet/in.h] \
@@ -89,6 +206,17 @@ index a3033f1..c80f7fc 100644
  dnl =====================================================================
  dnl Checks for typedefs, structures, and compiler characteristics.
  
+@@ -759,6 +766,10 @@ else
+   CLX_INFO=""
+ fi
+ 
++if test "${with_tcp}" = "builtin"; then
++  ECL_ADD_BUILTIN_MODULE([sockets])
++  with_tcp=yes
++fi
+ if test "${with_tcp}" = "yes"; then
+   AC_DEFINE(TCP, [1], [Network streams])
+   EXTRA_OBJS="${EXTRA_OBJS} tcp.${OBJEXT}"
 diff --git a/src/gmp/configure b/src/gmp/configure
 index 815c87d..e88d136 100755
 --- a/src/gmp/configure

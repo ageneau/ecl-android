@@ -5,7 +5,7 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 
 ---
  configure_cross                           |   91 ++
- configure_gmp_cross                       |   34 +
+ configure_gmp_cross                       |   41 +
  platforms/android/config.sh               |   32 +
  platforms/android/cross_config.in         |   64 +
  platforms/android/include/arm_dpimacros.h | 1603 +++++++++++++++++++++++++++++
@@ -18,7 +18,7 @@ From: Sylvain Ageneau <ageneau@gmail.com>
  platforms/iPhoneOS/config.sh              |   15 
  platforms/iPhoneOS/cross_config.in        |   64 +
  platforms/iPhoneSimulator/config.sh       |   40 +
- 14 files changed, 3702 insertions(+), 0 deletions(-)
+ 14 files changed, 3709 insertions(+), 0 deletions(-)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
  create mode 100644 platforms/android/config.sh
@@ -36,15 +36,11 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 
 diff --git a/configure_cross b/configure_cross
 new file mode 100755
-index 0000000..40a72d3
+index 0000000..8cdcc0c
 --- /dev/null
 +++ b/configure_cross
 @@ -0,0 +1,91 @@
 +#!/bin/bash
-+
-+ECLROOT=$(cd $(dirname ${0}) && pwd -P)
-+GMP_INSTALL_DIR=/opt/gmp
-+ECL_INSTALL_DIR=/opt/ecl
 +
 +usage()
 +{
@@ -57,29 +53,32 @@ index 0000000..40a72d3
 +
 +
 +platform=$1
-+template_config=platforms/${platform}/cross_config.in
-+srcdir=${ECLROOT}/src
-+ecl_to_run=${ECL_INSTALL_DIR}/host/bin/ecl
++ECLROOT=$(cd $(dirname ${0}) && pwd -P)
++GMP_INSTALL_DIR=/opt/gmp/$platform
++ECL_INSTALL_DIR=/opt/ecl/$platform
++template_config=platforms/$platform/cross_config.in
++srcdir=$ECLROOT/src
++ecl_to_run=/opt/ecl/host/bin/ecl
 +
-+builddir=${ECLROOT}/build/${platform}/ecl
++builddir=$ECLROOT/build/$platform/ecl
 +
 +if [ ! -d ${builddir} ] ; then
 +    echo Creating directory "\`${builddir}'"
 +    mkdir -p ${builddir}
 +fi
 +
-+case ${platform} in
++
++case $platform in
 +    android|iPhoneOS|iPhoneSimulator)
-+	PATH=${ECL_INSTALL_DIR}/host/bin:$PATH
-+	. ${ECLROOT}/platforms/${platform}/config.sh
++	. $ECLROOT/platforms/$platform/config.sh
 +	(cat $template_config; echo "ECL_TO_RUN=$ecl_to_run") > $builddir/cross_config
 +	config_opts="\
 +	--host=${host} --target=${target} \
 +	--with-cross-config=$builddir/cross_config \
-+	--with-gmp-prefix=${GMP_INSTALL_DIR}/${platform} \
++	--with-gmp-prefix=$GMP_INSTALL_DIR \
 +	--disable-longdouble \
 +	--enable-unicode=yes \
-+	--enable-boehm=included \
++        --enable-boehm=included \
 +	--enable-threads=yes \
 +	--with-debug-cflags=yes \
 +	--with-clx=no \
@@ -104,9 +103,10 @@ index 0000000..40a72d3
 +	export ABI=32
 +
 +	config_opts="\
++	--with-gmp-prefix=$GMP_INSTALL_DIR \
 +	--disable-longdouble \
 +	--enable-unicode=yes \
-+	--enable-boehm=included \
++        --enable-boehm=included \
 +	--enable-threads=yes \
 +	--with-debug-cflags=yes \
 +	--with-clx=no \
@@ -129,32 +129,31 @@ index 0000000..40a72d3
 +
 +
 +cd ${builddir}
-+${srcdir}/configure --srcdir=${srcdir} --prefix=${ECL_INSTALL_DIR}/${platform} ${config_opts}
++${srcdir}/configure --srcdir=${srcdir} --prefix=$ECL_INSTALL_DIR ${config_opts}
 +
 diff --git a/configure_gmp_cross b/configure_gmp_cross
 new file mode 100755
-index 0000000..bcc7085
+index 0000000..a783ae4
 --- /dev/null
 +++ b/configure_gmp_cross
-@@ -0,0 +1,34 @@
+@@ -0,0 +1,41 @@
 +#!/bin/bash
-+
-+ECLROOT=$(cd $(dirname ${0}) && pwd -P)
-+GMP_INSTALL_DIR=/opt/gmp
 +
 +usage()
 +{
 +    echo "Usage: `basename $0` platform"
 +    echo ""
-+    echo " platform    -- one of: iPhoneOS, iPhoneSimulator, android"
++    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android"
 +}
 +
 +[[ $# == 1 ]] || { usage; exit 1; }
 +
++ECLROOT=$(cd $(dirname ${0}) && pwd -P)
 +
 +platform=$1
-+srcdir=${ECLROOT}/src/gmp
-+builddir=${ECLROOT}/build/${platform}/gmp
++GMP_INSTALL_DIR=/opt/gmp/$platform
++srcdir=$ECLROOT/src/gmp
++builddir=$ECLROOT/build/$platform/gmp
 +
 +. $ECLROOT/platforms/$platform/config.sh
 +
@@ -168,8 +167,16 @@ index 0000000..bcc7085
 +        --disable-shared \
 +	--with-pic"
 +
++case $platform in
++    host)
++	export CFLAGS="-m32"
++	export LDFLAGS="-m32"
++	export ABI=32
++	;;
++esac
++
 +cd ${builddir}
-+${srcdir}/configure --srcdir=${srcdir} --prefix=${GMP_INSTALL_DIR}/${platform} --host=${host} --target=${target} ${base_config_opts}
++${srcdir}/configure --srcdir=${srcdir} --prefix=$GMP_INSTALL_DIR --host=${host} --target=${target} $base_config_opts
 +
 diff --git a/platforms/android/config.sh b/platforms/android/config.sh
 new file mode 100644
