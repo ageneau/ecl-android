@@ -11,9 +11,9 @@
 extern void loadLispFromAssets(char* fn);
 
 // extern ECL_CPP_TAG void init_lib_SERVE_EVENT(cl_object);
-// extern ECL_CPP_TAG void init_lib_SOCKETS(cl_object);
+extern ECL_CPP_TAG void init_lib_SOCKETS(cl_object);
 // extern ECL_CPP_TAG void init_lib_PROFILE(cl_object);
-// extern ECL_CPP_TAG void init_lib_BYTECMP(cl_object);
+extern ECL_CPP_TAG void init_lib_BYTECMP(cl_object);
 // extern ECL_CPP_TAG void init_lib_ECLFFI(cl_object);
 
 #define compiler_data_text NULL
@@ -43,14 +43,14 @@ void init_ECL_PROGRAM(cl_object cblock)
 #endif
 	
   {
-	// cl_object current, next = Cblock;
-    // current = read_VV(OBJNULL, init_lib_SOCKETS); current->cblock.next = next; next = current;
-    // current = read_VV(OBJNULL, init_lib_BYTECMP); current->cblock.next = next; next = current;
+	  cl_object current, next = Cblock;
+	  current = read_VV(OBJNULL, init_lib_SOCKETS); current->cblock.next = next; next = current;
+	  current = read_VV(OBJNULL, init_lib_BYTECMP); current->cblock.next = next; next = current;
     // current = read_VV(OBJNULL, init_lib_SERVE_EVENT); current->cblock.next = next; next = current;
     // current = read_VV(OBJNULL, init_lib_ECLFFI); current->cblock.next = next; next = current;
 	// current = read_VV(OBJNULL, init_lib_PROFILE); current->cblock.next = next; next = current; 
 
-	// Cblock->cblock.next = current;
+	  Cblock->cblock.next = current;
   }
 }
 
@@ -91,8 +91,11 @@ void ecl_toplevel(const char *home)
 {
     char tmp[512];
 
-    sprintf(tmp, "(load \"%s\")","init.lsp");
-    si_safe_eval(3, c_string_to_object(tmp), Cnil, OBJNULL);
+	CL_CATCH_ALL_BEGIN(ecl_process_env()) 
+	{
+		sprintf(tmp, "(load \"%s\")","init.lsp");
+		si_safe_eval(3, c_string_to_object(tmp), Cnil, OBJNULL);
+	} CL_CATCH_ALL_END;
 
 	fflush(stdout);
 }

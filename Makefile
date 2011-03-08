@@ -5,7 +5,7 @@ BDWGC_REV=2011/02/22
 SLIME_CVSROOT=:pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot
 SLIME_REV=2010/01/29
 
-all: clone-ecl checkout-bdwgc replace-bdwgc patch-ecl checkout-slime patch-slime
+all: clone-ecl checkout-bdwgc replace-bdwgc patch-ecl checkout-slime patch-slime copy-slime
 	echo "ECL directory patched for android"
 
 clone-ecl:
@@ -24,6 +24,11 @@ checkout-slime:
 
 patch-slime:
 	cd slime && patch -p0 < ../patches/swank-ecl-patches.txt
+
+copy-slime:
+	-mkdir -p hello-jni/assets/lisp/slime/contrib/
+	cp slime/*.lisp hello-jni/assets/lisp/slime/
+	cp slime/contrib/*.lisp hello-jni/assets/lisp/slime/contrib/
 
 patch-ecl:
 	cd ecl && patch -p1 < ../patches/android-ecl-gc-patch
