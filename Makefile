@@ -1,9 +1,11 @@
 ECL_GIT=git://ecls.git.sourceforge.net/gitroot/ecls/ecl
-ECL_REV=0df960178922fb0dba752356e59d6194975f333e
+ECL_REV=5fcd784bb9d4990e342bfa065c0ce28c18787e3d
 BDWGC_CVSROOT=:pserver:anonymous@bdwgc.cvs.sourceforge.net:/cvsroot/bdwgc
 BDWGC_REV=2011/02/22
+SLIME_CVSROOT=:pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot
+SLIME_REV=2010/01/29
 
-all: clone-ecl checkout-bdwgc replace-bdwgc patch-ecl
+all: clone-ecl checkout-bdwgc replace-bdwgc patch-ecl checkout-slime patch-slime
 	echo "ECL directory patched for android"
 
 clone-ecl:
@@ -16,6 +18,12 @@ checkout-bdwgc:
 replace-bdwgc:
 	rm -rf ./ecl/src/gc
 	cp -r ./bdwgc ./ecl/src/gc
+
+checkout-slime:
+	cvs -d "$(SLIME_CVSROOT)" co -D "$(SLIME_REV)" slime
+
+patch-slime:
+	cd slime && patch -p0 < ../patches/swank-ecl-patches.txt
 
 patch-ecl:
 	cd ecl && patch -p1 < ../patches/android-ecl-gc-patch

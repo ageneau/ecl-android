@@ -1,0 +1,294 @@
+Index: swank-ecl.lisp
+===================================================================
+RCS file: /project/slime/cvsroot/slime/swank-ecl.lisp,v
+retrieving revision 1.50
+diff -u -r1.50 swank-ecl.lisp
+--- swank-ecl.lisp	19 Dec 2009 14:56:06 -0000	1.50
++++ swank-ecl.lisp	8 Feb 2010 16:31:56 -0000
+@@ -30,6 +30,11 @@
+   (declare (ignore gf classes))
+   (values nil nil))
+ 
++(eval-when (:compile-toplevel :load-toplevel :execute)
++   (ignore-errors
++     (require 'serve-event)
++     (pushnew :serve-event *features*)))
++
+ 
+ ;;;; TCP Server
+ 
+@@ -53,6 +58,8 @@
+   (nth-value 1 (sb-bsd-sockets:socket-name socket)))
+ 
+ (defimplementation close-socket (socket)
++  (when (eq (preferred-communication-style) :fd-handler)
++    (remove-fd-handlers socket))
+   (sb-bsd-sockets:socket-close socket))
+ 
+ (defimplementation accept-connection (socket
+@@ -61,11 +68,28 @@
+   (declare (ignore buffering timeout external-format))
+   (make-socket-io-stream (accept socket)))
+ 
++(defun socket-make-stream (socket &rest args)
++  (let ((stream (apply 'sb-bsd-sockets:socket-make-stream socket args)))
++    (setf (slot-value socket 'sb-bsd-sockets::stream) nil)
++    stream))
++
+ (defun make-socket-io-stream (socket)
+-  (sb-bsd-sockets:socket-make-stream socket
+-                                     :output t
+-                                     :input t
+-                                     :element-type 'base-char))
++  (case (preferred-communication-style)
++    (:fd-handler
++     (sb-bsd-sockets:socket-make-stream socket
++                                        :output t
++                                        :input t
++                                        :element-type 'base-char))
++    (:spawn
++     (let* ((input (socket-make-stream socket
++                                       :direction :input
++                                       :element-type 'base-char))
++            (output (socket-make-stream socket
++                                        :direction :output
++                                        :element-type 'base-char))
++            (stream (make-two-way-stream input output)))
++       (setf (slot-value socket 'sb-bsd-sockets::stream) stream)
++       stream))))
+ 
+ (defun accept (socket)
+   "Like socket-accept, but retry on EAGAIN."
+@@ -74,7 +98,7 @@
+           (sb-bsd-sockets:interrupted-error ()))))
+ 
+ (defimplementation preferred-communication-style ()
+-  (values nil))
++  (values :spawn #+serve-event :fd-handler))
+ 
+ (defvar *external-format-to-coding-system*
+   '((:iso-8859-1
+@@ -120,6 +144,50 @@
+   (ext:quit))
+ 
+ 
++;;;; Serve Event Handlers
++
++#+serve-event
++(progn
++  
++(defun socket-fd (socket)
++  (etypecase socket
++    (fixnum socket)
++    (sb-bsd-sockets:socket (sb-bsd-sockets:socket-file-descriptor socket))
++    (file-stream (si:file-stream-fd socket))))
++
++(defvar *descriptor-handlers* (make-hash-table :test 'eq))
++
++(defimplementation add-fd-handler (socket fun)
++  (let* ((fd (socket-fd socket))
++         (handler (gethash fd *descriptor-handlers*)))
++    (when handler
++      (serve-event:remove-fd-handler handler))
++    (prog1
++        (setf (gethash fd *descriptor-handlers*)
++              (serve-event:add-fd-handler fd
++                                          :input
++                                          #'(lambda (x)
++                                              (declare (ignorable x))
++                                              (funcall fun))))
++      (serve-event:serve-event))))
++
++(defimplementation remove-fd-handlers (socket)
++  (let ((handler (gethash (socket-fd socket) *descriptor-handlers*)))
++    (when handler
++      (serve-event:remove-fd-handler handler))))
++
++(defimplementation wait-for-input (streams &optional timeout)
++  (assert (member timeout '(nil t)))
++  (loop
++     (let ((ready (remove-if-not #'listen streams)))
++       (when ready (return ready)))
++     ;; (when timeout (return nil))
++     (when (check-slime-interrupts) (return :interrupt))
++     (serve-event:serve-event)))
++
++)                                       ; progn
++
++
+ ;;;; Compilation
+ 
+ (defvar *buffer-name* nil)
+@@ -505,6 +573,9 @@
+ 
+ ;;;; Profiling
+ 
++#+profile
++(progn
++
+ (eval-when (:compile-toplevel :load-toplevel :execute)
+   (require 'profile))
+ 
+@@ -531,7 +602,7 @@
+ (defimplementation profile-package (package callers methods)
+   (declare (ignore callers methods))
+   (eval `(profile:profile ,(package-name (find-package package)))))
+-
++)                                       ; progn
+ 
+ ;;;; Threads
+ 
+@@ -547,40 +618,35 @@
+       (incf *thread-id-counter*)))
+ 
+   (defparameter *thread-id-map* (make-hash-table))
+-  (defparameter *id-thread-map* (make-hash-table))
+ 
+   (defvar *thread-id-map-lock*
+     (mp:make-lock :name "thread id map lock"))
+ 
+-  ; ecl doesn't have weak pointers
+   (defimplementation spawn (fn &key name)
+-    (let ((thread (mp:make-process :name name))
+-	  (id (next-thread-id)))
+-      (mp:process-preset
+-	thread
+-	#'(lambda ()
+-	    (unwind-protect
+-	      (mp:with-lock (*thread-id-map-lock*)
+-	        (setf (gethash id *thread-id-map*) thread)
+-                (setf (gethash thread *id-thread-map*) id))
+-	      (funcall fn)
+-	      (mp:with-lock (*thread-id-map-lock*)
+-                (remhash thread *id-thread-map*)
+-                (remhash id *thread-id-map*)))))
+-      (mp:process-enable thread)))
++    (mp:process-run-function name fn))
+ 
+   (defimplementation thread-id (thread)
+     (block thread-id
+       (mp:with-lock (*thread-id-map-lock*)
+-        (or (gethash thread *id-thread-map*)
+-            (let ((id (next-thread-id)))
+-              (setf (gethash id *thread-id-map*) thread)
+-              (setf (gethash thread *id-thread-map*) id)
++        (or (maphash (lambda (k v)
++                       (let ((maybe-thread (si:weak-pointer-value v)))
++                         (cond
++                           ((null maybe-thread) (remhash k *thread-id-map*))
++                           ((eq thread maybe-thread) (return-from thread-id k)))))
++                     *thread-id-map*)
++            (let ((id (next-thread-id))
++                  (maybe-thread (si:make-weak-pointer thread)))
++              (setf (gethash id *thread-id-map*) maybe-thread)
+               id)))))
+ 
+   (defimplementation find-thread (id)
+     (mp:with-lock (*thread-id-map-lock*)
+-      (gethash id *thread-id-map*)))
++      (let ((thread-pointer (gethash id *thread-id-map*)))
++        (when thread-pointer
++          (let ((maybe-thread (si:weak-pointer-value thread-pointer)))
++            (when (null maybe-thread)
++              (remhash id *thread-id-map*))
++            maybe-thread)))))
+ 
+   (defimplementation thread-name (thread)
+     (mp:process-name thread))
+@@ -613,9 +679,13 @@
+     (mp:process-active-p thread))
+ 
+   (defvar *mailbox-lock* (mp:make-lock :name "mailbox lock"))
++  (defvar *mailboxes* (list))
++  (declaim (type list *mailboxes*))
+ 
+   (defstruct (mailbox (:conc-name mailbox.))
+-    (mutex (mp:make-lock :name "process mailbox"))
++    thread
++    (mutex (mp:make-lock))
++    (waitqueue (mp:make-condition-variable))
+     (queue '() :type list))
+ 
+   (defun mailbox (thread)
+@@ -629,26 +699,24 @@
+   (defimplementation send (thread message)
+     (let* ((mbox (mailbox thread))
+            (mutex (mailbox.mutex mbox)))
+-      (mp:interrupt-process
+-	thread
+-	(lambda ()
+-	  (mp:with-lock (mutex)
+-            (setf (mailbox.queue mbox)
+-              (nconc (mailbox.queue mbox) (list message))))))))
+-
+-  (defimplementation receive ()
+-    (block got-mail
+-      (let* ((mbox (mailbox mp:*current-process*))
+-             (mutex (mailbox.mutex mbox)))
+-        (loop
+-	  (mp:with-lock (mutex)
+-            (if (mailbox.queue mbox)
+-	      (return-from got-mail (pop (mailbox.queue mbox)))))
+-          ;interrupt-process will halt this if it takes longer than 1sec
+-          (sleep 1)))))
++      (mp:with-lock (mutex)
++        (setf (mailbox.queue mbox)
++              (nconc (mailbox.queue mbox) (list message)))
++        (mp:condition-variable-broadcast (mailbox.waitqueue mbox)))))
+ 
+-  (defmethod stream-finish-output ((stream stream))
+-    (finish-output stream))
++  (defimplementation receive-if (test &optional timeout)
++    (let* ((mbox (mailbox (current-thread)))
++           (mutex (mailbox.mutex mbox)))
++      (assert (or (not timeout) (eq timeout t)))
++      (loop
++         (check-slime-interrupts)
++         (mp:with-lock (mutex)
++           (let* ((q (mailbox.queue mbox))
++                  (tail (member-if test q)))
++             (when tail
++               (setf (mailbox.queue mbox) (nconc (ldiff q tail) (cdr tail)))
++               (return (car tail))))
++           (when (eq timeout t) (return (values nil t)))
++           (mp:condition-variable-wait (mailbox.waitqueue mbox) mutex)))))
+ 
+   )
+-
+Index: swank.lisp
+===================================================================
+RCS file: /project/slime/cvsroot/slime/swank.lisp,v
+retrieving revision 1.682
+diff -u -r1.682 swank.lisp
+--- swank.lisp	3 Jan 2010 15:46:44 -0000	1.682
++++ swank.lisp	8 Feb 2010 16:31:56 -0000
+@@ -1097,11 +1097,11 @@
+     (with-panic-handler (connection)
+       (loop (dispatch-event (receive))))))
+ 
+-(defvar *auto-flush-interval* 0.2)
++(defvar *auto-flush-interval* #-ecl 0.2 #+ecl 1)
+ 
+ (defun auto-flush-loop (stream)
+   (loop
+-   (when (not (and (open-stream-p stream) 
++   (when (not (and #-ecl (open-stream-p stream) 
+                    (output-stream-p stream)))
+      (return nil))
+    (finish-output stream)
+Index: doc/slime.texi
+===================================================================
+RCS file: /project/slime/cvsroot/slime/doc/slime.texi,v
+retrieving revision 1.93
+diff -u -r1.93 slime.texi
+--- doc/slime.texi	5 Jan 2010 09:33:09 -0000	1.93
++++ doc/slime.texi	8 Feb 2010 16:31:57 -0000
+@@ -2964,7 +2964,7 @@
+ @SLIME{} is an Extension of @acronym{SLIM} by Eric Marsden. At the
+ time of writing, the authors and code-contributors of @SLIME{} are:
+ 
+-@include contributors.texi
++@c --- @include contributors.texi
+ 
+ ... not counting the bundled code from @file{hyperspec.el},
+ @cite{CLOCC}, and the @cite{CMU AI Repository}.
