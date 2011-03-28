@@ -1,5 +1,5 @@
 ECL_GIT=git://ecls.git.sourceforge.net/gitroot/ecls/ecl
-ECL_REV=5fcd784bb9d4990e342bfa065c0ce28c18787e3d
+ECL_REV=3e802fd0774933341aa293c60146000ef7ea68eb
 BDWGC_CVSROOT=:pserver:anonymous@bdwgc.cvs.sourceforge.net:/cvsroot/bdwgc
 BDWGC_REV=2011/02/22
 SLIME_CVSROOT=:pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot

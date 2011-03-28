@@ -15,7 +15,7 @@ From: Sylvain Ageneau <ageneau@gmail.com>
  8 files changed, 256 insertions(+), 37 deletions(-)
 
 diff --git a/contrib/sockets/sockets.lisp b/contrib/sockets/sockets.lisp
-index 593e4af..3baffb7 100755
+index 78b0b3b..c45dbf2 100755
 --- a/contrib/sockets/sockets.lisp
 +++ b/contrib/sockets/sockets.lisp
 @@ -107,6 +107,28 @@
@@ -96,7 +96,7 @@ index 593e4af..3baffb7 100755
  
  (define-sockopt sockopt-tcp-nodelay "IPPROTO_TCP" "TCP_NODELAY" bool)
 diff --git a/src/aclocal.m4 b/src/aclocal.m4
-index e1496d6..1b6effd 100644
+index 1189251..c8fa6a7 100644
 --- a/src/aclocal.m4
 +++ b/src/aclocal.m4
 @@ -816,7 +816,7 @@ dnl ----------------------------------------------------------------------
@@ -165,10 +165,10 @@ index e752e47..69e7468 100644
  #include <sys/socket.h>
  #include <sys/un.h>
 diff --git a/src/configure b/src/configure
-index d814a78..60fe45d 100755
+index e92a5c6..3d177a9 100755
 --- a/src/configure
 +++ b/src/configure
-@@ -15266,6 +15266,15 @@ else
+@@ -15262,6 +15262,15 @@ else
    CLX_INFO=""
  fi
  

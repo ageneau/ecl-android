@@ -6,7 +6,7 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 ---
  configure_cross                           |   91 ++
  configure_gmp_cross                       |   41 +
- platforms/android/config.sh               |   32 +
+ platforms/android/config.sh               |   31 +
  platforms/android/cross_config.in         |   64 +
  platforms/android/include/arm_dpimacros.h | 1603 +++++++++++++++++++++++++++++
  platforms/android/include/arm_fpamacros.h |  419 ++++++++
@@ -18,7 +18,7 @@ From: Sylvain Ageneau <ageneau@gmail.com>
  platforms/iPhoneOS/config.sh              |   15 
  platforms/iPhoneOS/cross_config.in        |   64 +
  platforms/iPhoneSimulator/config.sh       |   40 +
- 14 files changed, 3709 insertions(+), 0 deletions(-)
+ 14 files changed, 3708 insertions(+), 0 deletions(-)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
  create mode 100644 platforms/android/config.sh
@@ -36,7 +36,7 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 
 diff --git a/configure_cross b/configure_cross
 new file mode 100755
-index 0000000..8cdcc0c
+index 0000000..73fd3e1
 --- /dev/null
 +++ b/configure_cross
 @@ -0,0 +1,91 @@
@@ -111,7 +111,7 @@ index 0000000..8cdcc0c
 +	--with-debug-cflags=yes \
 +	--with-clx=no \
 +	--with-serve-event=no \
-+	--with-tcp=builtin \
++	--with-tcp=yes \
 +	--with-x=no \
 +	--with-rt=no \
 +	--with-defsystem=no \
@@ -119,8 +119,8 @@ index 0000000..8cdcc0c
 +	--with-profile=no \
 +	--with-dffi=no \
 +	--with-asdf=yes \
-+	--with-bytecmp=builtin \
-+	--with-cmp=builtin"
++	--with-bytecmp=yes \
++	--with-cmp=yes"
 +	;;
 +    *) 
 +	usage; exit 1
@@ -180,10 +180,10 @@ index 0000000..a783ae4
 +
 diff --git a/platforms/android/config.sh b/platforms/android/config.sh
 new file mode 100644
-index 0000000..15bf79d
+index 0000000..16e0a91
 --- /dev/null
 +++ b/platforms/android/config.sh
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,31 @@
 +host=arm-linux-eabi
 +target=arm-linux-eabi
 +
@@ -207,18 +207,17 @@ index 0000000..15bf79d
 +export OBJDUMP="$TOOLCHAIN/bin/arm-linux-androideabi-objdump"
 +
 +
-+export CFLAGS="--sysroot=$SYSROOT -fpic -ffunction-sections -funwind-tables  -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -Wno-psabi -march=armv5te -mtune=xscale -msoft-float -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -DANDROID  -DPLATFORM_ANDROID -Wa,--noexecstack -O0 -g -I$SYSROOT/usr/include -I$ECLROOT/platforms/android/include"
++export CFLAGS="--sysroot=$SYSROOT -fpic -ffunction-sections -funwind-tables  -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -Wno-psabi -march=armv5te -msoft-float -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -fno-unsigned-char -DANDROID  -DPLATFORM_ANDROID -Wa,--noexecstack -O0 -g -I$SYSROOT/usr/include -I$ECLROOT/platforms/android/include"
 +
 +export CFLAGS="$CFLAGS -DUSE_GET_STACKBASE_FOR_MAIN"
 +export CPPFLAGS="--sysroot=$SYSROOT"
-+#export CFLAGS="$CFLAGS -DHAVE_PTHREAD_GETATTR_NP -DHAVE_PTHREAD_ATTR_GETSTACK"
 +export CXXFLAGS="$CFLAGS"
 +
 +export LDFLAGS="--sysroot=$SYSROOT -g -Wl,--no-undefined -Wl,-z,noexecstack -Wl,-rpath-link=$SYSROOT/usr/lib  $SYSROOT/usr/lib/libc.so  $SYSROOT/usr/lib/libstdc++.so $SYSROOT/usr/lib/libm.so -lsupc++"
 +
 diff --git a/platforms/android/cross_config.in b/platforms/android/cross_config.in
 new file mode 100644
-index 0000000..eae23f2
+index 0000000..a593e04
 --- /dev/null
 +++ b/platforms/android/cross_config.in
 @@ -0,0 +1,64 @@
@@ -233,7 +232,7 @@ index 0000000..eae23f2
 +### it before invoking "configure" again.
 +
 +### 1.1) Direction of growth of the stack
-+ECL_STACK_DIR=up
++ECL_STACK_DIR=down
 +
 +### 1.2) Choose an integer datatype which is large enough to host a pointer
 +CL_FIXNUM_TYPE=int
@@ -265,12 +264,12 @@ index 0000000..eae23f2
 +ECL_UINT8_T=uint8_t
 +ECL_UINT16_T=uint16_t
 +ECL_UINT32_T=uint32_t
-+ECL_UINT64_T=no
++ECL_UINT64_T=uint64_t
 +ECL_INT8_T=int8_t
 +ECL_INT16_T=int16_t
 +ECL_INT32_T=int32_t
-+ECL_INT64_T=no
-+ECL_LONG_LONG_BITS=no
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
 +
 +###
 +### 1.7) Other features (set to 'no' to disable)
