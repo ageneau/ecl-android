@@ -1,5 +1,5 @@
-# This series applies on GIT commit ae9ef90ee2d1cc696b77e1c9984352a3b9c2e909
-ecl-android
+# This series applies on GIT commit 90b7b5dbbf810485e33d40d8b25b4802dc879d67
 invert-limb
-android-ecl-gc-patch
 build-scripts
+ecl-android
+android-ecl-gc-patch

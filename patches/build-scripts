@@ -4,9 +4,9 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 
 
 ---
- configure_cross                           |   91 ++
- configure_gmp_cross                       |   41 +
- platforms/android/config.sh               |   31 +
+ configure_cross                           |   93 ++
+ configure_gmp_cross                       |   45 +
+ platforms/android/config.sh               |   40 +
  platforms/android/cross_config.in         |   64 +
  platforms/android/include/arm_dpimacros.h | 1603 +++++++++++++++++++++++++++++
  platforms/android/include/arm_fpamacros.h |  419 ++++++++
@@ -17,8 +17,9 @@ From: Sylvain Ageneau <ageneau@gmail.com>
  platforms/android/include/ucontext.h      |    1 
  platforms/iPhoneOS/config.sh              |   15 
  platforms/iPhoneOS/cross_config.in        |   64 +
- platforms/iPhoneSimulator/config.sh       |   40 +
- 14 files changed, 3708 insertions(+), 0 deletions(-)
+ platforms/iPhoneSimulator/config.sh       |   16 
+ platforms/iPhoneSimulator/cross_config.in |   64 +
+ 15 files changed, 3763 insertions(+), 0 deletions(-)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
  create mode 100644 platforms/android/config.sh
@@ -33,13 +34,14 @@ From: Sylvain Ageneau <ageneau@gmail.com>
  create mode 100644 platforms/iPhoneOS/config.sh
  create mode 100644 platforms/iPhoneOS/cross_config.in
  create mode 100644 platforms/iPhoneSimulator/config.sh
+ create mode 100644 platforms/iPhoneSimulator/cross_config.in
 
 diff --git a/configure_cross b/configure_cross
 new file mode 100755
-index 0000000..73fd3e1
+index 0000000..ad4f9c3
 --- /dev/null
 +++ b/configure_cross
-@@ -0,0 +1,91 @@
+@@ -0,0 +1,93 @@
 +#!/bin/bash
 +
 +usage()
@@ -59,6 +61,8 @@ index 0000000..73fd3e1
 +template_config=platforms/$platform/cross_config.in
 +srcdir=$ECLROOT/src
 +ecl_to_run=/opt/ecl/host/bin/ecl
++host_platform=$($ECLROOT/src/config.guess)
++
 +
 +builddir=$ECLROOT/build/$platform/ecl
 +
@@ -70,6 +74,7 @@ index 0000000..73fd3e1
 +
 +case $platform in
 +    android|iPhoneOS|iPhoneSimulator)
++	export force_cross_compiling=yes
 +	. $ECLROOT/platforms/$platform/config.sh
 +	(cat $template_config; echo "ECL_TO_RUN=$ecl_to_run") > $builddir/cross_config
 +	config_opts="\
@@ -82,7 +87,7 @@ index 0000000..73fd3e1
 +	--enable-threads=yes \
 +	--with-debug-cflags=yes \
 +	--with-clx=no \
-+	--with-serve-event=no \
++	--with-serve-event=builtin \
 +	--with-tcp=builtin \
 +	--with-x=no \
 +	--with-rt=no \
@@ -100,7 +105,6 @@ index 0000000..73fd3e1
 +    host)
 +	export CFLAGS="-m32"
 +	export LDFLAGS="-m32"
-+	export ABI=32
 +
 +	config_opts="\
 +	--with-gmp-prefix=$GMP_INSTALL_DIR \
@@ -110,7 +114,7 @@ index 0000000..73fd3e1
 +	--enable-threads=yes \
 +	--with-debug-cflags=yes \
 +	--with-clx=no \
-+	--with-serve-event=no \
++	--with-serve-event=yes \
 +	--with-tcp=yes \
 +	--with-x=no \
 +	--with-rt=no \
@@ -133,10 +137,10 @@ index 0000000..73fd3e1
 +
 diff --git a/configure_gmp_cross b/configure_gmp_cross
 new file mode 100755
-index 0000000..a783ae4
+index 0000000..aa64bb3
 --- /dev/null
 +++ b/configure_gmp_cross
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,45 @@
 +#!/bin/bash
 +
 +usage()
@@ -173,6 +177,10 @@ index 0000000..a783ae4
 +	export LDFLAGS="-m32"
 +	export ABI=32
 +	;;
++    iPhoneSimulator)
++	base_config_opts="\
++        --disable-shared"
++	;;
 +esac
 +
 +cd ${builddir}
@@ -180,19 +188,28 @@ index 0000000..a783ae4
 +
 diff --git a/platforms/android/config.sh b/platforms/android/config.sh
 new file mode 100644
-index 0000000..16e0a91
+index 0000000..c27596c
 --- /dev/null
 +++ b/platforms/android/config.sh
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,40 @@
 +host=arm-linux-eabi
 +target=arm-linux-eabi
 +
-+#ANDROID_NDK_ROOT=/opt/android/android-sdk-mac_x86/android-ndk-r5b
-+ANDROID_NDK_ROOT=/opt/android/android-ndk-r5
++case "${host_platform}" in
++    *linux*)
++	ANDROID_NDK_ROOT=/opt/android/android-ndk-r5
++	TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86
++	;;
++    *darwin*)
++	ANDROID_NDK_ROOT=/opt/android/android-sdk-mac_x86/android-ndk-r5b
++	TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86
++	;;
++    *)
++	echo "You need to configure ANDROID_NDK_ROOT and TOOLCHAIN here"
++	exit 1
++esac
++    
 +SYSROOT=$ANDROID_NDK_ROOT/platforms/android-9/arch-arm
-+TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86
-+#TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86
-+
 +
 +export AR="$TOOLCHAIN/bin/arm-linux-androideabi-ar"
 +export AS="$TOOLCHAIN/bin/arm-linux-androideabi-as"
@@ -3691,11 +3708,11 @@ index 0000000..6aa2376
 +#include <asm/sigcontext.h>
 diff --git a/platforms/iPhoneOS/config.sh b/platforms/iPhoneOS/config.sh
 new file mode 100644
-index 0000000..373d670
+index 0000000..fcdbbf9
 --- /dev/null
 +++ b/platforms/iPhoneOS/config.sh
 @@ -0,0 +1,15 @@
-+iphone_sdk_ver=4.2
++iphone_sdk_ver=4.3
 +
 +host=arm-apple-darwin
 +target=arm-apple-darwin
@@ -3712,7 +3729,7 @@ index 0000000..373d670
 +export LDFLAGS="-arch armv6 -isysroot $SDKROOT"
 diff --git a/platforms/iPhoneOS/cross_config.in b/platforms/iPhoneOS/cross_config.in
 new file mode 100644
-index 0000000..eae23f2
+index 0000000..a593e04
 --- /dev/null
 +++ b/platforms/iPhoneOS/cross_config.in
 @@ -0,0 +1,64 @@
@@ -3727,7 +3744,7 @@ index 0000000..eae23f2
 +### it before invoking "configure" again.
 +
 +### 1.1) Direction of growth of the stack
-+ECL_STACK_DIR=up
++ECL_STACK_DIR=down
 +
 +### 1.2) Choose an integer datatype which is large enough to host a pointer
 +CL_FIXNUM_TYPE=int
@@ -3759,12 +3776,12 @@ index 0000000..eae23f2
 +ECL_UINT8_T=uint8_t
 +ECL_UINT16_T=uint16_t
 +ECL_UINT32_T=uint32_t
-+ECL_UINT64_T=no
++ECL_UINT64_T=uint64_t
 +ECL_INT8_T=int8_t
 +ECL_INT16_T=int16_t
 +ECL_INT32_T=int32_t
-+ECL_INT64_T=no
-+ECL_LONG_LONG_BITS=no
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
 +
 +###
 +### 1.7) Other features (set to 'no' to disable)
@@ -3782,19 +3799,17 @@ index 0000000..eae23f2
 +
 diff --git a/platforms/iPhoneSimulator/config.sh b/platforms/iPhoneSimulator/config.sh
 new file mode 100644
-index 0000000..fe878bc
+index 0000000..5746e06
 --- /dev/null
 +++ b/platforms/iPhoneSimulator/config.sh
-@@ -0,0 +1,40 @@
-+iphone_sdk_ver=4.2
+@@ -0,0 +1,16 @@
++iphone_sdk_ver=4.3
++int_sdk_ver=$(echo "(${iphone_sdk_ver} * 100)/1"|bc)
 +
 +host=i386-apple-darwin
 +target=i386-apple-darwin
-+
 +export SDK=/Developer/Platforms/iPhoneSimulator.platform/Developer
 +export SDKROOT=$SDK/SDKs/iPhoneSimulator${iphone_sdk_ver}.sdk
-+int_sdk_ver=$(echo "(${iphone_sdk_ver} * 100)/1"|bc)
-+
 +export CC="$SDK/usr/bin/gcc-4.2"
 +#export CC="$SDK/usr/bin/llvm-gcc-4.2"
 +export CXX="$CC"
@@ -3802,27 +3817,75 @@ index 0000000..fe878bc
 +export AR="$SDK/usr/bin/ar"
 +export STRIP="$SDK/usr/bin/strip"
 +export RANLIB="$SDK/usr/bin/ranlib"
++export CFLAGS="-g -arch i386 -I$SDKROOT/usr/include -isysroot $SDKROOT -DAPPLE -DIPHONE -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -DIPHONE_SIMULATOR -DIPHONE_SDK_VER=${int_sdk_ver} -DIGNORE_DYNAMIC_LOADING -mmacosx-version-min=10.6 -fmessage-length=0 -fasm-blocks"
++export LDFLAGS="-arch i386 -isysroot $SDKROOT"
+diff --git a/platforms/iPhoneSimulator/cross_config.in b/platforms/iPhoneSimulator/cross_config.in
+new file mode 100644
+index 0000000..a593e04
+--- /dev/null
++++ b/platforms/iPhoneSimulator/cross_config.in
+@@ -0,0 +1,64 @@
++###
++### YOU ARE TRYING TO CROSS COMPILE ECL.
++### PLEASE FOLLOW THESE INSTRUCTIONS:
++###
++### 1) Vital information cannot be determined at configuration time
++### because we are not able to run test programs. A file called
++###		
++### has been created, that you will have to fill out. Please do
++### it before invoking "configure" again.
 +
-+export CFLAGS=$(echo -g -arch i386 -I$SDKROOT/usr/include \
-+    -fmessage-length=0 \
-+    -pipe \
-+    -std=c99 \
-+    -Wno-trigraphs \
-+    -fpascal-strings \
-+    -fasm-blocks \
-+    -O0 \
-+    -Wreturn-type \
-+    -Wunused-variable \
-+    -isysroot $SDKROOT \
-+    -fexceptions \
-+    -fvisibility=hidden \
-+    -mmacosx-version-min=10.6 \
-+    -gdwarf-2 \
-+    -fobjc-abi-version=2 \
-+    -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 \
-+    -D_DARWIN_USE_64_BIT_INODE \
-+    -DAPPLE -DIPHONE -DIPHONE_SIMULATOR \
-+    -DIPHONE_SDK_VER=${int_sdk_ver})
-+export LDFLAGS=$(echo -arch i386 \
-+    -isysroot $SDKROOT -mmacosx-version-min=10.6 \
-+    -all_load -Xlinker -objc_abi_version -Xlinker 2)
++### 1.1) Direction of growth of the stack
++ECL_STACK_DIR=down
++
++### 1.2) Choose an integer datatype which is large enough to host a pointer
++CL_FIXNUM_TYPE=int
++CL_FIXNUM_BITS=32
++CL_FIXNUM_MAX=536870911L
++CL_FIXNUM_MIN=-536870912L
++CL_INT_BITS=32
++CL_LONG_BITS=32
++
++### 1.3) Order of bytes within a word
++ECL_BIGENDIAN=no
++
++### 1.4) What characters signal an end of line. May be LF (Linefeed or \n)
++###      CR (Carriage return or \r), and CRLF (CR followed by LF).
++ECL_NEWLINE=LF
++
++### 1.5) Can we guess how many characters are available for reading from
++###      the FILE structure?
++###          0 = no
++###          1 = (f)->_IO_read_end - (f)->_IO_read_ptr
++###          2 = (f)->_r
++###          3 = (f)->_cnt
++ECL_FILE_CNT=0
++
++###
++### 1.6) Other integer types (set to 'no' to disable)
++###
++ECL_STDINT_HEADER="#include <stdint.h>"
++ECL_UINT8_T=uint8_t
++ECL_UINT16_T=uint16_t
++ECL_UINT32_T=uint32_t
++ECL_UINT64_T=uint64_t
++ECL_INT8_T=int8_t
++ECL_INT16_T=int16_t
++ECL_INT32_T=int32_t
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
++
++###
++### 1.7) Other features (set to 'no' to disable)
++###
++ECL_WORKING_SEM_INIT=no
++ECL_WORKING_ENVIRON=yes
++
++### 2) To cross-compile ECL so that it runs on the system
++###		arm-linux-eabi
++### you need to first compile ECL on the system in which you are building
++### the cross-compiled files, that is
++###		x86_64-unknown-linux-gnu
++### By default we assume that ECL can be accessed from some directory in
++### the path.
++

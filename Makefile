@@ -1,5 +1,5 @@
 ECL_GIT=git://ecls.git.sourceforge.net/gitroot/ecls/ecl
-ECL_REV=3e802fd0774933341aa293c60146000ef7ea68eb
+ECL_REV=f0ace1a75932b4fd824268d797e3d4393049a62d
 BDWGC_CVSROOT=:pserver:anonymous@bdwgc.cvs.sourceforge.net:/cvsroot/bdwgc
 BDWGC_REV=2011/02/22
 SLIME_CVSROOT=:pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot
@@ -34,4 +34,5 @@ patch-ecl:
 	cd ecl && patch -p1 < ../patches/android-ecl-gc-patch
 	cd ecl && patch -p1 < ../patches/build-scripts
 	cd ecl && patch -p1 < ../patches/ecl-android
+	cd ecl && patch -p1 < ../patches/invert-limb
 	chmod +x ecl/configure_cross ecl/configure_gmp_cross

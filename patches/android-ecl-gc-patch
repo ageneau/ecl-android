@@ -4,10 +4,11 @@ From: Sylvain Ageneau <ageneau@gmail.com>
 
 
 ---
- src/gc/configure         |    6 ++++++
- src/gc/configure.ac      |    4 ++++
- src/gc/pthread_support.c |    4 ++--
- 3 files changed, 12 insertions(+), 2 deletions(-)
+ src/gc/configure                     |    6 ++++++
+ src/gc/configure.ac                  |    4 ++++
+ src/gc/libatomic_ops/src/Makefile.in |   17 +++--------------
+ src/gc/pthread_support.c             |    4 ++--
+ 4 files changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/src/gc/configure b/src/gc/configure
 index a06db04..41f6bb7 100755
@@ -41,6 +42,57 @@ index 6df2ea8..21d74b2 100644
       *-*-aix*)
          AC_DEFINE(GC_AIX_THREADS)
          AC_DEFINE(_REENTRANT)
+diff --git a/src/gc/libatomic_ops/src/Makefile.in b/src/gc/libatomic_ops/src/Makefile.in
+index dace062..e393e09 100755
+--- a/src/gc/libatomic_ops/src/Makefile.in
++++ b/src/gc/libatomic_ops/src/Makefile.in
+@@ -79,11 +79,6 @@ am__libatomic_ops_a_SOURCES_DIST = atomic_ops.c atomic_ops_sysdeps.S
+ @NEED_ASM_TRUE@am_libatomic_ops_a_OBJECTS = atomic_ops.$(OBJEXT) \
+ @NEED_ASM_TRUE@	atomic_ops_sysdeps.$(OBJEXT)
+ libatomic_ops_a_OBJECTS = $(am_libatomic_ops_a_OBJECTS)
+-libatomic_ops_gpl_a_AR = $(AR) $(ARFLAGS)
+-libatomic_ops_gpl_a_LIBADD =
+-am_libatomic_ops_gpl_a_OBJECTS = atomic_ops_stack.$(OBJEXT) \
+-	atomic_ops_malloc.$(OBJEXT)
+-libatomic_ops_gpl_a_OBJECTS = $(am_libatomic_ops_gpl_a_OBJECTS)
+ DEFAULT_INCLUDES = -I.@am__isrc@
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+ am__depfiles_maybe = depfiles
+@@ -94,9 +89,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ CCLD = $(CC)
+ LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+-SOURCES = $(libatomic_ops_a_SOURCES) $(libatomic_ops_gpl_a_SOURCES)
+-DIST_SOURCES = $(am__libatomic_ops_a_SOURCES_DIST) \
+-	$(libatomic_ops_gpl_a_SOURCES)
++SOURCES = $(libatomic_ops_a_SOURCES)
++DIST_SOURCES = $(am__libatomic_ops_a_SOURCES_DIST)
+ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+ 	html-recursive info-recursive install-data-recursive \
+ 	install-dvi-recursive install-exec-recursive \
+@@ -245,10 +239,9 @@ top_srcdir = @top_srcdir@
+ SUBDIRS = atomic_ops
+ AM_CFLAGS = @PICFLAG@
+ include_HEADERS = atomic_ops.h atomic_ops_stack.h atomic_ops_malloc.h
+-lib_LIBRARIES = libatomic_ops.a libatomic_ops_gpl.a
++lib_LIBRARIES = libatomic_ops.a
+ @NEED_ASM_FALSE@libatomic_ops_a_SOURCES = atomic_ops.c
+ @NEED_ASM_TRUE@libatomic_ops_a_SOURCES = atomic_ops.c atomic_ops_sysdeps.S
+-libatomic_ops_gpl_a_SOURCES = atomic_ops_stack.c atomic_ops_malloc.c
+ EXTRA_DIST = Makefile.msft
+ all: config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+@@ -338,10 +331,6 @@ libatomic_ops.a: $(libatomic_ops_a_OBJECTS) $(libatomic_ops_a_DEPENDENCIES)
+ 	-rm -f libatomic_ops.a
+ 	$(libatomic_ops_a_AR) libatomic_ops.a $(libatomic_ops_a_OBJECTS) $(libatomic_ops_a_LIBADD)
+ 	$(RANLIB) libatomic_ops.a
+-libatomic_ops_gpl.a: $(libatomic_ops_gpl_a_OBJECTS) $(libatomic_ops_gpl_a_DEPENDENCIES) 
+-	-rm -f libatomic_ops_gpl.a
+-	$(libatomic_ops_gpl_a_AR) libatomic_ops_gpl.a $(libatomic_ops_gpl_a_OBJECTS) $(libatomic_ops_gpl_a_LIBADD)
+-	$(RANLIB) libatomic_ops_gpl.a
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)
 diff --git a/src/gc/pthread_support.c b/src/gc/pthread_support.c
 index 1167330..a0dd135 100644
 --- a/src/gc/pthread_support.c
