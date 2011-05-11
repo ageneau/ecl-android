@@ -1,0 +1,11 @@
+*.a
+*.mode1v3
+*.o
+*.pbxuser
+/eclffi.c
+/eclffi.data
+/eclffi.h
+/util.c
+/util.data
+/util.h
+build

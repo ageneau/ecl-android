@@ -1,0 +1,52 @@
+ECL Build Notes
+~~~~~~~~~~~~~~~
+
+To run this project you must first follow the instructions in
+ecl-android/INSTALL.
+
+If during the installation you used a different path for the
+
+   ECL_INSTALL_ROOT_DIR or 
+   GMP_INSTALL_ROOT_DIR 
+
+variables, then you must change the corresponding variables in the
+eclshell Xcode project: 
+
+   Open eclshell.xcodeproj with Xcode
+
+   "Projects" -> "Edit Project Settings" -> "Build" tab -> 
+   "User Defined" section -> "ECL" and "GMP" variables
+
+eclshell Build Notes
+~~~~~~~~~~~~~~~~~~~~
+
+Download and setup a SLIME source directory. The swank-ecl-patches.txt
+has been submitted to the SLIME maintainers, and hopefully it will
+make it into the CVS builds one of these days, and the patch step will
+not be required.
+
+  cd eclshell
+  cvs -d :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot co -D'2010-01-29' slime
+  cd slime
+  patch -p0 < ../../swank-ecl-patches.txt
+  cd ..
+
+If you specified a different path or SDK version for the ECL build
+than the default, be sure to edit the sdk_ver and ecl_root settings in
+`eclshell/makefile'.
+
+  make			# see makefile for configuring ecl/gmp path
+
+That should generate a libeclffi.a fat library. 
+
+Now open eclshell.xcodeproj. Run a Simulator or Device
+build. Hopefully it will just work, and there will be some noisy
+output as SLIME loads, ending eventually with:
+
+;; Swank started at port: 4005.
+
+From a local emacs, run M-x slime-connect, to 127.0.0.1 (if running a
+Simulator build, for device builds look at the IP address listed on
+the device), port 4005.
+
+Happy hacking.
