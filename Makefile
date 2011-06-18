@@ -19,6 +19,6 @@ patch-slime:
 	cd slime && patch -p0 < ../patches/swank-ecl-patches.txt
 
 copy-slime:
-	-mkdir -p hello-jni/assets/lisp/slime/contrib/
-	cp slime/*.lisp hello-jni/assets/lisp/slime/
-	cp slime/contrib/*.lisp hello-jni/assets/lisp/slime/contrib/
+	-mkdir -p android/hello-jni/assets/lisp/slime/contrib/
+	cp slime/*.lisp android/hello-jni/assets/lisp/slime/
+	cp slime/contrib/*.lisp android/hello-jni/assets/lisp/slime/contrib/
