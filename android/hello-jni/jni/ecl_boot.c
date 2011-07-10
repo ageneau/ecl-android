@@ -8,51 +8,23 @@
 #define ECL_CPP_TAG
 #endif
 
+extern ECL_CPP_TAG void main_lib_SOCKETS();
+// extern ECL_CPP_TAG void main_lib_BYTECMP();
+// extern ECL_CPP_TAG void main_lib_SERVE_EVENT();
+// extern ECL_CPP_TAG void main_lib_ECLFFI();
+// extern ECL_CPP_TAG void main_lib_PROFILE();
+extern ECL_CPP_TAG void main_lib_ALEXANDRIA();
+extern ECL_CPP_TAG void main_lib_TRIVIAL_FEATURES();
+extern ECL_CPP_TAG void main_lib_TRIVIAL_GARBAGE();
+extern ECL_CPP_TAG void main_lib_BORDEAUX_THREADS();
+extern ECL_CPP_TAG void main_lib_BABEL();
+extern ECL_CPP_TAG void main_lib_CFFI();
+extern ECL_CPP_TAG void main_lib_CLPJ();
+extern ECL_CPP_TAG void main_lib_CLPJ_MONO_CROSS();
+// extern ECL_CPP_TAG void main_lib_TEST();
+
 extern void loadLispFromAssets(char* fn);
 
-// extern ECL_CPP_TAG void init_lib_SERVE_EVENT(cl_object);
-extern ECL_CPP_TAG void init_lib_SOCKETS(cl_object);
-// extern ECL_CPP_TAG void init_lib_PROFILE(cl_object);
-extern ECL_CPP_TAG void init_lib_BYTECMP(cl_object);
-// extern ECL_CPP_TAG void init_lib_ECLFFI(cl_object);
-
-#define compiler_data_text NULL
-#define compiler_data_text_size 0
-#define VV NULL
-#define VM 0
-
-#ifdef __cplusplus
-extern "C"
-#endif
-
-void init_ECL_PROGRAM(cl_object cblock)
-{
-  static cl_object Cblock;
-  if (!FIXNUMP(cblock)) {
-    Cblock = cblock;
-    cblock->cblock.data_text = compiler_data_text;
-    cblock->cblock.data_text_size = compiler_data_text_size;
-#ifndef ECL_DYNAMIC_VV
-    cblock->cblock.data = VV;
-#endif
-    cblock->cblock.data_size = VM;
-    return;
-  }
-#if defined(ECL_DYNAMIC_VV) && defined(ECL_SHARED_DATA)
-  VV = Cblock->cblock.data;
-#endif
-	
-  {
-	  cl_object current, next = Cblock;
-	  current = read_VV(OBJNULL, init_lib_SOCKETS); current->cblock.next = next; next = current;
-	  current = read_VV(OBJNULL, init_lib_BYTECMP); current->cblock.next = next; next = current;
-    // current = read_VV(OBJNULL, init_lib_SERVE_EVENT); current->cblock.next = next; next = current;
-    // current = read_VV(OBJNULL, init_lib_ECLFFI); current->cblock.next = next; next = current;
-	// current = read_VV(OBJNULL, init_lib_PROFILE); current->cblock.next = next; next = current; 
-
-	  Cblock->cblock.next = current;
-  }
-}
 
 int ecl_boot(const char *root_dir)
 {
@@ -69,11 +41,36 @@ int ecl_boot(const char *root_dir)
   ecl_set_option(ECL_OPT_INCREMENTAL_GC, 0);
 
   cl_boot(1, &ecl);
-  read_VV(OBJNULL, init_ECL_PROGRAM);
+  // fprintf(stderr,"loading SOCKETS\n");
+  // main_lib_SOCKETS();
+  // // main_lib_BYTECMP();
+  // // main_lib_SERVE_EVENT();
+  // // main_lib_ECLFFI();
+  // // main_lib_PROFILE();
+  // fprintf(stderr,"loading ALEXANDRIA\n");
+  // main_lib_ALEXANDRIA();
+  // fprintf(stderr,"loading TRIVIAL_FEATURES\n");
+  // main_lib_TRIVIAL_FEATURES();
+  // fprintf(stderr,"loading TRIVIAL_GARBAGE\n");
+  // main_lib_TRIVIAL_GARBAGE();
+  // fprintf(stderr,"loading BORDEAUX_THREADS\n");
+  // main_lib_BORDEAUX_THREADS();
+  // fprintf(stderr,"loading BABEL\n");
+  // main_lib_BABEL();
+  // fprintf(stderr,"loading CFFI\n");
+  // main_lib_CFFI();
+  fprintf(stderr,"loading CLPJ\n");
+  main_lib_CLPJ_MONO_CROSS();
+  //  main_lib_CLPJ();
+  //  main_lib_TEST();
+  fprintf(stderr,"ALL LOADED\n");
+
+  // read_VV(OBJNULL, init_ECL_PROGRAM);
   char tmp[2048];
   sprintf(tmp, "(setq *default-pathname-defaults* #p\"%s/\")", root_dir);
   si_safe_eval(3, c_string_to_object(tmp), Cnil, OBJNULL);
   ecl_toplevel(root_dir);
+
 #if 0
   const char *lisp_code = "(SI:TOP-LEVEL)";
   si_select_package(make_simple_base_string("CL-USER"));
@@ -89,13 +86,13 @@ int ecl_boot(const char *root_dir)
 
 void ecl_toplevel(const char *home)
 {
-    char tmp[512];
+  char tmp[512];
 
-	CL_CATCH_ALL_BEGIN(ecl_process_env()) 
-	{
-		sprintf(tmp, "(load \"%s\")","init.lsp");
-		si_safe_eval(3, c_string_to_object(tmp), Cnil, OBJNULL);
-	} CL_CATCH_ALL_END;
+  CL_CATCH_ALL_BEGIN(ecl_process_env()) 
+  {
+    sprintf(tmp, "(load \"%s\")","init.lsp");
+    si_safe_eval(3, c_string_to_object(tmp), Cnil, OBJNULL);
+  } CL_CATCH_ALL_END;
 
-	fflush(stdout);
+  fflush(stdout);
 }
