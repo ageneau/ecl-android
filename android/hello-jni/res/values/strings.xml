@@ -1,41 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2009 The Android Open Source Project
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_name">HelloJni</string>
-
-    <!--  BluetoothChat -->
-    <string name="send">Send</string>
-    <string name="not_connected">You are not connected to a device</string>
-    <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
-    <string name="title_connecting">connecting...</string>
-    <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
-    <string name="title_not_connected">not connected</string>
-
-    <!--  DeviceListActivity -->
-    <string name="scanning">scanning for devices...</string>
-    <string name="select_device">select a device to connect</string>
-    <string name="none_paired">No devices have been paired</string>
-    <string name="none_found">No devices found</string>
-    <string name="title_paired_devices">Paired Devices</string>
-    <string name="title_other_devices">Other Available Devices</string>
-    <string name="button_scan">Scan for devices</string>
-
-    <!-- Options Menu -->
-    <string name="secure_connect">Connect a device - Secure</string>
-    <string name="insecure_connect">Connect a device - Insecure</string>
-    <string name="discoverable">Make discoverable</string>
+<resources>
+    <string name="app_name">Command line Console</string>
+    
+    <string name="help_prompt">Type \'help\' to show available commands</string>
+    <string name="help_commands">Available commands:</string>
+    
+    <string name="ls_fullmode_on">ls full mode is on</string>
+    <string name="ls_fullmode_off">ls full mode is off</string>
+    
+    <string name="error_prefix">Error:\u0020</string>
+    <string name="error_not_dir">\u0020is not a directory</string>
+    <string name="error_cant_del">Cannot delete\u0020</string>
+    <string name="error_path_exists">\u0020already exists</string>
+    <string name="error_create_dir">Cannot create directory\u0020</string>
+    <string name="error_cant_ren">Cannot rename %1$s to %2$s</string>
+    <string name="error_notfile_notexist">\u0020is not a file or does not exist</string>
+    <string name="error_cant_cp">Cannot copy %1$s to %2$s</string>
+    <string name="error_history_id_not_found">History ID not found</string>
+    <string name="error_unknown_cmd">Unknown command --\u0020</string>
+    <string name="error_cant_cd_dir">Can\'t change to\u0020</string>
+    <string name="error_target_not_dir">Target is not a directory\u0020</string>
+    <string name="error_target_dir_cant_read">Target directory can\'t be read\u0020</string>
+    <string name="error_unknown_fontsize">Unknown font size</string>
+    
+    <string name="menu_kill_running_app">Kill running app</string> 
+    <string name="menu_kill_console">Kill console</string>
+    
+    <string name="display_height">Screen height</string>
+    <string name="display_width">Screen width</string>
+    <string name="metrics_density">Density</string>
+    <string name="metrics_densityDpi">Density Dpi</string>
+    <string name="metrics_scaledDensity">Scaled Density</string>
+    <string name="metrics_heightPixels">Height pixels</string>
+    <string name="metrics_widthPixels">Width pixels</string>
+    <string name="metrics_xdpi">xdpi</string>
+    <string name="metrics_ydpi">ydpi</string>
+    
+    <string name="netinfo_wifiinfo">Wifi info</string>
+    <string name="netinfo_macaddr">Mac address</string>
+    <string name="netinfo_ssid">SSID</string>
+    <string name="netinfo_ipaddr">IP address</string>
+    <string name="netinfo_netmask">Netmask</string>
+    <string name="netinfo_gateway">Gateway</string>
+    <string name="netinfo_dns1">DNS 1</string>
+    <string name="netinfo_dns2">DNS 2</string>
+    
+    <string name="netinfo_netintf_name">Interface name</string>
+    
+    <string name="current_fontsize">Font size</string>
+    <string name="external_program_running">External program is running</string>
 </resources>

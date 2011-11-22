@@ -20,6 +20,8 @@ import android.content.res.AssetManager;
 import android.content.res.AssetFileDescriptor;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.os.Bundle;
 import android.util.Log;
 import android.text.TextWatcher;
@@ -40,6 +42,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.Display;
+import android.util.DisplayMetrics;
 
 
 import java.io.File;
@@ -55,6 +59,9 @@ import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import com.example.hellojni.common.*;
+import com.example.hellojni.gui.*;
+
 
 public class HelloJni extends Activity
 {
@@ -63,23 +70,17 @@ public class HelloJni extends Activity
     static
     {
         System.loadLibrary("hello-jni");
-        Log.w(TAG,"Done loading library");
+        Log.i(TAG,"Done loading library");
     }
 
     // Layout Views
-    private ListView mConversationView;
-    private EditText mOutEditText;
-    private Button mSendButton;
+	private ConsoleScrollView scrollView;
+	private ConsoleOutputTextView outputTextView;
+
 
     private static String RESOURCES_DIR = "lisp";
     private static String APP_RESOURCES_DIR = "resources";
     private static boolean DEBUG = true;
-
-    // Array adapter for the conversation thread
-    private ArrayAdapter<String> mConversationArrayAdapter;
-    // String buffer for outgoing messages
-    private StringBuffer mOutStringBuffer;
-
     
     static AssetManager assetManager;
 	static File uncompressedFilesDir;
@@ -102,84 +103,99 @@ public class HelloJni extends Activity
             uncompressDir(RESOURCES_DIR,uncompressedFilesDir,true);
         }
 
-        Log.w(TAG,"ECL Starting...");        
+        Log.i(TAG,"ECL Starting...");        
         startECL();
-        Log.w(TAG,"ECL Started");
+        Log.i(TAG,"ECL Started");
 
 
-        EditText tv = new EditText(this);
+    	// init display text views 
+    	Display display = this.getWindowManager().getDefaultDisplay();
+    	DisplayMetrics metrics = new DisplayMetrics();
+    	display.getMetrics(metrics);
 
-        TextWatcher textWatcher = new TextWatcher()
-        {
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-                Log.w(TAG,"Text changed");
-            }
-            public void afterTextChanged(Editable arg0)
-            {
-            }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-        };
+    	LinearLayout ll = (LinearLayout)findViewById(R.id.verticalLayout);
+    	outputTextView = new ConsoleOutputTextView(this, metrics.heightPixels);
+    	ll.addView(outputTextView);
+    	
+    	scrollView = (ConsoleScrollView)findViewById(R.id.consoleScrollView);
+    	scrollView.setScrollViewListener(outputTextView);
 
-        tv.addTextChangedListener(textWatcher);
-        tv.setOnEditorActionListener(mWriteListener);
-        tv.setText("DONE");
-//        setContentView(tv);
+    	// init input button
+    	ImageButton inputOK = (ImageButton) findViewById(R.id.inputOKButton);
+    	inputOK.setOnClickListener(butClickListener);
+    	
+    	// init input text view
+    	EditText inputView = (EditText)findViewById(R.id.inputBox);
+    	inputView.setOnKeyListener(inputTextViewKeyListener);
+
     }
 
     @Override
     public void onStart()
     {
         super.onStart();
-        if(DEBUG) Log.e(TAG, "++ ON START ++");
-        setupChat();
     }
 
+    private void issueCommand()
+    {
+       EditText inputView = (EditText)findViewById(R.id.inputBox);
+	   String s = inputView.getText().toString().trim();
+	   String res = eclExec(s);
 
-    private void setupChat() {
-        Log.d(TAG, "setupChat()");
+	   inputView.setText(""); // clear
 
-        // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
-        mConversationView = (ListView) findViewById(R.id.in);
-        mConversationView.setAdapter(mConversationArrayAdapter);
+	   writeln("> " + s);
+	   writeln("");
+	   writeln(res);
+	}
 
-        // Initialize the compose field with a listener for the return key
-        mOutEditText = (EditText) findViewById(R.id.edit_text_out);
-        mOutEditText.setOnEditorActionListener(mWriteListener);
+    private View.OnClickListener butClickListener = new View.OnClickListener() 
+    {
+    	public void onClick(View v) {
+    		issueCommand();
+		}
+    	
+    };
 
-        // Initialize the send button with a listener that for click events
-        mSendButton = (Button) findViewById(R.id.button_send);
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                TextView view = (TextView) findViewById(R.id.edit_text_out);
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-        });
-        
-        // Initialize the BluetoothChatService to perform bluetooth connections
-//        mChatService = new BluetoothChatService(this, mHandler);
 
-        // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
+    private EditText.OnKeyListener inputTextViewKeyListener = new EditText.OnKeyListener() 
+    {
+		public boolean onKey(View v, int keyCode, KeyEvent event) {
+			if (keyCode == KeyEvent.KEYCODE_ENTER
+				&& event.getAction() == KeyEvent.ACTION_UP) {
+    		
+    			issueCommand();
+    			return true;
+    		}
+    		return false;
+    	}
+    	
+    };
+
+    private Runnable scrollToBottomAction = new Runnable()
+    {
+    	public void run() 
+    	{ 
+    		if (outputTextView.getViewableHeight() > scrollView.getHeight()) {
+    			scrollView.scrollTo(0, outputTextView.getHeight());
+    		} 
+        } 
+    };
+
+
+    public void write(String msg)
+    {
+    	outputTextView.appendText(msg);
+    	scrollView.post(scrollToBottomAction); // add scroll action to message queue
     }
 
-    private void sendMessage(String message) {
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            mConversationArrayAdapter.add("IN:  " + message);
-            String res = eclExec(message);
-            
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-            mOutEditText.setText(mOutStringBuffer);
-
-            mConversationArrayAdapter.add("OUT:  " + res);
-        }
-
+    public void writeln(String msg)
+    {
+    	outputTextView.appendText(msg);
+    	outputTextView.appendText(ConstantData.NEWLINE);
+    	scrollView.post(scrollToBottomAction); // add scroll action to message queue
     }
+
     
     public void uncompressDir(String in, File out, boolean recursive)
     {
@@ -217,20 +233,6 @@ public class HelloJni extends Activity
 			e.printStackTrace();
 		}
     }
-
-        // The action listener for the EditText widget, to listen for the return key
-    private TextView.OnEditorActionListener mWriteListener =
-        new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-            if(DEBUG) Log.i(TAG, "END onEditorAction");
-            return true;
-        }
-    };
 
 
 	public static String getResourcesPath()
