@@ -16,9 +16,11 @@
 package com.example.hellojni;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.AssetFileDescriptor;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -60,7 +62,6 @@ public class HelloJni extends Activity
         startECL();
         Log.w(TAG,"ECL Started");
 
-
         /* Create a TextView and set its content.
          * the text is retrieved by calling a native
          * function.
@@ -68,6 +69,15 @@ public class HelloJni extends Activity
         TextView  tv = new TextView(this);
         tv.setText("DONE");
         setContentView(tv);
+
+		String result = eclExec("(format nil \"Hello from lisp\")");
+		System.out.println("Result: " + result);
+		
+		Context context = getApplicationContext();
+		int duration = Toast.LENGTH_LONG;
+		
+		Toast toast = Toast.makeText(context, result, duration);
+		toast.show();
     }
 
     public void uncompressDir(String in, File out)
@@ -130,6 +140,7 @@ public class HelloJni extends Activity
     
     
     public native void startECL();
+    public native String eclExec(String string);
     
     static
     {
