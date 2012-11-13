@@ -1,4 +1,4 @@
-From 63082644ae399e03c0c1b0c320b1ee11305c578a Mon Sep 17 00:00:00 2001
+From f9e31b5644c9749dcfe72b40a6e3a3ba7b0f5a94 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 4/8] invert limb patch
@@ -173,5 +173,5 @@ index cbfd6db..78ed37b 100644
 +ASM_END()
 \ No newline at end of file
 -- 
-1.8.0
+1.7.12.1
 

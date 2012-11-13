@@ -1,4 +1,4 @@
-From 3a7b550b51757aac47cc2e5fed0088c856ae3ec4 Mon Sep 17 00:00:00 2001
+From 09b4ffe09aa60336a7a27d41b8846ab716f0c2ec Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <sylvain@nimbuzz.com>
 Date: Sun, 7 Aug 2011 11:18:08 -0300
 Subject: [PATCH 6/8] Fix install dir for libffi includes
@@ -33,5 +33,5 @@ index 91c0b28..5141d0f 100644
  all: all-am
  
 -- 
-1.8.0
+1.7.12.1
 

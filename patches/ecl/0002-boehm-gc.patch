@@ -1,4 +1,4 @@
-From a5e43d72689ec3d9dda438454036634855fccbfa Mon Sep 17 00:00:00 2001
+From 0e6e8eb0d473acaaa328af875cce20a46bf1734d Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Tue, 23 Aug 2011 19:08:13 -0300
 Subject: [PATCH 2/8] boehm-gc: * Remove libatomic_ops_gpl * Configure android
@@ -508,5 +508,5 @@ index 0000000..82d4681
 +2:	movl	%ecx,0(%esp)
 +	ret
 -- 
-1.8.0
+1.7.12.1
 
