@@ -1,46 +1,56 @@
 Install procedure:
+ 
+$ make 
 
-1. make 
-
-This will download ECL into the ecl/ directory. This is no ordinary
-version of ECL, no sir, it's a patched version that works both on
-Android and iPhone!
+This will download ECL into the ecl/ directory.
 
 You might want to check the file 
 
    ecl/scripts.conf
 
 before installing. There you can configure the GMP library and ECL
-installation directories. Also, if you plan to build for Android, you
-can configure the path to your Android SDK/NDK.
+installation directories.
 
 Depending on where you plan to install ECL, you might need to use
 `sudo' for configuring, compiling and installing.
 
-2. PROJECT_ROOT=$(pwd)
+$ PROJECT_ROOT=$(pwd)
 
-3. cd $(PROJECT_ROOT)/ecl
+$ cd $(PROJECT_ROOT)/ecl
 
-4. Compile a 32-bits host ECL to do the cross compilation. If you're
+# Compile a 32-bits host ECL to do the cross compilation. If you're
 running x86_64 linux, you'll need a multilib enabled GCC (aptitude
 install gcc-multilib on debian/ubuntu)
 
-4.1 cd $PROJECT_ROOT/ecl
-4.2 ./configure_cross host
-4.3 (cd $PROJECT_ROOT/ecl/build/host/ecl && make && make install)
+$ cd $PROJECT_ROOT/ecl
+$ ./configure_gmp_cross host
+$ (cd $PROJECT_ROOT/ecl/build/host/gmp && make && make install)
+
+Important note: on MacOS the bundled gmp library doesn't compile with
+-m32 so you need to use the compatible MPIR library instead, I use this
+version: http://www.mpir.org/mpir-2.5.1.tar.bz2. Use the
+configure_gmp_cross to compile it ( do export
+MPIR_SRC_DIR=/path/to/mpir-2.5.1 before running it )
+
+$ ./configure_cross host
+$ (cd $PROJECT_ROOT/ecl/build/host/ecl && make && make install)
 
 If you only want to build for one type of system, feel free to skip
 the steps for the other.
 
 __Android__
 
-5. cross-compile the GMP library for Android
-5.1 ./configure_gmp_cross android
-5.2 (cd $PROJECT_ROOT/ecl/build/android/gmp && make && make install)
+# Set some environment variable to point to our installed SDKs
+$ export ANDROID_SDK_ROOT=/opt/android/android-sdk # Adjust for your environment
+$ export ANDROID_NDK_ROOT=/opt/android/android-ndk # Adjust for your environment
 
-6. cross-compile ECL for android
-6.1 ./configure_cross android
-6.2 (cd $PROJECT_ROOT/ecl/build/android/ecl && make && make install)
+# cross-compile the GMP library for Android
+$ ./configure_gmp_cross android
+$ (cd $PROJECT_ROOT/ecl/build/android/gmp && make && make install)
+
+# cross-compile ECL for android
+$ ./configure_cross android
+$ (cd $PROJECT_ROOT/ecl/build/android/ecl && make && make install)
 
 At this point you should have a working ECL executable in
 /opt/ecl/android/bin/ecl. You can "adb push" it to the android
@@ -48,25 +58,25 @@ emulator and just execute it.
 
 __iPhone__
 
-7. cross-compile the GMP library for the iPhone
-7.1 ./configure_gmp_cross iPhoneOS
-7.2 (cd $PROJECT_ROOT/ecl/build/iPhoneOS/gmp && make && make install)
+# cross-compile the GMP library for the iPhone
+$ ./configure_gmp_cross iPhoneOS
+$ (cd $PROJECT_ROOT/ecl/build/iPhoneOS/gmp && make && make install)
 
-8. cross-compile ECL for the iPhone
-8.1 ./configure_cross iPhoneOS
-8.2 (cd $PROJECT_ROOT/ecl/build/iPhoneOS/ecl && make && make install)
+# cross-compile ECL for the iPhone
+$ ./configure_cross iPhoneOS
+$ (cd $PROJECT_ROOT/ecl/build/iPhoneOS/ecl && make && make install)
 
-9. cross-compile the GMP library for the iPhone simulator
-9.1 ./configure_gmp_cross iPhoneSimulator
-9.2 (cd $PROJECT_ROOT/ecl/build/iPhoneSimulator/gmp && make && make install)
+# cross-compile the GMP library for the iPhone simulator
+$ ./configure_gmp_cross iPhoneSimulator
+$ (cd $PROJECT_ROOT/ecl/build/iPhoneSimulator/gmp && make && make install)
 
-10. cross-compile ECL for the iPhone simulator
-10.1 ./configure_cross iPhoneSimulator
-10.2 (cd $PROJECT_ROOT/ecl/build/iPhoneSimulator/ecl && make && make install)
+# cross-compile ECL for the iPhone simulator
+$ ./configure_cross iPhoneSimulator
+$ (cd $PROJECT_ROOT/ecl/build/iPhoneSimulator/ecl && make && make install)
 
-11. In order to make it easy to configure the Xcode projects, let's
-make FAT binaries of the static libraries.
-11.1 ./iPhone_universal
+# In order to make it easy to configure the Xcode projects, let's make
+FAT binaries of the static libraries.
+$ ./iPhone_universal
 
 __Android projects__
 

@@ -1,7 +1,7 @@
-From 4a549233010e9be70f43acf40728386e3414e48b Mon Sep 17 00:00:00 2001
+From 31c23f4cf38162add4270f5b2597f78d79a5627e Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 07/11] android specific stuff
+Subject: [PATCH 7/8] android specific stuff
 
 ---
  src/Makefile.in         |   7 +-

@@ -1,7 +1,7 @@
-From 33df662a8f9a940c07795ccb790b326d7a001197 Mon Sep 17 00:00:00 2001
+From 63082644ae399e03c0c1b0c320b1ee11305c578a Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 04/11] invert limb patch
+Subject: [PATCH 4/8] invert limb patch
 
 ---
  src/gmp/mpn/arm/invert_limb.asm | 143 +++++++++++++++++++---------------------
