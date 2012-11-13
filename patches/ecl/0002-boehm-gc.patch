@@ -1,0 +1,513 @@
+From 825fad0ad51ffa766fc3c9ec655f14ae6c874550 Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Tue, 23 Aug 2011 19:08:13 -0300
+Subject: [PATCH 02/11] boehm-gc: * Remove libatomic_ops_gpl * Configure
+ android target * Add code for missing sigsetjmp on
+ Android x86
+
+---
+ src/gc-unstable/Makefile.am                   |  5 ++
+ src/gc-unstable/Makefile.in                   | 33 +++++-----
+ src/gc-unstable/configure                     | 95 +++++++++++++++++++++++++++
+ src/gc-unstable/configure.ac                  | 43 ++++++++++++
+ src/gc-unstable/libatomic_ops/src/Makefile.am |  4 +-
+ src/gc-unstable/libatomic_ops/src/Makefile.in | 19 +-----
+ src/gc-unstable/sigsetjmp_x86.S               | 94 ++++++++++++++++++++++++++
+ 7 files changed, 259 insertions(+), 34 deletions(-)
+ create mode 100644 src/gc-unstable/sigsetjmp_x86.S
+
+diff --git a/src/gc-unstable/Makefile.am b/src/gc-unstable/Makefile.am
+index 4de6e46..7c67264 100644
+--- a/src/gc-unstable/Makefile.am
++++ b/src/gc-unstable/Makefile.am
+@@ -87,6 +87,11 @@ if NEED_ATOMIC_OPS_ASM
+ nodist_libgc_la_SOURCES = libatomic_ops/src/atomic_ops_sysdeps.S
+ endif
+ 
++if NEED_SIGSETJMP_ASM
++libgc_la_SOURCES += sigsetjmp_x86.S
++endif
++
++
+ # Include THREADDLLIBS here to ensure that the correct versions of
+ # linuxthread semaphore functions get linked:
+ libgc_la_LIBADD = @addobjs@ $(THREADDLLIBS) $(UNWINDLIBS) $(ATOMIC_OPS_LIBS)
+diff --git a/src/gc-unstable/Makefile.in b/src/gc-unstable/Makefile.in
+index 29d41ea..f2c02b7 100644
+--- a/src/gc-unstable/Makefile.in
++++ b/src/gc-unstable/Makefile.in
+@@ -105,11 +105,12 @@ check_PROGRAMS = gctest$(EXEEXT) leaktest$(EXEEXT) middletest$(EXEEXT) \
+ @PTHREADS_TRUE@am__append_2 = pthread_start.c pthread_support.c pthread_stop_world.c
+ @DARWIN_THREADS_TRUE@am__append_3 = darwin_stop_world.c
+ @WIN32_THREADS_TRUE@am__append_4 = win32_threads.c
++@NEED_SIGSETJMP_ASM_TRUE@am__append_5 = sigsetjmp_x86.S
+ 
+ # C++ Interface
+ # -------------
+-@CPLUSPLUS_TRUE@am__append_5 = libgccpp.la
+-@CPLUSPLUS_TRUE@am__append_6 = include/gc_cpp.h include/gc_allocator.h
++@CPLUSPLUS_TRUE@am__append_6 = libgccpp.la
++@CPLUSPLUS_TRUE@am__append_7 = include/gc_cpp.h include/gc_allocator.h
+ DIST_COMMON = $(am__configure_deps) $(am__pkginclude_HEADERS_DIST) \
+ 	$(dist_noinst_HEADERS) $(dist_noinst_SCRIPTS) \
+ 	$(dist_pkgdata_DATA) $(include_HEADERS) $(srcdir)/Makefile.am \
+@@ -120,15 +121,15 @@ DIST_COMMON = $(am__configure_deps) $(am__pkginclude_HEADERS_DIST) \
+ 	$(top_srcdir)/include/private/config.h.in ChangeLog compile \
+ 	config.guess config.sub depcomp install-sh ltmain.sh missing \
+ 	mkinstalldirs
+-@KEEP_BACK_PTRS_TRUE@am__append_7 = tracetest$(EXEEXT)
+-@KEEP_BACK_PTRS_TRUE@am__append_8 = tracetest
+-@THREADS_TRUE@am__append_9 = threadleaktest$(EXEEXT) \
++@KEEP_BACK_PTRS_TRUE@am__append_8 = tracetest$(EXEEXT)
++@KEEP_BACK_PTRS_TRUE@am__append_9 = tracetest
++@THREADS_TRUE@am__append_10 = threadleaktest$(EXEEXT) \
+ @THREADS_TRUE@	threadkey_test$(EXEEXT) \
+ @THREADS_TRUE@	initsecondarythread$(EXEEXT)
+-@THREADS_TRUE@am__append_10 = threadleaktest threadkey_test \
++@THREADS_TRUE@am__append_11 = threadleaktest threadkey_test \
+ @THREADS_TRUE@	initsecondarythread
+-@CPLUSPLUS_TRUE@am__append_11 = test_cpp$(EXEEXT)
+-@CPLUSPLUS_TRUE@am__append_12 = test_cpp
++@CPLUSPLUS_TRUE@am__append_12 = test_cpp$(EXEEXT)
++@CPLUSPLUS_TRUE@am__append_13 = test_cpp
+ subdir = .
+ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+ am__aclocal_m4_deps = $(top_srcdir)/m4/gc_set_version.m4 \
+@@ -183,18 +184,19 @@ am__libgc_la_SOURCES_DIST = allchblk.c alloc.c blacklst.c checksums.c \
+ 	real_malloc.c reclaim.c specific.c stubborn.c typd_mlc.c \
+ 	backgraph.c thread_local_alloc.c pthread_start.c \
+ 	pthread_support.c pthread_stop_world.c darwin_stop_world.c \
+-	win32_threads.c
++	win32_threads.c sigsetjmp_x86.S
+ @PTHREADS_TRUE@am__objects_1 = pthread_start.lo pthread_support.lo \
+ @PTHREADS_TRUE@	pthread_stop_world.lo
+ @DARWIN_THREADS_TRUE@am__objects_2 = darwin_stop_world.lo
+ @WIN32_THREADS_TRUE@am__objects_3 = win32_threads.lo
++@NEED_SIGSETJMP_ASM_TRUE@am__objects_4 = sigsetjmp_x86.lo
+ am_libgc_la_OBJECTS = allchblk.lo alloc.lo blacklst.lo checksums.lo \
+ 	dbg_mlc.lo dyn_load.lo finalize.lo gc_dlopen.lo gcj_mlc.lo \
+ 	headers.lo malloc.lo mallocx.lo mark.lo mark_rts.lo misc.lo \
+ 	new_hblk.lo obj_map.lo os_dep.lo pcr_interface.lo ptr_chck.lo \
+ 	real_malloc.lo reclaim.lo specific.lo stubborn.lo typd_mlc.lo \
+ 	backgraph.lo thread_local_alloc.lo $(am__objects_1) \
+-	$(am__objects_2) $(am__objects_3)
++	$(am__objects_2) $(am__objects_3) $(am__objects_4)
+ @NEED_ATOMIC_OPS_ASM_FALSE@@USE_INTERNAL_LIBATOMIC_OPS_TRUE@nodist_libgc_la_OBJECTS = atomic_ops.lo
+ @NEED_ATOMIC_OPS_ASM_TRUE@nodist_libgc_la_OBJECTS =  \
+ @NEED_ATOMIC_OPS_ASM_TRUE@	atomic_ops_sysdeps.lo
+@@ -577,14 +579,14 @@ EXTRA_DIST = gc_cpp.cpp README.QUICK BCC_MAKEFILE NT_MAKEFILE \
+ 
+ # C Library
+ # ---------
+-lib_LTLIBRARIES = libgc.la $(am__append_5) libcord.la
++lib_LTLIBRARIES = libgc.la $(am__append_6) libcord.la
+ 
+ # unprefixed header
+ include_HEADERS = include/extra/gc.h include/extra/gc_cpp.h
+ 
+ # installed headers
+ #
+-pkginclude_HEADERS = $(am__append_6) include/gc.h include/gc_typed.h \
++pkginclude_HEADERS = $(am__append_7) include/gc.h include/gc_typed.h \
+ 	include/gc_inline.h include/gc_mark.h include/gc_cpp.h \
+ 	include/weakpointer.h include/new_gc_alloc.h \
+ 	include/gc_allocator.h include/gc_backptr.h include/gc_gcj.h \
+@@ -607,8 +609,8 @@ dist_noinst_HEADERS = include/private/gc_hdrs.h \
+ check_LTLIBRARIES = libstaticrootslib.la
+ TESTS = gctest$(EXEEXT) leaktest$(EXEEXT) middletest$(EXEEXT) \
+ 	smashtest$(EXEEXT) hugetest$(EXEEXT) realloc_test$(EXEEXT) \
+-	staticrootstest$(EXEEXT) $(am__append_7) $(am__append_9) \
+-	$(am__append_11)
++	staticrootstest$(EXEEXT) $(am__append_8) $(am__append_10) \
++	$(am__append_12)
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = bdw-gc.pc
+ libgc_la_SOURCES = allchblk.c alloc.c blacklst.c checksums.c dbg_mlc.c \
+@@ -617,7 +619,7 @@ libgc_la_SOURCES = allchblk.c alloc.c blacklst.c checksums.c dbg_mlc.c \
+ 	os_dep.c pcr_interface.c ptr_chck.c real_malloc.c reclaim.c \
+ 	specific.c stubborn.c typd_mlc.c backgraph.c \
+ 	thread_local_alloc.c $(am__append_2) $(am__append_3) \
+-	$(am__append_4)
++	$(am__append_4) $(am__append_5)
+ @NEED_ATOMIC_OPS_ASM_TRUE@nodist_libgc_la_SOURCES = libatomic_ops/src/atomic_ops_sysdeps.S
+ @USE_INTERNAL_LIBATOMIC_OPS_TRUE@nodist_libgc_la_SOURCES = libatomic_ops/src/atomic_ops.c
+ 
+@@ -933,6 +935,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/real_malloc.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/realloc_test.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reclaim.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sigsetjmp_x86.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smash_test.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparc_mach_dep.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/specific.Plo@am__quote@
+diff --git a/src/gc-unstable/configure b/src/gc-unstable/configure
+index 7f975b4..76b6e87 100755
+--- a/src/gc-unstable/configure
++++ b/src/gc-unstable/configure
+@@ -624,6 +624,8 @@ USE_INTERNAL_LIBATOMIC_OPS_FALSE
+ USE_INTERNAL_LIBATOMIC_OPS_TRUE
+ subdirs
+ ATOMIC_OPS_LIBS
++NEED_SIGSETJMP_ASM_FALSE
++NEED_SIGSETJMP_ASM_TRUE
+ USE_LIBDIR_FALSE
+ USE_LIBDIR_TRUE
+ UNWINDLIBS
+@@ -5084,6 +5086,12 @@ $as_echo "$as_me: WARNING: \"Explicit GC_INIT() calls may be required.\"" >&2;};
+         $as_echo "#define _REENTRANT 1" >>confdefs.h
+ 
+         ;;
++     *-*-eabi*)
++        $as_echo "#define GC_LINUX_THREADS 1" >>confdefs.h
++
++        $as_echo "#define _REENTRANT 1" >>confdefs.h
++
++        ;;
+      *-*-aix*)
+         $as_echo "#define GC_AIX_THREADS 1" >>confdefs.h
+ 
+@@ -16573,6 +16581,89 @@ fi
+ 
+ 
+ 
++
++
++
++
++
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sigsetjmp" >&5
++$as_echo_n "checking for sigsetjmp... " >&6; }
++if ${ac_cv_func_sigsetjmp+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++#include <setjmp.h>
++int
++main ()
++{
++
++sigjmp_buf jb;
++sigsetjmp(jb, 1);
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_link "$LINENO"; then :
++  ac_cv_func_sigsetjmp=yes
++else
++  ac_cv_func_sigsetjmp=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_sigsetjmp" >&5
++$as_echo "$ac_cv_func_sigsetjmp" >&6; }
++if test $ac_cv_func_sigsetjmp = yes; then
++  $as_echo "#define HAVE_SIGSETJMP 1" >>confdefs.h
++
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for siglongjmp" >&5
++$as_echo_n "checking for siglongjmp... " >&6; }
++if ${ac_cv_func_siglongjmp+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++/* end confdefs.h.  */
++
++#include <setjmp.h>
++int
++main ()
++{
++
++sigjmp_buf jb;
++sigsetjmp(jb, 1);
++siglongjmp(jb, 1);
++  ;
++  return 0;
++}
++_ACEOF
++if ac_fn_c_try_link "$LINENO"; then :
++  ac_cv_func_siglongjmp=yes
++else
++  ac_cv_func_siglongjmp=no
++fi
++rm -f core conftest.err conftest.$ac_objext \
++    conftest$ac_exeext conftest.$ac_ext
++fi
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_siglongjmp" >&5
++$as_echo "$ac_cv_func_siglongjmp" >&6; }
++if test $ac_cv_func_siglongjmp = yes; then
++  $as_echo "#define HAVE_SIGLONGJMP 1" >>confdefs.h
++
++fi
++
++ if test x$ac_cv_func_sigsetjmp = xno; then
++  NEED_SIGSETJMP_ASM_TRUE=
++  NEED_SIGSETJMP_ASM_FALSE='#'
++else
++  NEED_SIGSETJMP_ASM_TRUE='#'
++  NEED_SIGSETJMP_ASM_FALSE=
++fi
++
++
++
+ # Atomic Ops
+ # ----------
+ 
+@@ -16825,6 +16916,10 @@ if test -z "${USE_LIBDIR_TRUE}" && test -z "${USE_LIBDIR_FALSE}"; then
+   as_fn_error $? "conditional \"USE_LIBDIR\" was never defined.
+ Usually this means the macro was only invoked conditionally." "$LINENO" 5
+ fi
++if test -z "${NEED_SIGSETJMP_ASM_TRUE}" && test -z "${NEED_SIGSETJMP_ASM_FALSE}"; then
++  as_fn_error $? "conditional \"NEED_SIGSETJMP_ASM\" was never defined.
++Usually this means the macro was only invoked conditionally." "$LINENO" 5
++fi
+ if test -z "${USE_INTERNAL_LIBATOMIC_OPS_TRUE}" && test -z "${USE_INTERNAL_LIBATOMIC_OPS_FALSE}"; then
+   as_fn_error $? "conditional \"USE_INTERNAL_LIBATOMIC_OPS\" was never defined.
+ Usually this means the macro was only invoked conditionally." "$LINENO" 5
+diff --git a/src/gc-unstable/configure.ac b/src/gc-unstable/configure.ac
+index f25d021..038757a 100644
+--- a/src/gc-unstable/configure.ac
++++ b/src/gc-unstable/configure.ac
+@@ -126,6 +126,10 @@ case "$THREADS" in
+         AC_DEFINE(GC_LINUX_THREADS)
+         AC_DEFINE(_REENTRANT)
+         ;;
++     *-*-eabi*)
++        AC_DEFINE(GC_LINUX_THREADS)
++        AC_DEFINE(_REENTRANT)
++        ;;
+      *-*-aix*)
+         AC_DEFINE(GC_AIX_THREADS)
+         AC_DEFINE(_REENTRANT)
+@@ -679,6 +683,45 @@ fi
+ AM_CONDITIONAL(USE_LIBDIR, test -z "$with_cross_host")
+ 
+ 
++dnl Checks if sigsetjmp() is available
++dnl Defines HAVE_SIGSETJMP on success.
++AC_DEFUN([AC_FUNC_SIGSETJMP],
++[AC_CACHE_CHECK([for sigsetjmp], ac_cv_func_sigsetjmp,
++                [AC_TRY_LINK([
++#include <setjmp.h>],
++		[
++sigjmp_buf jb;
++sigsetjmp(jb, 1);],
++                [ac_cv_func_sigsetjmp=yes],
++                [ac_cv_func_sigsetjmp=no])])
++if test $ac_cv_func_sigsetjmp = yes; then
++  AC_DEFINE(HAVE_SIGSETJMP)
++fi])
++
++dnl Checks if siglongjmp() is available
++dnl Defines HAVE_SIGLONGJMP on success.
++AC_DEFUN([AC_FUNC_SIGLONGJMP],
++[AC_CACHE_CHECK([for siglongjmp], ac_cv_func_siglongjmp,
++                [AC_TRY_LINK([
++#include <setjmp.h>],
++		[
++sigjmp_buf jb;
++sigsetjmp(jb, 1);
++siglongjmp(jb, 1);],
++                [ac_cv_func_siglongjmp=yes],
++                [ac_cv_func_siglongjmp=no])])
++if test $ac_cv_func_siglongjmp = yes; then
++  AC_DEFINE(HAVE_SIGLONGJMP)
++fi])
++
++
++AC_FUNC_SIGSETJMP
++AC_FUNC_SIGLONGJMP
++
++AM_CONDITIONAL([NEED_SIGSETJMP_ASM],
++    [test x$ac_cv_func_sigsetjmp = xno])
++
++
+ # Atomic Ops
+ # ----------
+ 
+diff --git a/src/gc-unstable/libatomic_ops/src/Makefile.am b/src/gc-unstable/libatomic_ops/src/Makefile.am
+index 7ca41ff..383c222 100644
+--- a/src/gc-unstable/libatomic_ops/src/Makefile.am
++++ b/src/gc-unstable/libatomic_ops/src/Makefile.am
+@@ -3,14 +3,12 @@ SUBDIRS=atomic_ops
+ AM_CFLAGS=@PICFLAG@
+ 
+ include_HEADERS=atomic_ops.h atomic_ops_stack.h atomic_ops_malloc.h
+-lib_LIBRARIES = libatomic_ops.a libatomic_ops_gpl.a
++lib_LIBRARIES = libatomic_ops.a
+ if NEED_ASM
+ libatomic_ops_a_SOURCES = atomic_ops.c atomic_ops_sysdeps.S
+ else
+ libatomic_ops_a_SOURCES = atomic_ops.c
+ endif
+ 
+-libatomic_ops_gpl_a_SOURCES = atomic_ops_stack.c atomic_ops_malloc.c
+-
+ EXTRA_DIST=Makefile.msft
+ 
+diff --git a/src/gc-unstable/libatomic_ops/src/Makefile.in b/src/gc-unstable/libatomic_ops/src/Makefile.in
+index ff309fe..929259a 100644
+--- a/src/gc-unstable/libatomic_ops/src/Makefile.in
++++ b/src/gc-unstable/libatomic_ops/src/Makefile.in
+@@ -79,11 +79,6 @@ am__libatomic_ops_a_SOURCES_DIST = atomic_ops.c atomic_ops_sysdeps.S
+ @NEED_ASM_TRUE@am_libatomic_ops_a_OBJECTS = atomic_ops.$(OBJEXT) \
+ @NEED_ASM_TRUE@	atomic_ops_sysdeps.$(OBJEXT)
+ libatomic_ops_a_OBJECTS = $(am_libatomic_ops_a_OBJECTS)
+-libatomic_ops_gpl_a_AR = $(AR) $(ARFLAGS)
+-libatomic_ops_gpl_a_LIBADD =
+-am_libatomic_ops_gpl_a_OBJECTS = atomic_ops_stack.$(OBJEXT) \
+-	atomic_ops_malloc.$(OBJEXT)
+-libatomic_ops_gpl_a_OBJECTS = $(am_libatomic_ops_gpl_a_OBJECTS)
+ DEFAULT_INCLUDES = -I.@am__isrc@
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+ am__depfiles_maybe = depfiles
+@@ -94,9 +89,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+ 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+ CCLD = $(CC)
+ LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+-SOURCES = $(libatomic_ops_a_SOURCES) $(libatomic_ops_gpl_a_SOURCES)
+-DIST_SOURCES = $(am__libatomic_ops_a_SOURCES_DIST) \
+-	$(libatomic_ops_gpl_a_SOURCES)
++SOURCES = $(libatomic_ops_a_SOURCES)
++DIST_SOURCES = $(am__libatomic_ops_a_SOURCES_DIST)
+ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+ 	html-recursive info-recursive install-data-recursive \
+ 	install-dvi-recursive install-exec-recursive \
+@@ -246,10 +240,9 @@ top_srcdir = @top_srcdir@
+ SUBDIRS = atomic_ops
+ AM_CFLAGS = @PICFLAG@
+ include_HEADERS = atomic_ops.h atomic_ops_stack.h atomic_ops_malloc.h
+-lib_LIBRARIES = libatomic_ops.a libatomic_ops_gpl.a
++lib_LIBRARIES = libatomic_ops.a
+ @NEED_ASM_FALSE@libatomic_ops_a_SOURCES = atomic_ops.c
+ @NEED_ASM_TRUE@libatomic_ops_a_SOURCES = atomic_ops.c atomic_ops_sysdeps.S
+-libatomic_ops_gpl_a_SOURCES = atomic_ops_stack.c atomic_ops_malloc.c
+ EXTRA_DIST = Makefile.msft
+ all: config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
+@@ -339,10 +332,6 @@ libatomic_ops.a: $(libatomic_ops_a_OBJECTS) $(libatomic_ops_a_DEPENDENCIES)
+ 	-rm -f libatomic_ops.a
+ 	$(libatomic_ops_a_AR) libatomic_ops.a $(libatomic_ops_a_OBJECTS) $(libatomic_ops_a_LIBADD)
+ 	$(RANLIB) libatomic_ops.a
+-libatomic_ops_gpl.a: $(libatomic_ops_gpl_a_OBJECTS) $(libatomic_ops_gpl_a_DEPENDENCIES) 
+-	-rm -f libatomic_ops_gpl.a
+-	$(libatomic_ops_gpl_a_AR) libatomic_ops_gpl.a $(libatomic_ops_gpl_a_OBJECTS) $(libatomic_ops_gpl_a_LIBADD)
+-	$(RANLIB) libatomic_ops_gpl.a
+ 
+ mostlyclean-compile:
+ 	-rm -f *.$(OBJEXT)
+@@ -351,8 +340,6 @@ distclean-compile:
+ 	-rm -f *.tab.c
+ 
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atomic_ops.Po@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atomic_ops_malloc.Po@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atomic_ops_stack.Po@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atomic_ops_sysdeps.Po@am__quote@
+ 
+ .S.o:
+diff --git a/src/gc-unstable/sigsetjmp_x86.S b/src/gc-unstable/sigsetjmp_x86.S
+new file mode 100644
+index 0000000..82d4681
+--- /dev/null
++++ b/src/gc-unstable/sigsetjmp_x86.S
+@@ -0,0 +1,94 @@
++/* $OpenBSD: sigsetjmp.S,v 1.7 2005/08/07 11:30:38 espie Exp $ */
++/*-
++ * Copyright (c) 1990 The Regents of the University of California.
++ * All rights reserved.
++ *
++ * This code is derived from software contributed to Berkeley by
++ * William Jolitz.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. Neither the name of the University nor the names of its contributors
++ *    may be used to endorse or promote products derived from this software
++ *    without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#include <machine/asm.h>
++
++	.text
++
++ENTRY(sigsetjmp)
++	movl	4(%esp),%ecx
++	movl	8(%esp),%eax
++	movl	%eax,28(%ecx)
++	testl	%eax,%eax
++	jz	1f
++
++	PIC_PROLOGUE
++	pushl	$0
++#ifdef PIC
++	call	PIC_PLT(_C_LABEL(sigblock))
++#else
++	call	_C_LABEL(sigblock)
++#endif
++	addl	$4,%esp
++	PIC_EPILOGUE
++
++	movl	4(%esp),%ecx
++	movl	%eax,24(%ecx)
++1:	movl	0(%esp),%edx
++	movl	%edx, 0(%ecx)
++	movl	%ebx, 4(%ecx)
++	movl	%esp, 8(%ecx)
++	movl	%ebp,12(%ecx)
++	movl	%esi,16(%ecx)
++	movl	%edi,20(%ecx)
++	xorl	%eax,%eax
++	ret
++
++ENTRY(siglongjmp)
++	movl	4(%esp),%edx
++	cmpl	$0,28(%edx)
++	jz	1f
++
++	PIC_PROLOGUE
++	pushl	24(%edx)
++#ifdef PIC
++	call	PIC_PLT(_C_LABEL(sigsetmask))
++#else
++	call	_C_LABEL(sigsetmask)
++#endif
++	addl	$4,%esp
++	PIC_EPILOGUE
++
++1:	movl	4(%esp),%edx
++	movl	8(%esp),%eax
++	movl	0(%edx),%ecx
++	movl	4(%edx),%ebx
++	movl	8(%edx),%esp
++	movl	12(%edx),%ebp
++	movl	16(%edx),%esi
++	movl	20(%edx),%edi
++	testl	%eax,%eax
++	jnz	2f
++	incl	%eax
++2:	movl	%ecx,0(%esp)
++	ret
+-- 
+1.8.0
+

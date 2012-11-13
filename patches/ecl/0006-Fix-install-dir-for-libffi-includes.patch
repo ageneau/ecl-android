@@ -1,0 +1,37 @@
+From 559c81d187ef35f4b4b6f09b3d51f9e0dbfff50b Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <sylvain@nimbuzz.com>
+Date: Sun, 7 Aug 2011 11:18:08 -0300
+Subject: [PATCH 06/11] Fix install dir for libffi includes
+
+---
+ src/libffi/include/Makefile.am | 2 +-
+ src/libffi/include/Makefile.in | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/libffi/include/Makefile.am b/src/libffi/include/Makefile.am
+index fd28024..15301d6 100644
+--- a/src/libffi/include/Makefile.am
++++ b/src/libffi/include/Makefile.am
+@@ -5,5 +5,5 @@ AUTOMAKE_OPTIONS=foreign
+ DISTCLEANFILES=ffitarget.h
+ EXTRA_DIST=ffi.h.in ffi_common.h
+ 
+-includesdir = $(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include
++includesdir = $(includedir)
+ nodist_includes_HEADERS = ffi.h ffitarget.h
+diff --git a/src/libffi/include/Makefile.in b/src/libffi/include/Makefile.in
+index 91c0b28..5141d0f 100644
+--- a/src/libffi/include/Makefile.in
++++ b/src/libffi/include/Makefile.in
+@@ -211,7 +211,7 @@ top_srcdir = @top_srcdir@
+ AUTOMAKE_OPTIONS = foreign
+ DISTCLEANFILES = ffitarget.h
+ EXTRA_DIST = ffi.h.in ffi_common.h
+-includesdir = $(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include
++includesdir = $(includedir)
+ nodist_includes_HEADERS = ffi.h ffitarget.h
+ all: all-am
+ 
+-- 
+1.8.0
+

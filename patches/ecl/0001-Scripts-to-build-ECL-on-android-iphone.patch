@@ -1,0 +1,688 @@
+From 092a206d2af4380941ec88bb73fb08383513e525 Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Mon, 4 Apr 2011 19:57:38 -0300
+Subject: [PATCH 01/11] Scripts to build ECL on android/iphone
+
+---
+ configure_cross                           | 94 +++++++++++++++++++++++++++++++
+ configure_gmp_cross                       | 47 ++++++++++++++++
+ iPhone_universal                          | 41 ++++++++++++++
+ make_all                                  | 36 ++++++++++++
+ platforms/android/config.sh               | 36 ++++++++++++
+ platforms/android/cross_config.in         | 64 +++++++++++++++++++++
+ platforms/androidx86/config.sh            | 21 +++++++
+ platforms/androidx86/cross_config.in      | 64 +++++++++++++++++++++
+ platforms/iPhoneOS/config.sh              | 15 +++++
+ platforms/iPhoneOS/cross_config.in        | 64 +++++++++++++++++++++
+ platforms/iPhoneSimulator/config.sh       | 17 ++++++
+ platforms/iPhoneSimulator/cross_config.in | 64 +++++++++++++++++++++
+ scripts.conf                              | 10 ++++
+ 13 files changed, 573 insertions(+)
+ create mode 100755 configure_cross
+ create mode 100755 configure_gmp_cross
+ create mode 100755 iPhone_universal
+ create mode 100644 make_all
+ create mode 100644 platforms/android/config.sh
+ create mode 100644 platforms/android/cross_config.in
+ create mode 100644 platforms/androidx86/config.sh
+ create mode 100644 platforms/androidx86/cross_config.in
+ create mode 100644 platforms/iPhoneOS/config.sh
+ create mode 100644 platforms/iPhoneOS/cross_config.in
+ create mode 100644 platforms/iPhoneSimulator/config.sh
+ create mode 100644 platforms/iPhoneSimulator/cross_config.in
+ create mode 100644 scripts.conf
+
+diff --git a/configure_cross b/configure_cross
+new file mode 100755
+index 0000000..a9b7a61
+--- /dev/null
++++ b/configure_cross
+@@ -0,0 +1,94 @@
++#!/bin/bash
++
++usage()
++{
++    echo "Usage: `basename $0` platform"
++    echo ""
++    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86"
++}
++
++[ $# == 1 ] || { usage; exit 1; }
++
++
++platform=$1
++ECLROOT=$(cd $(dirname ${0}) && pwd -P)
++
++#include the variable definitions 
++. scripts.conf
++GMP_INSTALL_DIR=$GMP_INSTALL_ROOT_DIR/$platform
++ECL_INSTALL_DIR=$ECL_INSTALL_ROOT_DIR/$platform
++
++template_config=platforms/$platform/cross_config.in
++srcdir=$ECLROOT/src
++ecl_to_run=$ECL_INSTALL_ROOT_DIR/host/bin/ecl
++host_platform=$($ECLROOT/src/config.guess)
++
++builddir=$ECLROOT/build/$platform/ecl
++
++if [ ! -d ${builddir} ] ; then
++    echo Creating directory "\`${builddir}'"
++    mkdir -p ${builddir}
++fi
++
++
++case $platform in
++    android|androidx86|iPhoneOS|iPhoneSimulator)
++	. $ECLROOT/platforms/$platform/config.sh
++	(cat $template_config; echo "ECL_TO_RUN=$ecl_to_run") > $builddir/cross_config
++	config_opts="\
++	--host=${host} --target=${target} \
++	--with-cross-config=$builddir/cross_config \
++	--with-gmp-prefix=$GMP_INSTALL_DIR \
++	--enable-threads=yes \
++	--disable-longdouble \
++	--enable-boehm=included \
++	--with-dffi=included \
++	--with-cmp=no \
++	--with-asdf=builtin \
++	--with-bytecmp=builtin \
++	--with-serve-event=yes \
++    	--disable-shared"
++	;;
++
++    host)
++	export CFLAGS="-m32"
++	export LDFLAGS="-m32"
++	export ABI=32
++
++	config_opts="\
++	--with-gmp-prefix=$GMP_INSTALL_DIR \
++	--enable-threads=yes \
++	--disable-longdouble \
++        --enable-boehm=included \
++	--with-dffi=included"
++	;;
++
++    host64)
++	config_opts="\
++	--with-gmp-prefix=$GMP_INSTALL_DIR \
++	--enable-threads=yes \
++	--enable-boehm=included \
++	--with-dffi=included"
++	;;
++
++    host64nodl)
++	config_opts="\
++	--with-gmp-prefix=$GMP_INSTALL_DIR \
++	--enable-threads=yes \
++	--enable-boehm=included \
++	--with-dffi=included \
++	--with-cmp=builtin \
++    	--disable-shared"
++	;;
++    *) 
++	usage; exit 1
++	;;
++esac
++
++
++cd ${builddir}
++${srcdir}/configure --srcdir=${srcdir} --prefix=$ECL_INSTALL_DIR ${config_opts}
++
++echo "Configure done in ${builddir}."
++echo "To build do:"
++echo "cd ${builddir}; make && make install"
+diff --git a/configure_gmp_cross b/configure_gmp_cross
+new file mode 100755
+index 0000000..cd8022f
+--- /dev/null
++++ b/configure_gmp_cross
+@@ -0,0 +1,47 @@
++#!/bin/bash
++
++usage()
++{
++    echo "Usage: `basename $0` platform"
++    echo ""
++    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86"
++}
++
++[[ $# == 1 ]] || { usage; exit 1; }
++
++ECLROOT=$(cd $(dirname ${0}) && pwd -P)
++
++platform=$1
++#include the variable definitions 
++. scripts.conf
++GMP_INSTALL_DIR=$GMP_INSTALL_ROOT_DIR/$platform
++srcdir=$ECLROOT/src/gmp
++builddir=$ECLROOT/build/$platform/gmp
++
++. $ECLROOT/platforms/$platform/config.sh
++
++if [ ! -d ${builddir} ] ; then
++    echo Creating directory "\`${builddir}'"
++    mkdir -p ${builddir}
++fi
++
++
++base_config_opts="\
++        --disable-shared \
++	--with-pic"
++
++case $platform in
++    host)
++	export CFLAGS="-m32"
++	export LDFLAGS="-m32"
++	export ABI=32
++	;;
++    iPhoneSimulator)
++	base_config_opts="\
++        --disable-shared"
++	;;
++esac
++
++cd ${builddir}
++${srcdir}/configure --srcdir=${srcdir} --prefix=$GMP_INSTALL_DIR --host=${host} --target=${target} $base_config_opts
++
+diff --git a/iPhone_universal b/iPhone_universal
+new file mode 100755
+index 0000000..eddad85
+--- /dev/null
++++ b/iPhone_universal
+@@ -0,0 +1,41 @@
++#!/bin/bash
++
++# include ECL directory definition
++. scripts.conf
++
++lipo()
++{
++    armlib=$1
++    i386lib=$2
++    lipolib=$3
++    export SDK=/Developer/Platforms/iPhoneOS.platform/Developer
++    $SDK/usr/bin/lipo -arch arm $armlib -arch i386 $i386lib -create -output $lipolib
++}
++
++prefix=$ECL_INSTALL_ROOT_DIR
++mkdir -p $prefix/iPhoneUniversal/lib
++
++for lib in ecl eclgc eclatomic eclffi; do
++    rm -f $prefix/iPhoneUniversal/lib/lib${lib}.a
++    lipo $prefix/iPhoneOS/lib/lib${lib}.a \
++	$prefix/iPhoneSimulator/lib/lib${lib}.a \
++	$prefix/iPhoneUniversal/lib/lib${lib}.a
++done
++
++for lib in bytecmp serve-event sockets; do
++    rm -f $prefix/iPhoneUniversal/lib/lib${lib}.a
++    lipo $prefix/iPhoneOS/lib/ecl-11.1.1/lib${lib}.a \
++	$prefix/iPhoneSimulator/lib/ecl-11.1.1/lib${lib}.a \
++	$prefix/iPhoneUniversal/lib/lib${lib}.a
++done
++
++(cd $prefix/iPhoneUniversal; ln -fs ../iPhoneOS/include .)
++
++prefix=$GMP_INSTALL_ROOT_DIR
++mkdir -p $prefix/iPhoneUniversal/lib
++rm -f $prefix/iPhoneUniversal/lib/libgmp.a
++lipo $prefix/iPhoneOS/lib/libgmp.a \
++    $prefix/iPhoneSimulator/lib/libgmp.a \
++    $prefix/iPhoneUniversal/lib/libgmp.a
++(cd $prefix/iPhoneUniversal; ln -fs ../iPhoneOS/include .)
++
+diff --git a/make_all b/make_all
+new file mode 100644
+index 0000000..8c3630e
+--- /dev/null
++++ b/make_all
+@@ -0,0 +1,36 @@
++all: host iPhoneOS iPhoneSimulator android
++
++host:
++	-rm -rf build/host
++	./configure_cross host
++	cd build/host/ecl && make && rm -rf /opt/ecl/host && make install
++
++host64:
++	-rm -rf build/host64
++	./configure_cross host64
++	cd build/host64/ecl && make && rm -rf /opt/ecl/host64 && make install
++
++host64nodl:
++	-rm -rf build/host64nodl
++	./configure_cross host64nodl
++	cd build/host64nodl/ecl && make && rm -rf /opt/ecl/host64nodl && make install
++
++iPhoneSimulator:
++	-rm -rf build/iPhoneSimulator
++	./configure_cross iPhoneSimulator
++	cd build/iPhoneSimulator/ecl && make && rm -rf /opt/ecl/iPhoneSimulator && make install
++
++iPhoneOS:
++	-rm -rf build/iPhoneOS
++	./configure_cross iPhoneOS
++	cd build/iPhoneOS/ecl && make && rm -rf /opt/ecl/iPhoneOS && make install
++
++android:
++	-rm -rf build/android
++	./configure_cross android
++	cd build/android/ecl && make && rm -rf /opt/ecl/android && make install
++
++androidx86:
++	-rm -rf build/androidx86
++	./configure_cross androidx86
++	cd build/androidx86/ecl && make && rm -rf /opt/ecl/androidx86 && make install
+diff --git a/platforms/android/config.sh b/platforms/android/config.sh
+new file mode 100644
+index 0000000..f76dcb0
+--- /dev/null
++++ b/platforms/android/config.sh
+@@ -0,0 +1,36 @@
++host=arm-linux-eabi
++target=arm-linux-eabi
++android_target=android-4
++
++# include variable definitions. Since the script is run from ecl/ the path is ./
++. ./scripts.conf
++
++# case "${host_platform}" in
++#     *linux*)
++# 	ANDROID_NDK_ROOT=/opt/android/android-ndk-r5
++# 	TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.4.3/prebuilt/linux-x86
++# 	;;
++#     *darwin*)
++# 	ANDROID_NDK_ROOT=/opt/android/android-sdk-mac_x86/android-ndk-r5b
++# 	TOOLCHAIN=$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.4.3/prebuilt/darwin-x86
++# 	;;
++#     *)
++# 	echo "You need to configure ANDROID_NDK_ROOT and TOOLCHAIN here"
++# 	exit 1
++# esac
++    
++
++export AR="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-ar"
++export AS="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-as"
++export CC="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-gcc"
++export CXX="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-g++"
++export CPP="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-cpp"
++export NM="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-nm"
++export STRIP="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-strip"
++export RANLIB="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-ranlib"
++export GPROF="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-gprof"
++export READEFLF="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-readelf"
++export OBJDUMP="$TOOLCHAIN/armeabi/${android_target}/bin/arm-linux-androideabi-objdump"
++
++
++
+diff --git a/platforms/android/cross_config.in b/platforms/android/cross_config.in
+new file mode 100644
+index 0000000..a593e04
+--- /dev/null
++++ b/platforms/android/cross_config.in
+@@ -0,0 +1,64 @@
++###
++### YOU ARE TRYING TO CROSS COMPILE ECL.
++### PLEASE FOLLOW THESE INSTRUCTIONS:
++###
++### 1) Vital information cannot be determined at configuration time
++### because we are not able to run test programs. A file called
++###		
++### has been created, that you will have to fill out. Please do
++### it before invoking "configure" again.
++
++### 1.1) Direction of growth of the stack
++ECL_STACK_DIR=down
++
++### 1.2) Choose an integer datatype which is large enough to host a pointer
++CL_FIXNUM_TYPE=int
++CL_FIXNUM_BITS=32
++CL_FIXNUM_MAX=536870911L
++CL_FIXNUM_MIN=-536870912L
++CL_INT_BITS=32
++CL_LONG_BITS=32
++
++### 1.3) Order of bytes within a word
++ECL_BIGENDIAN=no
++
++### 1.4) What characters signal an end of line. May be LF (Linefeed or \n)
++###      CR (Carriage return or \r), and CRLF (CR followed by LF).
++ECL_NEWLINE=LF
++
++### 1.5) Can we guess how many characters are available for reading from
++###      the FILE structure?
++###          0 = no
++###          1 = (f)->_IO_read_end - (f)->_IO_read_ptr
++###          2 = (f)->_r
++###          3 = (f)->_cnt
++ECL_FILE_CNT=0
++
++###
++### 1.6) Other integer types (set to 'no' to disable)
++###
++ECL_STDINT_HEADER="#include <stdint.h>"
++ECL_UINT8_T=uint8_t
++ECL_UINT16_T=uint16_t
++ECL_UINT32_T=uint32_t
++ECL_UINT64_T=uint64_t
++ECL_INT8_T=int8_t
++ECL_INT16_T=int16_t
++ECL_INT32_T=int32_t
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
++
++###
++### 1.7) Other features (set to 'no' to disable)
++###
++ECL_WORKING_SEM_INIT=no
++ECL_WORKING_ENVIRON=yes
++
++### 2) To cross-compile ECL so that it runs on the system
++###		arm-linux-eabi
++### you need to first compile ECL on the system in which you are building
++### the cross-compiled files, that is
++###		x86_64-unknown-linux-gnu
++### By default we assume that ECL can be accessed from some directory in
++### the path.
++
+diff --git a/platforms/androidx86/config.sh b/platforms/androidx86/config.sh
+new file mode 100644
+index 0000000..cd60b89
+--- /dev/null
++++ b/platforms/androidx86/config.sh
+@@ -0,0 +1,21 @@
++host=i686-android-linux
++target=i686-android-linux
++android_target=android-14
++
++# include variable definitions. Since the script is run from ecl/ the path is ./
++. ./scripts.conf
++
++export AR="$TOOLCHAIN/x86/${android_target}/bin/${host}-ar"
++export AS="$TOOLCHAIN/x86/${android_target}/bin/${host}-as"
++export CC="$TOOLCHAIN/x86/${android_target}/bin/${host}-gcc"
++export CXX="$TOOLCHAIN/x86/${android_target}/bin/${host}-g++"
++export CPP="$TOOLCHAIN/x86/${android_target}/bin/${host}-cpp"
++export NM="$TOOLCHAIN/x86/${android_target}/bin/${host}-nm"
++export STRIP="$TOOLCHAIN/x86/${android_target}/bin/${host}-strip"
++export RANLIB="$TOOLCHAIN/x86/${android_target}/bin/${host}-ranlib"
++export GPROF="$TOOLCHAIN/x86/${android_target}/bin/${host}-gprof"
++export READEFLF="$TOOLCHAIN/x86/${android_target}/bin/${host}-readelf"
++export OBJDUMP="$TOOLCHAIN/x86/${android_target}/bin/${host}-objdump"
++
++
++
+diff --git a/platforms/androidx86/cross_config.in b/platforms/androidx86/cross_config.in
+new file mode 100644
+index 0000000..a593e04
+--- /dev/null
++++ b/platforms/androidx86/cross_config.in
+@@ -0,0 +1,64 @@
++###
++### YOU ARE TRYING TO CROSS COMPILE ECL.
++### PLEASE FOLLOW THESE INSTRUCTIONS:
++###
++### 1) Vital information cannot be determined at configuration time
++### because we are not able to run test programs. A file called
++###		
++### has been created, that you will have to fill out. Please do
++### it before invoking "configure" again.
++
++### 1.1) Direction of growth of the stack
++ECL_STACK_DIR=down
++
++### 1.2) Choose an integer datatype which is large enough to host a pointer
++CL_FIXNUM_TYPE=int
++CL_FIXNUM_BITS=32
++CL_FIXNUM_MAX=536870911L
++CL_FIXNUM_MIN=-536870912L
++CL_INT_BITS=32
++CL_LONG_BITS=32
++
++### 1.3) Order of bytes within a word
++ECL_BIGENDIAN=no
++
++### 1.4) What characters signal an end of line. May be LF (Linefeed or \n)
++###      CR (Carriage return or \r), and CRLF (CR followed by LF).
++ECL_NEWLINE=LF
++
++### 1.5) Can we guess how many characters are available for reading from
++###      the FILE structure?
++###          0 = no
++###          1 = (f)->_IO_read_end - (f)->_IO_read_ptr
++###          2 = (f)->_r
++###          3 = (f)->_cnt
++ECL_FILE_CNT=0
++
++###
++### 1.6) Other integer types (set to 'no' to disable)
++###
++ECL_STDINT_HEADER="#include <stdint.h>"
++ECL_UINT8_T=uint8_t
++ECL_UINT16_T=uint16_t
++ECL_UINT32_T=uint32_t
++ECL_UINT64_T=uint64_t
++ECL_INT8_T=int8_t
++ECL_INT16_T=int16_t
++ECL_INT32_T=int32_t
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
++
++###
++### 1.7) Other features (set to 'no' to disable)
++###
++ECL_WORKING_SEM_INIT=no
++ECL_WORKING_ENVIRON=yes
++
++### 2) To cross-compile ECL so that it runs on the system
++###		arm-linux-eabi
++### you need to first compile ECL on the system in which you are building
++### the cross-compiled files, that is
++###		x86_64-unknown-linux-gnu
++### By default we assume that ECL can be accessed from some directory in
++### the path.
++
+diff --git a/platforms/iPhoneOS/config.sh b/platforms/iPhoneOS/config.sh
+new file mode 100644
+index 0000000..da44f3c
+--- /dev/null
++++ b/platforms/iPhoneOS/config.sh
+@@ -0,0 +1,15 @@
++iphone_sdk_ver=5.1
++
++host=arm-apple-darwin
++target=arm-apple-darwin
++export SDK=$XCODE_INSTALL_ROOT/Contents/Developer/Platforms/iPhoneOS.platform/Developer
++export SDKROOT=$SDK/SDKs/iPhoneOS${iphone_sdk_ver}.sdk
++#export CC="$SDK/usr/bin/gcc-4.2"
++export CC="$SDK/usr/bin/llvm-gcc-4.2"
++export CXX="$CC"
++export CPP="$SDK/usr/bin/llvm-cpp-4.2"
++export AR="$SDK/usr/bin/ar"
++export STRIP="$SDK/usr/bin/strip"
++export RANLIB="$SDK/usr/bin/ranlib"
++export CFLAGS="-g -arch armv7 -I$SDKROOT/usr/include -isysroot $SDKROOT -DAPPLE -DIPHONE"
++export LDFLAGS="-arch armv7 -isysroot $SDKROOT"
+diff --git a/platforms/iPhoneOS/cross_config.in b/platforms/iPhoneOS/cross_config.in
+new file mode 100644
+index 0000000..a593e04
+--- /dev/null
++++ b/platforms/iPhoneOS/cross_config.in
+@@ -0,0 +1,64 @@
++###
++### YOU ARE TRYING TO CROSS COMPILE ECL.
++### PLEASE FOLLOW THESE INSTRUCTIONS:
++###
++### 1) Vital information cannot be determined at configuration time
++### because we are not able to run test programs. A file called
++###		
++### has been created, that you will have to fill out. Please do
++### it before invoking "configure" again.
++
++### 1.1) Direction of growth of the stack
++ECL_STACK_DIR=down
++
++### 1.2) Choose an integer datatype which is large enough to host a pointer
++CL_FIXNUM_TYPE=int
++CL_FIXNUM_BITS=32
++CL_FIXNUM_MAX=536870911L
++CL_FIXNUM_MIN=-536870912L
++CL_INT_BITS=32
++CL_LONG_BITS=32
++
++### 1.3) Order of bytes within a word
++ECL_BIGENDIAN=no
++
++### 1.4) What characters signal an end of line. May be LF (Linefeed or \n)
++###      CR (Carriage return or \r), and CRLF (CR followed by LF).
++ECL_NEWLINE=LF
++
++### 1.5) Can we guess how many characters are available for reading from
++###      the FILE structure?
++###          0 = no
++###          1 = (f)->_IO_read_end - (f)->_IO_read_ptr
++###          2 = (f)->_r
++###          3 = (f)->_cnt
++ECL_FILE_CNT=0
++
++###
++### 1.6) Other integer types (set to 'no' to disable)
++###
++ECL_STDINT_HEADER="#include <stdint.h>"
++ECL_UINT8_T=uint8_t
++ECL_UINT16_T=uint16_t
++ECL_UINT32_T=uint32_t
++ECL_UINT64_T=uint64_t
++ECL_INT8_T=int8_t
++ECL_INT16_T=int16_t
++ECL_INT32_T=int32_t
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
++
++###
++### 1.7) Other features (set to 'no' to disable)
++###
++ECL_WORKING_SEM_INIT=no
++ECL_WORKING_ENVIRON=yes
++
++### 2) To cross-compile ECL so that it runs on the system
++###		arm-linux-eabi
++### you need to first compile ECL on the system in which you are building
++### the cross-compiled files, that is
++###		x86_64-unknown-linux-gnu
++### By default we assume that ECL can be accessed from some directory in
++### the path.
++
+diff --git a/platforms/iPhoneSimulator/config.sh b/platforms/iPhoneSimulator/config.sh
+new file mode 100644
+index 0000000..c0d8ebc
+--- /dev/null
++++ b/platforms/iPhoneSimulator/config.sh
+@@ -0,0 +1,17 @@
++iphone_sdk_ver=5.1
++int_sdk_ver=$(echo "(${iphone_sdk_ver} * 100)/1"|bc)
++
++export force_cross_compiling=yes
++host=i686-apple-darwin
++target=i686-apple-darwin
++export SDK=$XCODE_INSTALL_ROOT/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer
++export SDKROOT=$SDK/SDKs/iPhoneSimulator${iphone_sdk_ver}.sdk
++#export CC="$SDK/usr/bin/gcc-4.2"
++export CC="$SDK/usr/bin/gcc"
++export CXX="$CC"
++export CPP="$SDK/usr/bin/cpp"
++export AR="$SDK/usr/bin/ar"
++export STRIP="$SDK/usr/bin/strip"
++export RANLIB="$SDK/usr/bin/ranlib"
++export CFLAGS="-g -arch i386 -I$SDKROOT/usr/include -isysroot $SDKROOT -DAPPLE -DIPHONE -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -DIPHONE_SIMULATOR -DIPHONE_SDK_VER=${int_sdk_ver} -DIGNORE_DYNAMIC_LOADING -mmacosx-version-min=10.6 -fmessage-length=0 -fasm-blocks"
++export LDFLAGS="-arch i386 -isysroot $SDKROOT"
+diff --git a/platforms/iPhoneSimulator/cross_config.in b/platforms/iPhoneSimulator/cross_config.in
+new file mode 100644
+index 0000000..a593e04
+--- /dev/null
++++ b/platforms/iPhoneSimulator/cross_config.in
+@@ -0,0 +1,64 @@
++###
++### YOU ARE TRYING TO CROSS COMPILE ECL.
++### PLEASE FOLLOW THESE INSTRUCTIONS:
++###
++### 1) Vital information cannot be determined at configuration time
++### because we are not able to run test programs. A file called
++###		
++### has been created, that you will have to fill out. Please do
++### it before invoking "configure" again.
++
++### 1.1) Direction of growth of the stack
++ECL_STACK_DIR=down
++
++### 1.2) Choose an integer datatype which is large enough to host a pointer
++CL_FIXNUM_TYPE=int
++CL_FIXNUM_BITS=32
++CL_FIXNUM_MAX=536870911L
++CL_FIXNUM_MIN=-536870912L
++CL_INT_BITS=32
++CL_LONG_BITS=32
++
++### 1.3) Order of bytes within a word
++ECL_BIGENDIAN=no
++
++### 1.4) What characters signal an end of line. May be LF (Linefeed or \n)
++###      CR (Carriage return or \r), and CRLF (CR followed by LF).
++ECL_NEWLINE=LF
++
++### 1.5) Can we guess how many characters are available for reading from
++###      the FILE structure?
++###          0 = no
++###          1 = (f)->_IO_read_end - (f)->_IO_read_ptr
++###          2 = (f)->_r
++###          3 = (f)->_cnt
++ECL_FILE_CNT=0
++
++###
++### 1.6) Other integer types (set to 'no' to disable)
++###
++ECL_STDINT_HEADER="#include <stdint.h>"
++ECL_UINT8_T=uint8_t
++ECL_UINT16_T=uint16_t
++ECL_UINT32_T=uint32_t
++ECL_UINT64_T=uint64_t
++ECL_INT8_T=int8_t
++ECL_INT16_T=int16_t
++ECL_INT32_T=int32_t
++ECL_INT64_T=int64_t
++ECL_LONG_LONG_BITS=64
++
++###
++### 1.7) Other features (set to 'no' to disable)
++###
++ECL_WORKING_SEM_INIT=no
++ECL_WORKING_ENVIRON=yes
++
++### 2) To cross-compile ECL so that it runs on the system
++###		arm-linux-eabi
++### you need to first compile ECL on the system in which you are building
++### the cross-compiled files, that is
++###		x86_64-unknown-linux-gnu
++### By default we assume that ECL can be accessed from some directory in
++### the path.
++
+diff --git a/scripts.conf b/scripts.conf
+new file mode 100644
+index 0000000..1c61583
+--- /dev/null
++++ b/scripts.conf
+@@ -0,0 +1,10 @@
++# configure here the installation path of the GMP library and ECL
++GMP_INSTALL_ROOT_DIR=/opt/gmp
++ECL_INSTALL_ROOT_DIR=/opt/ecl
++
++# path to Android SDK/NDK, if you plan to build for Android
++ANDROID_NDK_ROOT=/opt/android/android-ndk
++TOOLCHAIN=/opt/android/toolchains
++
++# path to the Xcode application if you plan to build for iOS
++XCODE_INSTALL_ROOT=/Applications/Xcode.app
+-- 
+1.8.0
+

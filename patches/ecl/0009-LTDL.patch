@@ -1,0 +1,245 @@
+From 59b88a6b0291e876bbcb997720aa26a93c19cdc2 Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Sun, 5 Aug 2012 14:56:35 -0300
+Subject: [PATCH 09/11] LTDL
+
+---
+ configure_cross       |  5 ++++-
+ src/c/ffi/libraries.d | 31 +++++++++++++++++++++++--------
+ src/configure         | 29 ++++++++++++++++++++++++++---
+ src/configure.in      | 18 +++++++++++++++---
+ 4 files changed, 68 insertions(+), 15 deletions(-)
+
+diff --git a/configure_cross b/configure_cross
+index a9b7a61..b9dfa06 100755
+--- a/configure_cross
++++ b/configure_cross
+@@ -72,13 +72,16 @@ case $platform in
+ 	;;
+ 
+     host64nodl)
++	export CFLAGS="-DENABLE_LTDL -I/opt/local-sylvain/include/"
++	export LIBS="-L/opt/local-sylvain/lib -lltdl"
+ 	config_opts="\
+ 	--with-gmp-prefix=$GMP_INSTALL_DIR \
+ 	--enable-threads=yes \
+ 	--enable-boehm=included \
+ 	--with-dffi=included \
+ 	--with-cmp=builtin \
+-    	--disable-shared"
++	--enable-shared=no \
++	--enable-ltdt=yes"
+ 	;;
+     *) 
+ 	usage; exit 1
+diff --git a/src/c/ffi/libraries.d b/src/c/ffi/libraries.d
+index 82cb931..764e7e1 100644
+--- a/src/c/ffi/libraries.d
++++ b/src/c/ffi/libraries.d
+@@ -34,17 +34,17 @@
+ #  undef HAVE_MACH_O_DYLD_H
+ # endif
+ #endif
+-#ifdef HAVE_DLFCN_H
++#if defined(HAVE_DLFCN_H) || defined(ENABLE_LTDL)
+ # ifdef HAVE_MACH_O_DYLD_H
+ #  undef HAVE_MACH_O_DYLD_H
+ # endif
+ #endif
+-#ifdef ENABLE_DLOPEN
++#if defined(ENABLE_DLOPEN) && !defined(ENABLE_LTDL)
+ # ifdef cygwin
+ #  include <w32api/windows.h>
+ #  include <sys/stat.h>
+ # endif
+-# ifdef HAVE_DLFCN_H
++# if defined(HAVE_DLFCN_H) || defined(ENABLE_LTDL)
+ #  include <dlfcn.h>
+ #  define INIT_PREFIX "init_fas_"
+ #  ifdef bool
+@@ -67,6 +67,9 @@
+ # else
+ #  include <unistd.h>
+ # endif
++#elif defined(ENABLE_LTDL)
++#  define INIT_PREFIX "init_fas_"
++#  include <ltdl.h>
+ #endif /* ENABLE_DLOPEN */
+ #include <ecl/ecl-inl.h>
+ #include <ecl/internal.h>
+@@ -150,8 +153,10 @@ static void
+ set_library_error(cl_object block) {
+ 	cl_object output;
+ 	ecl_disable_interrupts();
+-#ifdef HAVE_DLFCN_H
++#if defined(HAVE_DLFCN_H) && !defined(ENABLE_LTDL)
+ 	output = make_base_string_copy(dlerror());
++#else if defined(ENABLE_LDTD)
++	output = make_base_string_copy(lt_dlerror());
+ #endif
+ #ifdef HAVE_MACH_O_DYLD_H
+ 	{
+@@ -181,8 +186,10 @@ dlopen_wrapper(cl_object block)
+ {
+ 	cl_object filename = block->cblock.name;
+         char *filename_string = (char*)filename->base_string.self;
+-#ifdef HAVE_DLFCN_H
++#if defined(HAVE_DLFCN_H) && !defined(ENABLE_LTDL)
+ 	block->cblock.handle = dlopen(filename_string, RTLD_NOW|RTLD_GLOBAL);
++#else if defined(ENABLE_LTDL)
++	block->cblock.handle = lt_dlopen(filename_string);
+ #endif
+ #ifdef HAVE_MACH_O_DYLD_H
+ 	{
+@@ -210,8 +217,10 @@ static void
+ dlclose_wrapper(cl_object block)
+ {
+         if (block->cblock.handle != NULL) {
+-#ifdef HAVE_DLFCN_H
++#if defined(HAVE_DLFCN_H) && !defined(ENABLE_LTDL)
+                 dlclose(block->cblock.handle);
++#else if defined(ENABLE_LTDL)
++                lt_dlclose(block->cblock.handle);
+ #endif
+ #ifdef HAVE_MACH_O_DYLD_H
+                 NSUnLinkModule(block->cblock.handle, NSUNLINKMODULE_OPTION_NONE);
+@@ -288,11 +297,13 @@ ecl_library_open(cl_object filename, bool force_reload) {
+ 	bool self_destruct = 0;
+ 	char *filename_string;
+ 
++#ifndef ENABLE_LTDL
+ 	/* Coerces to a file name but does not merge with cwd */
+ 	filename = coerce_to_physical_pathname(filename);
+         filename = ecl_namestring(filename,
+                                   ECL_NAMESTRING_TRUNCATE_IF_ERROR |
+                                   ECL_NAMESTRING_FORCE_BASE_STRING);
++#endif
+ 
+ 	if (!force_reload) {
+ 		/* When loading a foreign library, such as a dll or a
+@@ -374,8 +385,10 @@ ecl_library_symbol(cl_object block, const char *symbol, bool lock) {
+ 		p = (void*)hnd;
+ 		}
+ #endif
+-#ifdef HAVE_DLFCN_H
++#if defined(HAVE_DLFCN_H) && !defined(ENABLE_LTDL)
+ 		p = dlsym(0, symbol);
++#else if defined(ENABLE_LTDL)
++		p = lt_dlsym(0, symbol);
+ #endif
+ #if !defined(ECL_MS_WINDOWS_HOST) && !defined(HAVE_DLFCN_H)
+ 		p = 0;
+@@ -383,8 +396,10 @@ ecl_library_symbol(cl_object block, const char *symbol, bool lock) {
+ 		ecl_enable_interrupts();
+ 	} else {
+ 		ecl_disable_interrupts();
+-#ifdef HAVE_DLFCN_H
++#if defined(HAVE_DLFCN_H) && !defined(ENABLE_LTDL)
+ 		p = dlsym(block->cblock.handle, symbol);
++#else if defined(ENABLE_LTDL)
++		p = lt_dlsym(block->cblock.handle, symbol);
+ #endif
+ #if defined(ECL_MS_WINDOWS_HOST)
+ 		{
+diff --git a/src/configure b/src/configure
+index e4853b4..cedc6df 100755
+--- a/src/configure
++++ b/src/configure
+@@ -760,6 +760,7 @@ ac_user_opts='
+ enable_option_checking
+ with_cross_config
+ enable_shared
++enable_ltdl
+ enable_rpath
+ enable_threads
+ enable_boehm
+@@ -1439,6 +1440,8 @@ Optional Features:
+   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+   --enable-shared         enable loading compiled files (default=YES)
++  --enable-ltdl           enable loading compiled files using ltdl (only if
++                          enable-shared=no, default=NO)
+   --enable-rpath          hard-code the location of the ECL shared library.
+                           (no|yes, default=NO)
+   --enable-threads        support for native threads (yes|no|auto,
+@@ -2596,6 +2599,14 @@ else
+ fi
+ 
+ 
++# Check whether --enable-ltdl was given.
++if test "${enable_ltdl+set}" = set; then :
++  enableval=$enable_ltdl;
++else
++  enable_ltdl=no
++fi
++
++
+ # Check whether --enable-rpath was given.
+ if test "${enable_rpath+set}" = set; then :
+   enableval=$enable_rpath;
+@@ -9254,10 +9265,22 @@ $as_echo "#define ENABLE_DLOPEN 1" >>confdefs.h
+ 
+ LSP_FEATURES="(cons :wants-dlopen ${LSP_FEATURES})"
+ 
++elif test ${enable_ltdt} = "yes"; then
++
++$as_echo "#define ENABLE_DLOPEN 1" >>confdefs.h
++
++   $as_echo "#define ENABLE_LTDL 1" >>confdefs.h
++
++
++LSP_FEATURES="(cons :wants-dlpreopen ${LSP_FEATURES})"
++
++   enable_soname=no
++   LSP_LIBRARIES="${LIBPREFIX}ecl.${LIBEXT}"
++   ECL_LDRPATH=''
+ else
+-  enable_soname=no
+-  LSP_LIBRARIES="${LIBPREFIX}ecl.${LIBEXT}"
+-  ECL_LDRPATH=''
++   enable_soname=no
++   LSP_LIBRARIES="${LIBPREFIX}ecl.${LIBEXT}"
++   ECL_LDRPATH=''
+ fi
+ 
+ if test "x${enable_rpath}" = "xno"; then
+diff --git a/src/configure.in b/src/configure.in
+index 74d296e..592f2ae 100644
+--- a/src/configure.in
++++ b/src/configure.in
+@@ -33,6 +33,11 @@ AC_ARG_ENABLE(shared,
+                   [enable loading compiled files (default=YES)]),
+   [], [enable_shared=yes])
+ 
++AC_ARG_ENABLE(ltdl,
++  AS_HELP_STRING( [--enable-ltdl],
++                  [enable loading compiled files using ltdl (only if enable-shared=no, default=NO)]),
++  [], [enable_ltdl=no])
++
+ AC_ARG_ENABLE(rpath,
+   AS_HELP_STRING( [--enable-rpath],
+ 		  [hard-code the location of the ECL shared library.]
+@@ -743,10 +748,17 @@ if test ${enable_shared} = "yes"; then
+   AC_DEFINE(ENABLE_DLOPEN, [1], [Allow loading dynamically linked code])
+   LSP_LIBRARIES="${SHAREDPREFIX}ecl.${SHAREDEXT}"
+   ECL_ADD_FEATURE([wants-dlopen])
++elif test ${enable_ltdt} = "yes"; then
++   AC_DEFINE(ENABLE_DLOPEN, [1], [Allow loading pseudo-dynamically linked code using libtool's ltdl])
++   AC_DEFINE(ENABLE_LTDL)
++   ECL_ADD_FEATURE([wants-dlpreopen])
++   enable_soname=no
++   LSP_LIBRARIES="${LIBPREFIX}ecl.${LIBEXT}"
++   ECL_LDRPATH=''
+ else
+-  enable_soname=no
+-  LSP_LIBRARIES="${LIBPREFIX}ecl.${LIBEXT}"
+-  ECL_LDRPATH=''
++   enable_soname=no
++   LSP_LIBRARIES="${LIBPREFIX}ecl.${LIBEXT}"
++   ECL_LDRPATH=''
+ fi
+ 
+ if test "x${enable_rpath}" = "xno"; then
+-- 
+1.8.0
+

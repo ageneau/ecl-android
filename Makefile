@@ -1,22 +1,22 @@
-#ECL_GIT=git://ecls.git.sourceforge.net/gitroot/ecls/ecl
-#ECL_REV=f0ace1a75932b4fd824268d797e3d4393049a62d
-ECL_GIT=git://github.com/ageneau/ecl-mirror.git
-ECL_REV=fec62ac6b23e75ad9d46
-SLIME_CVSROOT=:pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot
-SLIME_REV=2010/01/29
+ECL_GIT=git://git.code.sf.net/p/ecls/ecl
+ECL_REV=b970c5b206f2590531bab24acadfff165ccb2f92
+SLIME_GIT=git://common-lisp.net/projects/mirror/slime.git
+SLIME_REV=c92708b2df6b92e8dbc78829fd45ceb62303e994
 
-all: clone-ecl checkout-slime patch-slime copy-slime
+all: clone-ecl patch-ecl checkout-slime copy-slime
 	echo "ECL directory patched for android"
 
 clone-ecl:
 	git clone $(ECL_GIT) ecl
 	cd ecl && git checkout $(ECL_REV) -b mobile
 
-checkout-slime:
-	cvs -d "$(SLIME_CVSROOT)" co -D "$(SLIME_REV)" slime
+patch-ecl:
+	cd ecl && for i in ../patches/ecl/*.patch; do patch -p1 < $$i; done
+	chmod +x ecl/configure_cross ecl/configure_gmp_cross
 
-patch-slime:
-	cd slime && patch -p0 < ../patches/swank-ecl-patches.txt
+checkout-slime:
+	git clone $(SLIME_GIT) slime
+	cd slime && git checkout $(SLIME_REV) -b mobile
 
 copy-slime:
 	-mkdir -p android/hello-jni/assets/lisp/slime/contrib/
