@@ -7,7 +7,9 @@
    #:registered-compilers
    #:cross-compile
    #:user-cc-flags
-   #:user-ld-flags))
+   #:user-ld-flags
+   #:cc-flags
+   #:ld-flags))
 
 (org.tfeb.conduit-packages:defpackage asdf-cross
   (:use :cl :cross-cmp)
