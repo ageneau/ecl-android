@@ -1,7 +1,7 @@
 ECL_GIT=git://git.code.sf.net/p/ecls/ecl
-ECL_REV=b970c5b206f2590531bab24acadfff165ccb2f92
+ECL_REV=afafaae325b0427e5e144eb653f99f6e3e16d4c0
 SLIME_GIT=git://common-lisp.net/projects/mirror/slime.git
-SLIME_REV=c92708b2df6b92e8dbc78829fd45ceb62303e994
+SLIME_REV=847d102f3984cf241e11c8057b4d176f91c122dc
 
 all: clone-ecl patch-ecl checkout-slime copy-slime
 	echo "ECL directory patched for android"

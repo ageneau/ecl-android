@@ -1,13 +1,13 @@
-From 58de115e9824fbc8c1471d0faf4c5bbe25715888 Mon Sep 17 00:00:00 2001
+From a64f023709105e90012ff3c07607c9fd9cb4989f Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 1/8] Scripts to build ECL on android/iphone
 
 ---
  configure_cross                           | 101 ++++++++++++++++++++++++++++++
- configure_gmp_cross                       |  83 ++++++++++++++++++++++++
+ configure_gmp_cross                       |  87 +++++++++++++++++++++++++
  iPhone_universal                          |  37 +++++++++++
- make_all                                  |  36 +++++++++++
+ make_all                                  |  43 +++++++++++++
  platforms/android/config.sh               |  85 +++++++++++++++++++++++++
  platforms/android/cross_config.in         |  64 +++++++++++++++++++
  platforms/androidx86/cross_config.in      |  64 +++++++++++++++++++
@@ -16,7 +16,7 @@ Subject: [PATCH 1/8] Scripts to build ECL on android/iphone
  platforms/iPhoneSimulator/config.sh       |  19 ++++++
  platforms/iPhoneSimulator/cross_config.in |  64 +++++++++++++++++++
  scripts.conf                              |   3 +
- 12 files changed, 639 insertions(+)
+ 12 files changed, 650 insertions(+)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
  create mode 100755 iPhone_universal
@@ -139,10 +139,10 @@ index 0000000..05d2994
 +echo "cd ${builddir}; make && make install"
 diff --git a/configure_gmp_cross b/configure_gmp_cross
 new file mode 100755
-index 0000000..72beb27
+index 0000000..921fad8
 --- /dev/null
 +++ b/configure_gmp_cross
-@@ -0,0 +1,83 @@
+@@ -0,0 +1,87 @@
 +#!/bin/bash
 +
 +usage()
@@ -181,10 +181,12 @@ index 0000000..72beb27
 +builddir=$ECLROOT/build/$platform/gmp
 +
 +case $platform in
-+    host)
++    android|androidx86)
++	. $ECLROOT/platforms/android/config.sh $platform || exit 1
 +	;;
-+    *)
++    iPhoneOS|iPhoneSimulator)
 +	. $ECLROOT/platforms/$platform/config.sh || exit 1
++	;;
 +esac
 +
 +if [ ! -d ${builddir} ] ; then
@@ -195,6 +197,8 @@ index 0000000..72beb27
 +if grep -q MPIR $srcdir/Changelog; then
 +    echo "Using MPIR library"
 +    base_config_opt="--enable-gmpcompat"
++    echo "Copying patched invert_limb.asm to MPIR source directory"
++    cp $ECLROOT/src/gmp/mpn/arm/invert_limb.asm $srcdir/mpn/arm/invert_limb.asm
 +fi
 +
 +base_config_opts="\
@@ -271,46 +275,53 @@ index 0000000..0ac83af
 +
 diff --git a/make_all b/make_all
 new file mode 100644
-index 0000000..8c3630e
+index 0000000..23dcbaa
 --- /dev/null
 +++ b/make_all
-@@ -0,0 +1,36 @@
-+all: host iPhoneOS iPhoneSimulator android
+@@ -0,0 +1,43 @@
++GMP_INSTALL_ROOT_DIR=/opt/gmp
++ECL_INSTALL_ROOT_DIR=/opt/ecl
 +
-+host:
-+	-rm -rf build/host
-+	./configure_cross host
-+	cd build/host/ecl && make && rm -rf /opt/ecl/host && make install
++TARGETS=host64 host iPhoneOS iPhoneSimulator android androidx86
++TARGETS_ECL=$(TARGETS:=.ecl)
++TARGETS_GMP=$(TARGETS:=.gmp)
 +
-+host64:
-+	-rm -rf build/host64
-+	./configure_cross host64
-+	cd build/host64/ecl && make && rm -rf /opt/ecl/host64 && make install
++.PHONY: all clean
 +
-+host64nodl:
-+	-rm -rf build/host64nodl
-+	./configure_cross host64nodl
-+	cd build/host64nodl/ecl && make && rm -rf /opt/ecl/host64nodl && make install
++all: $(TARGETS_ECL) $(TARGETS_GMP)
 +
-+iPhoneSimulator:
-+	-rm -rf build/iPhoneSimulator
-+	./configure_cross iPhoneSimulator
-+	cd build/iPhoneSimulator/ecl && make && rm -rf /opt/ecl/iPhoneSimulator && make install
++iPhoneSimulator: iPhoneSimulator.ecl
 +
-+iPhoneOS:
-+	-rm -rf build/iPhoneOS
-+	./configure_cross iPhoneOS
-+	cd build/iPhoneOS/ecl && make && rm -rf /opt/ecl/iPhoneOS && make install
++iPhoneOS: iPhoneOS.ecl
 +
-+android:
-+	-rm -rf build/android
-+	./configure_cross android
-+	cd build/android/ecl && make && rm -rf /opt/ecl/android && make install
++ios: iPhoneOS iPhoneSimulator
 +
-+androidx86:
-+	-rm -rf build/androidx86
-+	./configure_cross androidx86
-+	cd build/androidx86/ecl && make && rm -rf /opt/ecl/androidx86 && make install
++android: android.ecl
++
++androidx86: androidx86.ecl
++
++iPhoneOS.ecl iPhoneSimulator.ecl android.ecl androidx86.ecl : host.ecl
++
++%.ecl: %.gmp
++	-rm -rf build/$(@:.ecl=)/ecl
++	./configure_cross $(@:.ecl=)
++	cd build/$(@:.ecl=)/ecl && make && rm -rf $(ECL_INSTALL_ROOT_DIR)/$(@:.ecl=) && make install
++
++	touch $@
++
++%.gmp:
++	-rm -rf build/$(@:.gmp=)/gmp
++	./configure_gmp_cross $(@:.gmp=)
++	cd build/$(@:.gmp=)/gmp && make && rm -rf $(GMP_INSTALL_ROOT_DIR)/$(@:.gmp=) && make install
++
++	touch $@
++
++
++
++clean:
++	rm -f *.ecl *.gmp
++
++
 diff --git a/platforms/android/config.sh b/platforms/android/config.sh
 new file mode 100755
 index 0000000..4f5c115
