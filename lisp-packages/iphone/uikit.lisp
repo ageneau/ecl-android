@@ -7,71 +7,6 @@
  "#import \"UIButtonCB.h\""
  )
 
-#+ffi
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defmacro def-ffi-enum (name bindings &key (type :int))
-    `(progn
-       (defvar ,name
-         (list
-          ,@(mapcar (lambda (binding)
-                      `(cons ,(first binding)
-                             (ffi:c-inline () ()
-                                           ,type
-                                           ,(second binding)
-                                           :one-liner t)))
-                    bindings)))
-       (defun ,(sym "keyword->" name) (key)
-         (cdr (find key ,name :key 'car)))
-       (defun ,(sym name "->keyword") (key)
-         (car (find key ,name :key 'cdr)))))
-  )
-
-(defvar *objc-nil* (c-fficall () :pointer-void "nil" :one-liner t))
-
-(defun ns-log (msg)
-  (c-fficall ((msg :cstring)) :void
-    "NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-     NSLog([NSString stringWithCString: #0]);
-     [pool release];"))
-
-(defun make-NSString (string)
-  (if string
-      (c-fficall ((string :cstring))
-          :pointer-void
-        "[NSString stringWithCString: #0]" :one-liner t)
-      *objc-nil*))
-
-(defun alloc (class-name &key init)
-  (let ((obj (c-fficall ((class-name :cstring))
-                 :pointer-void
-               "[NSClassFromString([NSString stringWithCString: #0]) alloc]"
-               :one-liner t)))
-    (if init
-        (c-fficall ((obj :pointer-void)) :pointer-void "[#0 init]" :one-liner t)
-        obj)))
-
-(defun release (obj)
-  (c-fficall ((obj :pointer-void)) :void "[#0 release];"))
-
-(defvar *autorelease-pool* nil)
-(defvar *autorelease-level* 0)
-
-(defun make-autorelease-pool ()
-  (c-fficall () :pointer-void "[[NSAutoreleasePool alloc] init]" :one-liner t))
-
-(defmacro with-autorelease-pool (() &body body)
-  `(let ((*autorelease-pool* (or *autorelease-pool* (make-autorelease-pool))))
-     (unwind-protect
-          (let ((*autorelease-level* (1+ *autorelease-level*)))
-            ,@body)
-       (when (zerop *autorelease-level*)
-         (release *autorelease-pool*)))))
-
-(defun make-callback-function (fun)
-  (lambda (&rest args)
-    (with-simple-restart (abort "Abort this callback")
-      (apply fun args))))
-
 (defun key-window ()
   (c-fficall () :pointer-void
     "[[UIApplication sharedApplication] keyWindow]"
@@ -243,3 +178,35 @@
     (set-text-color view (or text-color (color-argb 1 0 0 0)))
     (when number-of-lines (set-number-of-lines view number-of-lines))
     view))
+
+(defmacro make-viewcontroller-instance (viewcontroller-class)
+  `(let ((viewcontroller (c-fficall ()
+				    :pointer-void
+				    ,(format nil "[[~a alloc] initWithNibName:nil bundle:nil]" viewcontroller-class)
+				    :one-liner t)))
+     (ext:set-finalizer viewcontroller #'release)
+     viewcontroller))
+
+(defun set-root-viewcontroller (window viewcontroller)
+  (c-fficall ((window :pointer-void)
+              (viewcontroller :pointer-void))
+	     :void
+	     "[#0 setRootViewController: #1];"))
+
+
+(defun show-alert (title &key message (dismiss-label "OK"))
+  "Displays a simple alert to notify the user"
+  (check-type title string)
+  (check-type dismiss-label string)
+  (c-fficall (((make-NSString title) :pointer-void)
+              ((make-NSString message) :pointer-void)
+              ((make-NSString dismiss-label) :pointer-void))
+      :void
+    "{UIAlertView *alert = [[UIAlertView alloc] 
+      initWithTitle: #0
+      message: #1
+      delegate: nil
+      cancelButtonTitle: #2
+      otherButtonTitles: nil];
+     [alert show];
+     [alert release];}"))

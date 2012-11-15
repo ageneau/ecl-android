@@ -14,7 +14,9 @@
       'product_name': '<(project_name)',
 
       'dependencies': [
+				'../../lisp-packages/iphone/libiphone.gyp:*',
       ],
+
       'include_dirs': [
         '<(ECL_INCLUDE_DIRS)',
         '<(project_root)/Lisp',
@@ -23,10 +25,8 @@
         '<(project_root)/AppDelegate.h',
         '<(project_root)/AppDelegate.m',
         '<(project_root)/main.m',
-        '<(project_root)/ViewController.h',
-        '<(project_root)/ViewController.m',
-        '<(project_root)/Lisp/ecl_boot.c',
-        '<(project_root)/Lisp/ecl_boot.h',
+        '<(project_root)/ecl_boot.c',
+        '<(project_root)/ecl_boot.h',
         '<(project_root)/<(project_name)-Prefix.pch',
       ],
       'mac_bundle_resources': [
@@ -34,14 +34,9 @@
         '<(project_root)/Default.png',
         '<(project_root)/Default@2x.png',
         '<(project_root)/en.lproj/InfoPlist.strings',
-        '<(project_root)/en.lproj/MainStoryboard_iPad.storyboard',
-        '<(project_root)/en.lproj/MainStoryboard_iPhone.storyboard',
-        '<(project_root)/Shaders/Shader.fsh',
-        '<(project_root)/Shaders/Shader.vsh',
         '<(project_root)/Resources/init.lisp',
         '<(project_root)/Resources/help.doc',
-        '<(project_root)/Resources/slime',
-#        '<(project_root)/<(project_name)-Info.plist',
+        '<(SLIME_ROOT_DIR)',
       ],
       'link_settings' : {
         'libraries' : [
@@ -49,6 +44,8 @@
           '$(SDKROOT)/System/Library/Frameworks/UIKit.framework',
           '$(SDKROOT)/System/Library/Frameworks/OpenGLES.framework',
           '$(SDKROOT)/System/Library/Frameworks/GLKit.framework',
+          '$(SDKROOT)/System/Library/Frameworks/CoreGraphics.framework',
+          '<(INTERMEDIATE_DIR)/libopenglsample.a',
         ],
       },
       'xcode_settings': {
@@ -58,12 +55,49 @@
         'OTHER_LDFLAGS' : [
           '<@(ECL_LDFLAGS)',
           '<@(ECL_LIBRARIES)',
-          '-lapp-bundle-mono-cross',
-#          '-lalexandria-mono-cross',
-#          '-lbabel-mono-cross',
-#          '-ltrivial-features-mono-cross',
         ],
       },
+      'actions': [
+        {
+          'action_name': 'genlibiphone',
+          'inputs': [
+          ],
+          'outputs': [
+            'libopenglsample.a',
+          ],
+          'action': [
+            'make',
+            '<(_outputs)',
+          ],
+        },
+        {
+          'action_name': 'gensymboltable',
+          'inputs': [
+            '$(SDKROOT)/System/Library/Frameworks/OpenGLES.framework/OpenGLES',
+          ],
+          'outputs': [
+            'ltdl-symbol-table.oS.c',
+          ],
+          'action': [
+						# This should work but gyp has a strange way of generating
+						# script rules in Xcode...
+            # '<(GEN_SYM)',
+            # '<(_inputs)',
+            'make', 
+            '<(_outputs)',
+          ],
+#          'process_outputs_as_sources': 1,
+        },
+      ],
+
+      'copies': [
+        {
+          'destination': '<(INTERMEDIATE_DIR)/',
+          'files': [
+            'libopenglsample.a',
+          ],
+        },
+      ],
     },
   ],
 }

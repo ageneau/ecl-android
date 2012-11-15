@@ -408,10 +408,8 @@
 					"-lsockets",
 					"-lecl",
 					"-leclatomic",
-					"-leclffi",
 					"-leclgc",
 					"-lgmp",
-					"-lltdl",
 					"-L.",
 				);
 				PRODUCT_NAME = eclshell;

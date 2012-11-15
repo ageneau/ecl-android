@@ -115,7 +115,7 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
               (set-text *label*
                         (format nil "slime: ~a:~a~%"
                                 address port))
-              (cocoa:show-alert
+              (show-alert
                "Swank Ready" 
                :message (format nil "Connect to ~a:~a from MCLIDE or SLIME."
                                 address port))))

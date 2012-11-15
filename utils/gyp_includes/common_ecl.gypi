@@ -25,23 +25,19 @@
       '-lsockets',
       '-lecl',
       '-leclatomic',
-      '-leclffi',
       '-leclgc',
       '-lgmp',
-      '-lltdl',
     ],
+
     'ECL_INCLUDE_DIRS': [
       '<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/include',
       '<(GMP_INSTALL_ROOT_DIR)/<(ecl_platform)/include',
     ],
+
     'ECL_LDFLAGS': [
       '-L<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib',
       '-L<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib/ecl-<(ECL_VER)',
       '-L<(GMP_INSTALL_ROOT_DIR)/<(ecl_platform)/lib',
-    ],
-
-    'mac_bundle_resources': [
-      '<(ECL_INSTALL_ROOT_DIR)/iPhoneOS/lib/ecl-<(ECL_VER)/help.doc',
     ],
     
     'ECL_HOST': '<(ECL_INSTALL_ROOT_DIR)/host/bin/ecl',

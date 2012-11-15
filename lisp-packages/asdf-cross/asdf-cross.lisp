@@ -40,7 +40,12 @@
    #'cross-compile
    (get-compiler arch)
    #'(lambda ()
-       (apply 'compile-file* input-file :system-p t (remove-keys '(arch) keys)))))
+       (apply 'compile-file* input-file
+	      :system-p t
+	      :c-file t
+	      :h-file t
+	      :data-file t
+	      (remove-keys '(arch) keys)))))
 
 (defclass cross-compile-op (compile-op)
   ((arch :initarg :arch)))

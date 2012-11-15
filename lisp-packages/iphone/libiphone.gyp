@@ -26,6 +26,8 @@
       'sources': [
         '<(project_root)/UIButtonCB.h',
         '<(project_root)/UIButtonCB.m',
+        '<(project_root)/LispGLKViewController.h',
+        '<(project_root)/LispGLKViewController.m',
         '<(project_root)/lisp_registry.c',
         '<(project_root)/lisp_registry.h',
       ],

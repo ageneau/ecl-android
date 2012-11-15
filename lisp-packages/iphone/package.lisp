@@ -11,6 +11,7 @@
    :make-button
    :make-label
    :make-NSString
+   :make-glkviewcontroller
    :ns-log
    :redraw
    :release
@@ -28,10 +29,8 @@
    :set-text-color
    :set-title
    :set-title-color
+   :set-root-viewcontroller
    :system-font
+   :show-alert
    :with-autorelease-pool))
 
-(defpackage :cocoa
-  (:use :cl :ffi :util :iphone)
-  (:export
-   :show-alert))

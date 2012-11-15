@@ -1,9 +1,51 @@
 (in-package :cl-user)
+(use-package :iphone)
+(use-package :cl-opengl)
+(use-package :openglsample)
 
 (format t "Current path: ~A ~%" (truename #P"./"))
 (setq *default-pathname-defaults* (truename #P"./"))
 (setq *default-directory* (truename #P"./"))
 
+(defvar *gles-app* (make-instance 'shader-vao-window))
+
+(defun redraw (view x y w h)
+  (format t "redraw~%")
+
+  (openglsample:display *gles-app* w h))
+
+(defun update ()
+  ;; (format t "update~%")
+  )
+
+
+(handler-case
+    (let* ((glkviewcontroller (make-glkviewcontroller
+			       :on-setupgl
+			       #'(lambda ()
+				   (format t "on-setupgl~%")
+				   (format t "GL Version: ~a ~%" (gl:gl-version))
+				   (format t "GLSL Version: ~a ~%" (gl:glsl-version))
+				   (openglsample:setup *gles-app*))
+			       :on-teardowngl
+			       #'(lambda ()
+				   (format t "on-teardowngl~%"))
+			       :on-update
+			       #'(lambda ()
+				   (handler-case
+				       (funcall #'update)
+				     (t (se) (format t "Update: got exception: ~a ~%" se))))
+			       :on-redraw
+			       #'(lambda (view x y w h)
+				   (handler-case
+				       (funcall #'redraw view x y w h)
+				     (t (se) (format t "Redraw: got exception: ~a ~%" se)))))))
+      
+      (set-root-viewcontroller (key-window) glkviewcontroller))
+  (t (se) (format t "Got Exception: ~a ~%" se)))
+
+
+                                                          
 (defun sysinfo (&optional (out *standard-output*))
   "Print the current environment to a stream."
   (declare (stream out))
@@ -62,15 +104,9 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
                  :type nil
                  :defaults pathname))
 
-(require 'ASDF)
+(load (merge-pathnames #P"slime/swank-loader" (pathname-parent *load-pathname*)) :verbose t)
+(swank-loader:init)
 
-(asdf:initialize-source-registry
- `(:source-registry
-   (:tree ,(namestring (merge-pathnames #P"slime/" (pathname-parent *load-pathname*))))
-   :inherit-configuration))
-
-
-(asdf:oos 'asdf:load-op :swank)
 (in-package :swank-backend)
 
 (defimplementation lisp-implementation-program ()

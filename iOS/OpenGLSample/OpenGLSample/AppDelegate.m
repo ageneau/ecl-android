@@ -11,19 +11,26 @@
 
 @implementation AppDelegate
 
+- (void) postLoadInitialize
+{
+    const char *curdir = [[[NSBundle mainBundle] resourcePath] UTF8String];
+    chdir(curdir);
+    ecl_boot([[[NSBundle mainBundle] resourcePath] UTF8String]);
+}
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    dispatch_queue_t queue = dispatch_queue_create("self.test", NULL);
+    [self performSelector: @selector(postLoadInitialize) withObject: nil afterDelay: 0.1f];
     
-    dispatch_async(queue, ^{
-		    const char *curdir = [[[NSBundle mainBundle] resourcePath] UTF8String];
-		    chdir(curdir);
-		    ecl_boot([[[NSBundle mainBundle] resourcePath] UTF8String]);
-    });
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    UIViewController *vc = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+//    ViewController *vc = [[ViewController alloc] initWithNibName:nil bundle:nil];
+    [self.window setRootViewController:vc];
+//    [self.window addSubview:vc.view];
+    [self.window makeKeyAndVisible];
     
-    dispatch_release(queue);
-
-
+    
     // Override point for customization after application launch.
     return YES;
 }

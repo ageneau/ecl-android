@@ -33,6 +33,7 @@
         '<(project_root)/Icon.png',
         '<(project_root)/MainWindow.xib',
         '<(project_root)/init.lisp',
+        '<(project_root)/help.doc',
         '<(SLIME_ROOT_DIR)',
       ],
       'link_settings' : {
