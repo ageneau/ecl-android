@@ -1,7 +1,7 @@
-From 59b88a6b0291e876bbcb997720aa26a93c19cdc2 Mon Sep 17 00:00:00 2001
+From 0ac404f3714771126bdd5b78ebeea8c2d233e8ab Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sun, 5 Aug 2012 14:56:35 -0300
-Subject: [PATCH 09/11] LTDL
+Subject: [PATCH 8/8] LTDL
 
 ---
  configure_cross       |  5 ++++-
@@ -11,15 +11,15 @@ Subject: [PATCH 09/11] LTDL
  4 files changed, 68 insertions(+), 15 deletions(-)
 
 diff --git a/configure_cross b/configure_cross
-index a9b7a61..b9dfa06 100755
+index 69631bf..9789331 100755
 --- a/configure_cross
 +++ b/configure_cross
-@@ -72,13 +72,16 @@ case $platform in
+@@ -79,13 +79,16 @@ case $platform in
  	;;
  
      host64nodl)
-+	export CFLAGS="-DENABLE_LTDL -I/opt/local-sylvain/include/"
-+	export LIBS="-L/opt/local-sylvain/lib -lltdl"
++	export CFLAGS="-DENABLE_LTDL -DENABLE_DLOPEN -I/opt/libtool/host64/include/"
++	export LIBS="-L/opt/libtool/host64/lib -lltdl"
  	config_opts="\
  	--with-gmp-prefix=$GMP_INSTALL_DIR \
  	--enable-threads=yes \
@@ -28,7 +28,7 @@ index a9b7a61..b9dfa06 100755
  	--with-cmp=builtin \
 -    	--disable-shared"
 +	--enable-shared=no \
-+	--enable-ltdt=yes"
++	--enable-ltdl=yes"
  	;;
      *) 
  	usage; exit 1
@@ -142,7 +142,7 @@ index 82cb931..764e7e1 100644
  #if defined(ECL_MS_WINDOWS_HOST)
  		{
 diff --git a/src/configure b/src/configure
-index e4853b4..cedc6df 100755
+index ca8a72f..4fe33e6 100755
 --- a/src/configure
 +++ b/src/configure
 @@ -760,6 +760,7 @@ ac_user_opts='
@@ -153,7 +153,7 @@ index e4853b4..cedc6df 100755
  enable_rpath
  enable_threads
  enable_boehm
-@@ -1439,6 +1440,8 @@ Optional Features:
+@@ -1438,6 +1439,8 @@ Optional Features:
    --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
    --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
    --enable-shared         enable loading compiled files (default=YES)
@@ -162,7 +162,7 @@ index e4853b4..cedc6df 100755
    --enable-rpath          hard-code the location of the ECL shared library.
                            (no|yes, default=NO)
    --enable-threads        support for native threads (yes|no|auto,
-@@ -2596,6 +2599,14 @@ else
+@@ -2593,6 +2596,14 @@ else
  fi
  
  
@@ -177,7 +177,7 @@ index e4853b4..cedc6df 100755
  # Check whether --enable-rpath was given.
  if test "${enable_rpath+set}" = set; then :
    enableval=$enable_rpath;
-@@ -9254,10 +9265,22 @@ $as_echo "#define ENABLE_DLOPEN 1" >>confdefs.h
+@@ -9208,10 +9219,22 @@ $as_echo "#define ENABLE_DLOPEN 1" >>confdefs.h
  
  LSP_FEATURES="(cons :wants-dlopen ${LSP_FEATURES})"
  
@@ -204,7 +204,7 @@ index e4853b4..cedc6df 100755
  
  if test "x${enable_rpath}" = "xno"; then
 diff --git a/src/configure.in b/src/configure.in
-index 74d296e..592f2ae 100644
+index 6a44083..1dc819a 100644
 --- a/src/configure.in
 +++ b/src/configure.in
 @@ -33,6 +33,11 @@ AC_ARG_ENABLE(shared,
@@ -219,7 +219,7 @@ index 74d296e..592f2ae 100644
  AC_ARG_ENABLE(rpath,
    AS_HELP_STRING( [--enable-rpath],
  		  [hard-code the location of the ECL shared library.]
-@@ -743,10 +748,17 @@ if test ${enable_shared} = "yes"; then
+@@ -737,10 +742,17 @@ if test ${enable_shared} = "yes"; then
    AC_DEFINE(ENABLE_DLOPEN, [1], [Allow loading dynamically linked code])
    LSP_LIBRARIES="${SHAREDPREFIX}ecl.${SHAREDEXT}"
    ECL_ADD_FEATURE([wants-dlopen])
