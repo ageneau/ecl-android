@@ -3,327 +3,297 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D3623260D0F684500981E51 /* eclshellAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* eclshellAppDelegate.m */; };
-		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
-		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
-		311AE63B104B98E2004D3132 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 311AE63A104B98E2004D3132 /* Icon.png */; };
-		313AF8CE12BF53FC0032D21D /* UIButtonCB.m in Sources */ = {isa = PBXBuildFile; fileRef = 313AF8CD12BF53FC0032D21D /* UIButtonCB.m */; };
-		314C844E10448FDE00689028 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = 314C83E310448FDE00689028 /* slime */; };
-		31920CF21041CFDC00EAFB0D /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = 31920CF11041CFDC00EAFB0D /* init.lisp */; };
-		31920E451043175D00EAFB0D /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = 31920E431043175D00EAFB0D /* ecl_boot.c */; };
-		31AA2765104DF869005DC971 /* libeclffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 31AA2764104DF869005DC971 /* libeclffi.a */; };
+		0243723F79AFB5A659BADDA2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C8465526F59EF8BC04114B4 /* main.m */; };
+		04ADB237B5F4D0DEDC38F19D /* UIButtonCB.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D3B8E55D88A5198061EF0F3 /* UIButtonCB.m */; };
+		0FBE1EB43489EAA7E4B52C58 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 668C046B68172FBD576A73CD /* MainWindow.xib */; };
+		13192A5B76A959B214FC0EBB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C7775CAC966E2C23B0B746E /* UIKit.framework */; };
+		8DC15D2AEAEEE6A33CEC8BE9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C9886F228B0D8E78158152 /* CoreGraphics.framework */; };
+		98D5FD3DCF1383744B8CB8E6 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = BBD6A3C505940196D1FF854A /* slime */; };
+		9FE4935BA4C896E3BF3A03FF /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = A2A09AD79C76FF96B1457674 /* ecl_boot.c */; };
+		C199CFC418C66707E3B6A392 /* eclshellAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 347B3546B34231545FE1402E /* eclshellAppDelegate.m */; };
+		C5097E4D9D4F83B16BE89FC7 /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = B6AD473E5409F02914ABF961 /* init.lisp */; };
+		C68F1DB398137822E4F584BB /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 68C68B64D9CFDC919E71F039 /* Icon.png */; };
+		ED6FFACB373189773D408814 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0812A6B72C77060E1DA6FD0B /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildRule section */
-		31920BF810411C4000EAFB0D /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.gcc.4_2;
-			filePatterns = "*.d";
-			fileType = pattern.proxy;
-			isEditable = 1;
-			outputFiles = (
-			);
-		};
-/* End PBXBuildRule section */
-
 /* Begin PBXFileReference section */
-		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D3623240D0F684500981E51 /* eclshellAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eclshellAppDelegate.h; sourceTree = "<group>"; };
-		1D3623250D0F684500981E51 /* eclshellAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = eclshellAppDelegate.m; sourceTree = "<group>"; };
-		1D6058910D05DD3D006BFB54 /* eclshell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eclshell.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		311AE63A104B98E2004D3132 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
-		313AF8CC12BF53FC0032D21D /* UIButtonCB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIButtonCB.h; sourceTree = "<group>"; };
-		313AF8CD12BF53FC0032D21D /* UIButtonCB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIButtonCB.m; sourceTree = "<group>"; };
-		314C83E310448FDE00689028 /* slime */ = {isa = PBXFileReference; lastKnownFileType = folder; path = slime; sourceTree = "<group>"; };
-		31920CF11041CFDC00EAFB0D /* init.lisp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = init.lisp; sourceTree = "<group>"; };
-		31920E431043175D00EAFB0D /* ecl_boot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ecl_boot.c; sourceTree = "<group>"; };
-		31920E441043175D00EAFB0D /* ecl_boot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ecl_boot.h; sourceTree = "<group>"; };
-		31AA2764104DF869005DC971 /* libeclffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libeclffi.a; sourceTree = "<group>"; };
-		32CA4F630368D1EE00C91783 /* eclshell_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eclshell_Prefix.pch; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* eclshell-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "eclshell-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		0812A6B72C77060E1DA6FD0B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		209C24B2F683D41C5A531393 /* eclshell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eclshell.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		32EABC1BCC72795A68F9391A /* ecl_boot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ecl_boot.h; sourceTree = "<group>"; };
+		347B3546B34231545FE1402E /* eclshellAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = eclshellAppDelegate.m; sourceTree = "<group>"; };
+		3C8465526F59EF8BC04114B4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4131DF8CD12F83603FD723AA /* eclshellAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = eclshellAppDelegate.h; sourceTree = "<group>"; };
+		465AF1298708A906FFC9ED2F /* eclshell-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = text; path = "eclshell-Prefix.pch"; sourceTree = "<group>"; };
+		66716F5E97AB5C4DEC6D7287 /* UIButtonCB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIButtonCB.h; sourceTree = "<group>"; };
+		668C046B68172FBD576A73CD /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		68C68B64D9CFDC919E71F039 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		7D3B8E55D88A5198061EF0F3 /* UIButtonCB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIButtonCB.m; sourceTree = "<group>"; };
+		9C7775CAC966E2C23B0B746E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A0C9886F228B0D8E78158152 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A2A09AD79C76FF96B1457674 /* ecl_boot.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ecl_boot.c; sourceTree = "<group>"; };
+		B6AD473E5409F02914ABF961 /* init.lisp */ = {isa = PBXFileReference; lastKnownFileType = text; path = init.lisp; sourceTree = "<group>"; };
+		B7DD5DA7F6F7B48B7924969C /* common.gypi */ = {isa = PBXFileReference; lastKnownFileType = text; name = common.gypi; path = ../../utils/gyp_includes/common.gypi; sourceTree = "<group>"; };
+		BBD6A3C505940196D1FF854A /* slime */ = {isa = PBXFileReference; lastKnownFileType = text; path = slime; sourceTree = "<group>"; };
+		F25DF1DB1EA31298130BF195 /* common_ecl.gypi */ = {isa = PBXFileReference; lastKnownFileType = text; name = common_ecl.gypi; path = ../../utils/gyp_includes/common_ecl.gypi; sourceTree = "<group>"; };
+		F6AF8DE7746FB93A279BA376 /* eclshell.gyp */ = {isa = PBXFileReference; lastKnownFileType = text; path = eclshell.gyp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+		DDB0D14E1F520453F00445BA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
-				31AA2765104DF869005DC971 /* libeclffi.a in Frameworks */,
+				ED6FFACB373189773D408814 /* Foundation.framework in Frameworks */,
+				13192A5B76A959B214FC0EBB /* UIKit.framework in Frameworks */,
+				8DC15D2AEAEEE6A33CEC8BE9 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
+		1B05FA1E635448B2732487A7 /* ../.. */ = {
 			isa = PBXGroup;
 			children = (
-				313AF8CC12BF53FC0032D21D /* UIButtonCB.h */,
-				313AF8CD12BF53FC0032D21D /* UIButtonCB.m */,
-				1D3623240D0F684500981E51 /* eclshellAppDelegate.h */,
-				1D3623250D0F684500981E51 /* eclshellAppDelegate.m */,
+				BBD6A3C505940196D1FF854A /* slime */,
+			);
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		20BF9E40310CF32509123591 /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				B7DD5DA7F6F7B48B7924969C /* common.gypi */,
+				F25DF1DB1EA31298130BF195 /* common_ecl.gypi */,
+				F6AF8DE7746FB93A279BA376 /* eclshell.gyp */,
+			);
+			name = Build;
+			sourceTree = "<group>";
+		};
+		558549B5B74ACA2C2DE6AC66 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				1B05FA1E635448B2732487A7 /* ../.. */,
+				5EA0E0E4E91C277911BC5255 /* Classes */,
+				68C68B64D9CFDC919E71F039 /* Icon.png */,
+				668C046B68172FBD576A73CD /* MainWindow.xib */,
+				A2A09AD79C76FF96B1457674 /* ecl_boot.c */,
+				32EABC1BCC72795A68F9391A /* ecl_boot.h */,
+				465AF1298708A906FFC9ED2F /* eclshell-Prefix.pch */,
+				B6AD473E5409F02914ABF961 /* init.lisp */,
+				3C8465526F59EF8BC04114B4 /* main.m */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		5EA0E0E4E91C277911BC5255 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				66716F5E97AB5C4DEC6D7287 /* UIButtonCB.h */,
+				7D3B8E55D88A5198061EF0F3 /* UIButtonCB.m */,
+				4131DF8CD12F83603FD723AA /* eclshellAppDelegate.h */,
+				347B3546B34231545FE1402E /* eclshellAppDelegate.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
 		};
-		19C28FACFE9D520D11CA2CBB /* Products */ = {
+		70505059C918406D1736CED6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* eclshell.app */,
+				A0C9886F228B0D8E78158152 /* CoreGraphics.framework */,
+				0812A6B72C77060E1DA6FD0B /* Foundation.framework */,
+				9C7775CAC966E2C23B0B746E /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C167CC23ED46BB31B15C0363 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				209C24B2F683D41C5A531393 /* eclshell.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
+		F3FBA59B7CBC504F95A82B36 = {
 			isa = PBXGroup;
 			children = (
-				080E96DDFE201D6D7F000001 /* Classes */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
+				558549B5B74ACA2C2DE6AC66 /* Source */,
+				70505059C918406D1736CED6 /* Frameworks */,
+				C167CC23ED46BB31B15C0363 /* Products */,
+				20BF9E40310CF32509123591 /* Build */,
 			);
-			name = CustomTemplate;
-			sourceTree = "<group>";
-		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-				31920E431043175D00EAFB0D /* ecl_boot.c */,
-				31920E441043175D00EAFB0D /* ecl_boot.h */,
-				32CA4F630368D1EE00C91783 /* eclshell_Prefix.pch */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-			);
-			name = "Other Sources";
-			sourceTree = "<group>";
-		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				311AE63A104B98E2004D3132 /* Icon.png */,
-				314C83E310448FDE00689028 /* slime */,
-				31920CF11041CFDC00EAFB0D /* init.lisp */,
-				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
-				8D1107310486CEB800E47090 /* eclshell-Info.plist */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				31AA2764104DF869005DC971 /* libeclffi.a */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
-				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* eclshell */ = {
+		8F35AE208F784D190770E21C /* All */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "eclshell" */;
+			buildConfigurationList = FA123908CDF1BB5DF2475F93 /* Build configuration list for PBXNativeTarget "All" */;
 			buildPhases = (
-				1D60588D0D05DD3D006BFB54 /* Resources */,
-				1D60588E0D05DD3D006BFB54 /* Sources */,
-				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				2F93D1723E860FC883596B06 /* Resources */,
+				8A031D633C218B4DD9295521 /* Sources */,
+				DDB0D14E1F520453F00445BA /* Frameworks */,
 			);
 			buildRules = (
-				31920BF810411C4000EAFB0D /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
-			name = eclshell;
+			name = All;
 			productName = eclshell;
-			productReference = 1D6058910D05DD3D006BFB54 /* eclshell.app */;
+			productReference = 209C24B2F683D41C5A531393 /* eclshell.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		29B97313FDCFA39411CA2CEA /* Project object */ = {
+		8DDA502B2376C2186B3035BF /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "eclshell" */;
-			compatibilityVersion = "Xcode 3.1";
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = 8F44EF44BB8ECE85DB6F8E92 /* Build configuration list for PBXProject "eclshell" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				en,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
+			mainGroup = F3FBA59B7CBC504F95A82B36;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* eclshell */,
+				8F35AE208F784D190770E21C /* All */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+		2F93D1723E860FC883596B06 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
-				31920CF21041CFDC00EAFB0D /* init.lisp in Resources */,
-				314C844E10448FDE00689028 /* slime in Resources */,
-				311AE63B104B98E2004D3132 /* Icon.png in Resources */,
+				C68F1DB398137822E4F584BB /* Icon.png in Resources */,
+				0FBE1EB43489EAA7E4B52C58 /* MainWindow.xib in Resources */,
+				C5097E4D9D4F83B16BE89FC7 /* init.lisp in Resources */,
+				98D5FD3DCF1383744B8CB8E6 /* slime in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+		8A031D633C218B4DD9295521 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
-				1D3623260D0F684500981E51 /* eclshellAppDelegate.m in Sources */,
-				31920E451043175D00EAFB0D /* ecl_boot.c in Sources */,
-				313AF8CE12BF53FC0032D21D /* UIButtonCB.m in Sources */,
+				C199CFC418C66707E3B6A392 /* eclshellAppDelegate.m in Sources */,
+				04ADB237B5F4D0DEDC38F19D /* UIButtonCB.m in Sources */,
+				0243723F79AFB5A659BADDA2 /* main.m in Sources */,
+				9FE4935BA4C896E3BF3A03FF /* ecl_boot.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Debug */ = {
+		99C44F8CC9F3FE1E436A1CB5 /* Release_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Release_Base;
+		};
+		F5D9CE2BAE6517A21082AF2B /* Release_Base */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = eclshell_Prefix.pch;
-				INFOPLIST_FILE = "eclshell-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
-				PRODUCT_NAME = eclshell;
-			};
-			name = Debug;
-		};
-		1D6058950D05DD3E006BFB54 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COPY_PHASE_STRIP = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = eclshell_Prefix.pch;
-				INFOPLIST_FILE = "eclshell-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-				);
-				PRODUCT_NAME = eclshell;
-			};
-			name = Release;
-		};
-		C01FCF4F08A954540054247B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CLANG_LINK_OBJC_RUNTIME = NO;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				ECL = /opt/ecl;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_CW_ASM_SYNTAX = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				GMP = /opt/gmp;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_OBJC_CALL_CXX_CDTORS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "./eclshell-Prefix.pch";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
-					$ECL/iPhoneUniversal/include,
-					$GMP/iPhoneUniversal/include,
+					/opt/ecl/iPhoneUniversal/include,
+					/opt/gmp/iPhoneUniversal/include,
+					.,
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = (
-					$ECL/iPhoneUniversal/lib,
-					$GMP/iPhoneUniversal/lib,
-				);
+				INFOPLIST_FILE = "./eclshell-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/System/Library/Frameworks";
 				OTHER_LDFLAGS = (
-					"-lecl",
-					"-lgmp",
-					"-leclgc",
+					"-L/opt/ecl/iPhoneUniversal/lib",
+					"-L/opt/ecl/iPhoneUniversal/lib/ecl-12.7.1",
+					"-L/opt/gmp/iPhoneUniversal/lib",
+					"-lasdf",
+					"-ldeflate",
+					"-ldefsystem",
+					"-lecl-cdb",
+					"-lecl-curl",
+					"-lecl-help",
+					"-lecl-quicklisp",
+					"-lprofile",
+					"-lql-minitar",
+					"-lrt",
+					"-lsb-bsd-sockets",
 					"-lserve-event",
 					"-lsockets",
-					"-lbytecmp",
+					"-lecl",
+					"-leclatomic",
+					"-leclffi",
+					"-leclgc",
+					"-lgmp",
+					"-L.",
+					"-leclshell",
 				);
-				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PRODUCT_NAME = eclshell;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				USER_HEADER_SEARCH_PATHS = "";
+				STRIP_INSTALLED_PRODUCT = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+				USE_HEADERMAP = NO;
+				WRAPPER_PREFIX = "";
 			};
-			name = Debug;
-		};
-		C01FCF5008A954540054247B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				ECL = /opt/ecl;
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				GMP = /opt/gmp;
-				HEADER_SEARCH_PATHS = (
-					$ECL/iPhoneUniversal/include,
-					$GMP/iPhoneUniversal/include,
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
-				LIBRARY_SEARCH_PATHS = (
-					$ECL/iPhoneUniversal/lib,
-					$GMP/iPhoneUniversal/lib,
-				);
-				PREBINDING = NO;
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
+			name = Release_Base;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "eclshell" */ = {
+		8F44EF44BB8ECE85DB6F8E92 /* Build configuration list for PBXProject "eclshell" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Debug */,
-				1D6058950D05DD3E006BFB54 /* Release */,
+				99C44F8CC9F3FE1E436A1CB5 /* Release_Base */,
 			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Release_Base;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "eclshell" */ = {
+		FA123908CDF1BB5DF2475F93 /* Build configuration list for PBXNativeTarget "All" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug */,
-				C01FCF5008A954540054247B /* Release */,
+				F5D9CE2BAE6517A21082AF2B /* Release_Base */,
 			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Release_Base;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+	rootObject = 8DDA502B2376C2186B3035BF /* Project object */;
 }

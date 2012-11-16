@@ -8,4 +8,9 @@
 /util.c
 /util.data
 /util.h
+/cocoa.c
+/cocoa.h
+/cocoa.data
 build
+/eclshell.xcodeproj/project.xcworkspace
+/eclshell.xcodeproj/xcuserdata

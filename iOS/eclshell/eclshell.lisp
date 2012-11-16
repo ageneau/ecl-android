@@ -8,6 +8,7 @@
    :load-font
    :make-button
    :make-label
+   :make-NSString
    :ns-log
    :redraw
    :release
@@ -57,6 +58,8 @@
          (car (find key ,name :key 'cdr)))))
   )
 
+(defvar *objc-nil* (c-fficall () :pointer-void "nil" :one-liner t))
+
 (defun ns-log (msg)
   (c-fficall ((msg :cstring)) :void
     "NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -64,9 +67,11 @@
      [pool release];"))
 
 (defun make-NSString (string)
-  (c-fficall ((string :cstring))
-      :pointer-void
-    "[NSString stringWithCString: #0]" :one-liner t))
+  (if string
+      (c-fficall ((string :cstring))
+          :pointer-void
+        "[NSString stringWithCString: #0]" :one-liner t)
+      *objc-nil*))
 
 (defun alloc (class-name &key init)
   (let ((obj (c-fficall ((class-name :cstring))
@@ -177,7 +182,7 @@
                         ,(format nil "[[~a alloc] initWithFrame: CGRectZero]" view-class)
                         :one-liner t)
                       ,init-view-args)))
-     (si:set-finalizer view #'release)
+     (ext:set-finalizer view #'release)
      view))
 
 (def-ffi-enum uicontrol-state

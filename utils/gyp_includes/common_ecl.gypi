@@ -4,6 +4,7 @@
   'variables': {
     'GMP_INSTALL_ROOT_DIR': '/opt/gmp',
     'ECL_INSTALL_ROOT_DIR': '/opt/ecl',
+    'SLIME_ROOT_DIR' : '../../slime',
     'ECL_VER': '12.7.1',
     'ecl_platform': 'iPhoneUniversal',
     'LIB_EXT': '.a',
@@ -36,6 +37,11 @@
       '-L<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib',
       '-L<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib/ecl-<(ECL_VER)',
       '-L<(GMP_INSTALL_ROOT_DIR)/<(ecl_platform)/lib',
-    ],    
+    ],
+
+    'mac_bundle_resources': [
+			'<(ECL_INSTALL_ROOT_DIR)/iPhoneOS/lib/ecl-<(ECL_VER)/help.doc',
+		],
+    
   },
 }
