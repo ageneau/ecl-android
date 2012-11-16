@@ -1,0 +1,9 @@
+[submodule "utils/gyp"]
+	path = utils/gyp
+	url = http://git.chromium.org/external/gyp.git
+[submodule "ecl"]
+	path = ecl
+	url = git://git.code.sf.net/p/ecls/ecl
+[submodule "slime"]
+	path = slime
+	url = git://common-lisp.net/projects/mirror/slime.git
