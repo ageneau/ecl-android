@@ -1,0 +1,10 @@
+*.o
+*.lo
+*~
+*.a
+log
+*.la
+.libs
+cache
+out
+*.eclh
