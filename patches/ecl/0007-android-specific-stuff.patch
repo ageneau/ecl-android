@@ -1,7 +1,7 @@
-From a39f8ad82d5fd42f5ef966422e98dc89b00e880f Mon Sep 17 00:00:00 2001
+From 4e7785ff844bf4fe9c8ef90fbfddaf714e93b402 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 7/8] android specific stuff
+Subject: [PATCH 7/9] android specific stuff
 
 ---
  src/Makefile.in         |   7 +-
@@ -18,7 +18,7 @@ Subject: [PATCH 7/8] android specific stuff
  create mode 100644 src/cmp/crosscmp.lsp.in
 
 diff --git a/src/Makefile.in b/src/Makefile.in
-index 0b00da2..560babd 100644
+index 8b5eab6..60b087e 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
 @@ -96,6 +96,10 @@ $(ECL_CMPDIR)/cmpdefs.lsp: $(ECL_CMPDIR)/cmpdefs.pre
@@ -50,7 +50,7 @@ index 0b00da2..560babd 100644
  flatinstall: build-stamp
  	$(MAKE) DESTDIR=$(DESTDIR) bindir=$(prefix) libdir=$(prefix) \
 diff --git a/src/aclocal.m4 b/src/aclocal.m4
-index 6f52c66..4f31b4e 100644
+index 1de1e92..686cbd4 100644
 --- a/src/aclocal.m4
 +++ b/src/aclocal.m4
 @@ -86,7 +86,7 @@ dnl Set up a configuration file for the case when we are cross-
@@ -235,7 +235,7 @@ index 0000000..4407800
 +       (si::pathname-translations "SYS" old-translation))))
 \ No newline at end of file
 diff --git a/src/compile.lsp.in b/src/compile.lsp.in
-index 6e77c0e..030e439 100755
+index 7b1d6a2..23d5720 100755
 --- a/src/compile.lsp.in
 +++ b/src/compile.lsp.in
 @@ -115,9 +115,9 @@
@@ -251,10 +251,10 @@ index 6e77c0e..030e439 100755
  
  #+:wants-dlopen
 diff --git a/src/configure b/src/configure
-index ee7ee3b..ca8a72f 100755
+index 20967a1..e4853b4 100755
 --- a/src/configure
 +++ b/src/configure
-@@ -4718,7 +4718,7 @@ else
+@@ -4729,7 +4729,7 @@ else
  fi
  
  
@@ -263,7 +263,7 @@ index ee7ee3b..ca8a72f 100755
    if test -n "${with_cross_config}" -a -f "${with_cross_config}"; then
      . ${with_cross_config}
    elif test -f ./cross_config; then
-@@ -4856,6 +4856,7 @@ case "${host_os}" in
+@@ -4867,6 +4867,7 @@ case "${host_os}" in
  		THREAD_LIBS='-lpthread'
  		SHARED_LDFLAGS="-shared ${LDFLAGS}"
  		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
@@ -271,7 +271,7 @@ index ee7ee3b..ca8a72f 100755
  		ECL_LDRPATH='-Wl,--rpath,~A'
  		clibs="-ldl"
  		# Maybe CFLAGS="-D_ISOC99_SOURCE ${CFLAGS}" ???
-@@ -4863,6 +4864,23 @@ case "${host_os}" in
+@@ -4874,6 +4875,23 @@ case "${host_os}" in
  		SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
  		SONAME_LDFLAGS="-Wl,-soname,SONAME"
  		;;
@@ -295,7 +295,7 @@ index ee7ee3b..ca8a72f 100755
  	gnu*)
  		thehost='gnu'
  		THREAD_CFLAGS='-D_THREAD_SAFE'
-@@ -5023,6 +5041,16 @@ case "${host_os}" in
+@@ -5034,6 +5052,16 @@ case "${host_os}" in
  		shared="no"
  		;;
  esac
@@ -312,7 +312,7 @@ index ee7ee3b..ca8a72f 100755
  case "${host_cpu}" in
  	alpha*)
  		CFLAGS="${CFLAGS} -mieee";;
-@@ -6737,7 +6765,7 @@ done
+@@ -6748,7 +6776,7 @@ done
  
  
  for ac_header in sys/resource.h sys/utsname.h float.h pwd.h dlfcn.h link.h \
@@ -321,7 +321,7 @@ index ee7ee3b..ca8a72f 100755
                    sys/wait.h semaphore.h
  do :
    as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-@@ -6753,6 +6781,24 @@ done
+@@ -6764,6 +6792,24 @@ done
  
  
  
@@ -346,7 +346,7 @@ index ee7ee3b..ca8a72f 100755
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
  $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
  if ${ac_cv_c_const+:} false; then :
-@@ -9056,7 +9102,7 @@ fi
+@@ -9067,7 +9113,7 @@ fi
  
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking working environ" >&5
  $as_echo_n "checking working environ... " >&6; }
@@ -355,7 +355,7 @@ index ee7ee3b..ca8a72f 100755
    if test "$cross_compiling" = yes; then :
    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
  $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-@@ -9083,6 +9129,8 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+@@ -9094,6 +9140,8 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
    conftest.$ac_objext conftest.beam conftest.$ac_ext
  fi
  
@@ -364,7 +364,7 @@ index ee7ee3b..ca8a72f 100755
  fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ECL_WORKING_ENVIRON" >&5
  $as_echo "$ECL_WORKING_ENVIRON" >&6; }
-@@ -9225,6 +9273,14 @@ else
+@@ -9271,6 +9319,14 @@ else
    CLX_INFO=""
  fi
  
@@ -379,7 +379,7 @@ index ee7ee3b..ca8a72f 100755
  if test "${with_tcp}" = "yes"; then
  
  $as_echo "#define TCP 1" >>confdefs.h
-@@ -9383,7 +9439,7 @@ $as_echo "#define ECL_RELATIVE_PACKAGE_NAMES 1" >>confdefs.h
+@@ -9429,7 +9485,7 @@ $as_echo "#define ECL_RELATIVE_PACKAGE_NAMES 1" >>confdefs.h
  
  fi
  
@@ -388,7 +388,7 @@ index ee7ee3b..ca8a72f 100755
  
  ac_config_headers="$ac_config_headers ecl/config.h:ecl/configpre.h"
   # FIXME
-@@ -10094,6 +10150,7 @@ do
+@@ -10140,6 +10196,7 @@ do
      "lsp/config.pre") CONFIG_FILES="$CONFIG_FILES lsp/config.pre:lsp/config.lsp.in" ;;
      "compile.pre") CONFIG_FILES="$CONFIG_FILES compile.pre:compile.lsp.in" ;;
      "cmp/cmpdefs.pre") CONFIG_FILES="$CONFIG_FILES cmp/cmpdefs.pre:cmp/cmpdefs.lsp" ;;
@@ -397,10 +397,10 @@ index ee7ee3b..ca8a72f 100755
      "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
      "ecl/config.h") CONFIG_HEADERS="$CONFIG_HEADERS ecl/config.h:ecl/configpre.h" ;;
 diff --git a/src/configure.in b/src/configure.in
-index d8a0f6d..6a44083 100644
+index f1f72ec..74d296e 100644
 --- a/src/configure.in
 +++ b/src/configure.in
-@@ -604,9 +604,16 @@ AC_CHECK_HEADERS( [fcntl.h limits.h netdb.h netinet/in.h] \
+@@ -610,9 +610,16 @@ AC_CHECK_HEADERS( [fcntl.h limits.h netdb.h netinet/in.h] \
  dnl !!! end autoscan
  
  AC_CHECK_HEADERS( [sys/resource.h sys/utsname.h float.h pwd.h dlfcn.h link.h] \
@@ -418,7 +418,7 @@ index d8a0f6d..6a44083 100644
  dnl =====================================================================
  dnl Checks for typedefs, structures, and compiler characteristics.
  
-@@ -772,6 +779,10 @@ else
+@@ -778,6 +785,10 @@ else
    CLX_INFO=""
  fi
  
@@ -429,7 +429,7 @@ index d8a0f6d..6a44083 100644
  if test "${with_tcp}" = "yes"; then
    AC_DEFINE(TCP, [1], [Network streams])
    EXTRA_OBJS="${EXTRA_OBJS} tcp.${OBJEXT}"
-@@ -876,6 +887,7 @@ AC_CONFIG_FILES([
+@@ -882,6 +893,7 @@ AC_CONFIG_FILES([
    ecl/configpre.h:h/config.h.in bin/ecl-config.pre:util/ecl-config
    lsp/config.pre:lsp/config.lsp.in compile.pre:compile.lsp.in
    cmp/cmpdefs.pre:cmp/cmpdefs.lsp

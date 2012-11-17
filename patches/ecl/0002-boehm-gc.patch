@@ -1,7 +1,7 @@
-From 1dc3d021a061d14e2d90fa0c6961606999bc1e75 Mon Sep 17 00:00:00 2001
+From 211334c4a4d05b33138a3ec4de7adac0cb2c3163 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Tue, 23 Aug 2011 19:08:13 -0300
-Subject: [PATCH 2/8] boehm-gc: * Remove libatomic_ops_gpl * Configure android
+Subject: [PATCH 2/9] boehm-gc: * Remove libatomic_ops_gpl * Configure android
  target * Add code for missing sigsetjmp on Android x86
 
 ---

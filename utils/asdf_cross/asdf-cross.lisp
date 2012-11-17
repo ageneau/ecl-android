@@ -35,21 +35,19 @@
 (require :asdf)
 (in-package :asdf)
 
+(use-package :cross-cmp)
 
-(defun cross-pathname (x)
-  (merge-pathnames (format nil "~a-cross" (pathname-name x)) x))
 
-(defclass cross-compile-op (operation)
-  ((proclamations :initarg :proclamations :accessor compile-op-proclamations :initform nil)
-   (on-warnings :initarg :on-warnings :accessor operation-on-warnings
-                :initform *compile-file-warnings-behaviour*)
-   (on-failure :initarg :on-failure :accessor operation-on-failure
-               :initform *compile-file-failure-behaviour*)
-   (flags :initarg :flags :accessor compile-op-flags
-          :initform nil)))
+(defun compile-cross (input-file &rest keys &key output-file arch &allow-other-keys)
+  (declare (ignore output-file))
+  (funcall
+   #'cross-compile
+   (get-compiler arch)
+   #'(lambda ()
+       (apply 'compile-file* input-file :system-p t (remove-keys '(arch) keys)))))
 
-;; (defmethod component-depends-on ((o cross-compile-op) (c component))
-;;   (list (list 'load-op (component-name c))))
+(defclass cross-compile-op (compile-op)
+  ((arch :initarg :arch)))
 
 (defmethod component-depends-on ((o cross-compile-op) (c system))
   (mapcar #'(lambda (x)
@@ -58,21 +56,6 @@
 		  x))
 	  (component-depends-on (make-instance 'compile-op) c)))
 
-(defmethod perform ((o cross-compile-op) (c component))
-  ())
-
-(defun compile-cross (input-file &rest keys &key output-file &allow-other-keys)
-  (declare (ignore output-file))
-  (c::with-crosscomp-env
-      (apply 'compile-file* input-file :system-p t keys)))
-
-(defmethod perform :before ((operation cross-compile-op) (c source-file))
-   (loop :for file :in (asdf:output-files operation c)
-     :for pathname = (if (typep file 'logical-pathname)
-                         (translate-logical-pathname file)
-                         file)
-     :do (ensure-directories-exist pathname)))
-
 (defmethod perform ((operation cross-compile-op) (c cl-source-file))
   (let ((source-file (component-pathname c))
 	(output-file (first (output-files operation c)))
@@ -80,7 +63,9 @@
 	(*compile-file-failure-behaviour* (operation-on-failure operation)))
     (multiple-value-bind (output warnings-p failure-p)
         (apply 'compile-cross source-file
-               :output-file output-file (compile-op-flags operation))
+               :output-file output-file
+	       :arch (slot-value operation 'arch)
+	       (compile-op-flags operation))
       (unless output
         (error 'compile-error :component c :operation operation))
       (when failure-p
@@ -98,25 +83,20 @@
           (:error (error 'compile-warned :component c :operation operation))
           (:ignore nil))))))
 
-
-(defmethod output-files ((operation cross-compile-op) (c component))
-  (declare (ignorable operation))
-  (let ((output-comp (output-files (make-instance 'compile-op) c)))
-    (mapcar #'cross-pathname output-comp)))
-
 (defmethod output-files ((operation cross-compile-op) (c cl-source-file))
   (declare (ignorable operation))
   (let* ((output-comp (output-files (make-instance 'compile-op) c))
-	 (cross-object-files (mapcar #'cross-pathname
-				     (remove "fas" output-comp
-					     :key #'pathname-type :test #'string=))))
+	 (cross-object-files (remove "fas" output-comp
+				     :key #'pathname-type :test #'string=)))
     cross-object-files))
 
 (defclass cross-lib-op (lib-op)
-  ((type :initform :lib)))
+  ((type :initform :lib)
+   (arch :initarg :arch)))
 
 (defclass cross-monolithic-lib-op (monolithic-lib-op)
-  ((type :initform :lib)))
+  ((type :initform :lib)
+   (arch :initarg :arch)))
 
 
 (defmethod bundle-sub-operations ((o cross-lib-op) c)
@@ -138,44 +118,55 @@
   (declare (ignorable o))
   (list (list 'cross-compile-op (component-name c))))
 
-
-(defmethod output-files ((o cross-lib-op) (c system))
-  (mapcar #'cross-pathname (call-next-method)))
-
-(defmethod output-files ((o cross-monolithic-lib-op) (c system))
-  (mapcar #'cross-pathname (call-next-method)))
-
 (defmethod perform ((o cross-lib-op) (c system))
-  (c::with-crosscomp-env
-      (call-next-method)))
+  (funcall
+   #'cross-compile
+   (get-compiler (slot-value o 'arch))
+   #'call-next-method))
 
 (defmethod perform ((o cross-monolithic-lib-op) (c system))
-  (c::with-crosscomp-env
-      (call-next-method)))
+  (funcall
+   #'cross-compile
+   (get-compiler (slot-value o 'arch))
+   #'call-next-method))
+
+(defmethod initialize-instance :after ((instance cross-monolithic-lib-op) &rest initargs
+                                       &key (arch)
+                                       &allow-other-keys)
+  (declare (ignorable initargs))
+  (setf (bundle-op-build-args instance)
+        (remove-keys '(arch name-suffix)
+                     (slot-value instance 'original-initargs))))
+
+(defmethod bundle-op-build-args :around ((op cross-monolithic-lib-op))
+  (declare (ignorable op))
+  (let ((args (call-next-method)))
+    (remf args :arch)
+    args))
 
 (defclass cross-program-op (program-op)
-  ())
+  ((arch :initarg :arch)))
 
 (defmethod perform ((o cross-program-op) (c system))
-  (c::with-crosscomp-env
-      (let ((prebuilts (loop
-      			  :for (o . c) :in (bundle-sub-operations o c)
-      			  :when (typep c 'prebuilt-system)
-      			  :collect (component-name c))))
-      	(setf (slot-value o 'epilogue-code)
-      	      `(progn
-		 (asdf::register-pre-built-system "ASDF")
-      		 ,@(loop :for package in prebuilts
-		      :collect `(asdf::register-pre-built-system ,package))
-		 (si::top-level t)))
-      	(call-next-method))))
+  (apply
+   'cross-compile
+   (get-compiler (slot-value o 'arch))
+   #'(lambda ()
+       (let ((prebuilts (loop
+			   :for (o . c) :in (bundle-sub-operations o c)
+			   :when (typep c 'prebuilt-system)
+			   :collect (component-name c))))
+	 (setf (slot-value o 'epilogue-code)
+	       `(progn
+		  (asdf::register-pre-built-system "ASDF")
+		  ,@(loop :for package in prebuilts
+		       :collect `(asdf::register-pre-built-system ,package))
+		  (si::top-level t)))
+	 (call-next-method)))))
 
 (defmethod bundle-sub-operations ((o cross-program-op) c)
   (mapcar #'(lambda (x) (cons (make-instance 'cross-lib-op) (cdr x)))
 	  (call-next-method)))
-
-(defmethod output-files ((o cross-program-op) (c system))
-  (mapcar #'cross-pathname (call-next-method)))
 
 ;; Prebuilt systems
 
@@ -196,40 +187,55 @@
   (oos 'load-op system)
 
   (unwind-protect
-       (let ((common-lisp:*features* (cons :cross common-lisp:*features*)))
-	 ;; This forces reloading of system definitions forms
-	 ;; Needed for :cross handling
-	 (clrhash *defined-systems*)
+       (loop
+	  for arch being the hash-keys of *cross-compilers*
+	  nconc
+	    (let ((common-lisp:*features* (cons :cross common-lisp:*features*))
+		  (*user-cache* (list asdf::*user-cache* arch)))
 
-	 (let* ((operation-name (ecase type
-				  ((:lib :static-library)
-				   (if monolithic 'cross-monolithic-lib-op 'cross-lib-op))
-				  ((:program)
-				   'cross-program-op)))
-		(move-here-path (if (and move-here
-					 (typep move-here '(or pathname string)))
-				    (pathname move-here)
-				    (merge-pathnames "./asdf-output/")))
-		(operation (apply #'operate operation-name
-				  system
-				  (remove-keys '(monolithic type move-here) args)))
-		(system (find-system system))
-		(files (and system (output-files operation system))))
+	      (clear-output-translations)
+	      ;; This forces reloading of system definitions forms
+	      ;; Needed for :cross handling
+	      (clrhash *defined-systems*)
 
-	  (if (or move-here (and (null move-here-p)
-				 (member operation-name '(:program :binary))))
-	      (loop with dest-path = (truename (ensure-directories-exist move-here-path))
-		 for f in files
-		 for new-f = (make-pathname :name (pathname-name f)
-					    :type (pathname-type f)
-					    :defaults dest-path)
-		 do (progn
-		      (when (probe-file new-f)
-			(delete-file new-f))
-		      (rename-file f new-f))
-		 collect new-f)
-	      files)))
-    ;; Future compilations need to reload systems without :cross in features
-    (clrhash *defined-systems*)))
+	      (let* ((operation-name (ecase type
+				       ((:lib :static-library)
+					(if monolithic 'cross-monolithic-lib-op 'cross-lib-op))
+				       ((:program)
+					'cross-program-op)))
+		     (move-here-path (if (and move-here
+					      (typep move-here '(or pathname string)))
+					 (pathname move-here)
+					 (merge-pathnames "./asdf-output/")))
+		     (keys (append
+			    (remove-keys '(monolithic type move-here) args)
+			    (list :name-suffix nil
+				  :arch arch)))
+		     (operation (apply #'operate operation-name
+				       system
+				       keys))
+		     (system (find-system system))
+		     (files (and system (output-files operation system))))
+
+		(if (or move-here (and (null move-here-p)
+				       (member operation-name '(:program :binary))))
+		    (loop with dest-path = (truename (ensure-directories-exist move-here-path))
+		       for f in files
+		       for new-f = (make-pathname :name (concatenate 'string
+								     (pathname-name f)
+								     "_"
+								     arch)
+						  :type (pathname-type f)
+						  :defaults dest-path)
+		       do (progn
+			    (when (probe-file new-f)
+			      (delete-file new-f))
+			    (rename-file f new-f))
+		       collect new-f)
+		    files))))
+    (progn
+      (clear-output-translations)
+      ;; Future compilations need to reload systems without :cross in features
+      (clrhash *defined-systems*))))
 
 (export 'make-cross-build)

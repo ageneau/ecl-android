@@ -1,7 +1,7 @@
-From b84d2bf185c73c6e9d4c784538c56975644bd3b2 Mon Sep 17 00:00:00 2001
+From 317f459c4242d60458ec1c3669ac85dbecfd539f Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 3/8] Fix socket implementation on android (getprotobyname is
+Subject: [PATCH 3/9] Fix socket implementation on android (getprotobyname is
  not implemented in bionic libc)
 
 ---
