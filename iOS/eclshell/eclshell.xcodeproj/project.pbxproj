@@ -3,25 +3,66 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		7CE374150F92352DB04990D1 /* All Support */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 06B885FAEC1C63100533E83F /* Build configuration list for PBXAggregateTarget "All Support" */;
+			buildPhases = (
+				154B4A8AAA0CFD0A858C390E /* Action "genlibiphone" */,
+			);
+			dependencies = (
+			);
+			name = "All Support";
+			productName = "eclshell Support";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
-		0243723F79AFB5A659BADDA2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C8465526F59EF8BC04114B4 /* main.m */; };
-		04ADB237B5F4D0DEDC38F19D /* UIButtonCB.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D3B8E55D88A5198061EF0F3 /* UIButtonCB.m */; };
-		0FBE1EB43489EAA7E4B52C58 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 668C046B68172FBD576A73CD /* MainWindow.xib */; };
-		13192A5B76A959B214FC0EBB /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C7775CAC966E2C23B0B746E /* UIKit.framework */; };
-		8DC15D2AEAEEE6A33CEC8BE9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C9886F228B0D8E78158152 /* CoreGraphics.framework */; };
-		98D5FD3DCF1383744B8CB8E6 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = BBD6A3C505940196D1FF854A /* slime */; };
-		9FE4935BA4C896E3BF3A03FF /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = A2A09AD79C76FF96B1457674 /* ecl_boot.c */; };
-		C199CFC418C66707E3B6A392 /* eclshellAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 347B3546B34231545FE1402E /* eclshellAppDelegate.m */; };
-		C5097E4D9D4F83B16BE89FC7 /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = B6AD473E5409F02914ABF961 /* init.lisp */; };
-		C68F1DB398137822E4F584BB /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 68C68B64D9CFDC919E71F039 /* Icon.png */; };
-		ED6FFACB373189773D408814 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0812A6B72C77060E1DA6FD0B /* Foundation.framework */; };
+		058AB7A2EE572C791A2670A3 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 668C046B68172FBD576A73CD /* MainWindow.xib */; };
+		065F74C9714A63133F786FBC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0812A6B72C77060E1DA6FD0B /* Foundation.framework */; };
+		282E33B434F0669BCFB495F1 /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = A2A09AD79C76FF96B1457674 /* ecl_boot.c */; };
+		4FEDA5439D5E9134F681EACE /* libiphone_ios_universal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71961E12E2CB0E780BDC7FE5 /* libiphone_ios_universal.a */; };
+		5710F196A72D5BBC80BB0551 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C9886F228B0D8E78158152 /* CoreGraphics.framework */; };
+		5A6A922F1180E578E5D916B3 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 68C68B64D9CFDC919E71F039 /* Icon.png */; };
+		7A8D2BCE71C39A38CE62E0E2 /* UIButtonCB.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D3B8E55D88A5198061EF0F3 /* UIButtonCB.m */; };
+		7D42DC32B4374FD9697A0109 /* eclshellAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 347B3546B34231545FE1402E /* eclshellAppDelegate.m */; };
+		818A41A3326FF0A556D109B5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C7775CAC966E2C23B0B746E /* UIKit.framework */; };
+		8196D6315C422DE732684FA3 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = BBD6A3C505940196D1FF854A /* slime */; };
+		97ACA2E0EDCB7FEDD8351279 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C8465526F59EF8BC04114B4 /* main.m */; };
+		AC15D3801C020CB60AA76D10 /* libiphone_ios_universal.a in Copy to $(INTERMEDIATE_DIR)/ */ = {isa = PBXBuildFile; fileRef = 141A3E5057D26D6E314C1890 /* libiphone_ios_universal.a */; };
+		B486A86CF891239FD5AA4545 /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = B6AD473E5409F02914ABF961 /* init.lisp */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E1E99EFF5E17F9412D626477 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8DDA502B2376C2186B3035BF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7CE374150F92352DB04990D1;
+			remoteInfo = "All Support";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BD71C77C892E9B2EB854741A /* Copy to $(INTERMEDIATE_DIR)/ */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(INTERMEDIATE_DIR)/";
+			dstSubfolderSpec = 0;
+			files = (
+				AC15D3801C020CB60AA76D10 /* libiphone_ios_universal.a in Copy to $(INTERMEDIATE_DIR)/ */,
+			);
+			name = "Copy to $(INTERMEDIATE_DIR)/";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		0812A6B72C77060E1DA6FD0B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		141A3E5057D26D6E314C1890 /* libiphone_ios_universal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libiphone_ios_universal.a; sourceTree = "<group>"; };
 		209C24B2F683D41C5A531393 /* eclshell.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eclshell.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32EABC1BCC72795A68F9391A /* ecl_boot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ecl_boot.h; sourceTree = "<group>"; };
 		347B3546B34231545FE1402E /* eclshellAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = eclshellAppDelegate.m; sourceTree = "<group>"; };
@@ -31,6 +72,7 @@
 		66716F5E97AB5C4DEC6D7287 /* UIButtonCB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIButtonCB.h; sourceTree = "<group>"; };
 		668C046B68172FBD576A73CD /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		68C68B64D9CFDC919E71F039 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		71961E12E2CB0E780BDC7FE5 /* libiphone_ios_universal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libiphone_ios_universal.a; path = libiphone_ios_universal.a; sourceTree = INTERMEDIATE_DIR; };
 		7D3B8E55D88A5198061EF0F3 /* UIButtonCB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIButtonCB.m; sourceTree = "<group>"; };
 		9C7775CAC966E2C23B0B746E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A0C9886F228B0D8E78158152 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -47,9 +89,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ED6FFACB373189773D408814 /* Foundation.framework in Frameworks */,
-				13192A5B76A959B214FC0EBB /* UIKit.framework in Frameworks */,
-				8DC15D2AEAEEE6A33CEC8BE9 /* CoreGraphics.framework in Frameworks */,
+				065F74C9714A63133F786FBC /* Foundation.framework in Frameworks */,
+				818A41A3326FF0A556D109B5 /* UIKit.framework in Frameworks */,
+				5710F196A72D5BBC80BB0551 /* CoreGraphics.framework in Frameworks */,
+				4FEDA5439D5E9134F681EACE /* libiphone_ios_universal.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,7 +117,7 @@
 			name = Build;
 			sourceTree = "<group>";
 		};
-		558549B5B74ACA2C2DE6AC66 /* Source */ = {
+		318E839547F943AC16921654 /* Source */ = {
 			isa = PBXGroup;
 			children = (
 				1B05FA1E635448B2732487A7 /* ../.. */,
@@ -85,6 +128,7 @@
 				32EABC1BCC72795A68F9391A /* ecl_boot.h */,
 				465AF1298708A906FFC9ED2F /* eclshell-Prefix.pch */,
 				B6AD473E5409F02914ABF961 /* init.lisp */,
+				141A3E5057D26D6E314C1890 /* libiphone_ios_universal.a */,
 				3C8465526F59EF8BC04114B4 /* main.m */,
 			);
 			name = Source;
@@ -101,12 +145,13 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
-		70505059C918406D1736CED6 /* Frameworks */ = {
+		9C80B4027EBCA81E98F43023 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				A0C9886F228B0D8E78158152 /* CoreGraphics.framework */,
 				0812A6B72C77060E1DA6FD0B /* Foundation.framework */,
 				9C7775CAC966E2C23B0B746E /* UIKit.framework */,
+				71961E12E2CB0E780BDC7FE5 /* libiphone_ios_universal.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -122,8 +167,8 @@
 		F3FBA59B7CBC504F95A82B36 = {
 			isa = PBXGroup;
 			children = (
-				558549B5B74ACA2C2DE6AC66 /* Source */,
-				70505059C918406D1736CED6 /* Frameworks */,
+				318E839547F943AC16921654 /* Source */,
+				9C80B4027EBCA81E98F43023 /* Frameworks */,
 				C167CC23ED46BB31B15C0363 /* Products */,
 				20BF9E40310CF32509123591 /* Build */,
 			);
@@ -136,6 +181,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FA123908CDF1BB5DF2475F93 /* Build configuration list for PBXNativeTarget "All" */;
 			buildPhases = (
+				BD71C77C892E9B2EB854741A /* Copy to $(INTERMEDIATE_DIR)/ */,
 				2F93D1723E860FC883596B06 /* Resources */,
 				8A031D633C218B4DD9295521 /* Sources */,
 				DDB0D14E1F520453F00445BA /* Frameworks */,
@@ -143,6 +189,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				6E45D02F2F9A4256E6B8CB4D /* PBXTargetDependency */,
 			);
 			name = All;
 			productName = eclshell;
@@ -159,16 +206,13 @@
 			};
 			buildConfigurationList = 8F44EF44BB8ECE85DB6F8E92 /* Build configuration list for PBXProject "eclshell" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
-			knownRegions = (
-				en,
-			);
 			mainGroup = F3FBA59B7CBC504F95A82B36;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				8F35AE208F784D190770E21C /* All */,
+				7CE374150F92352DB04990D1 /* All Support */,
 			);
 		};
 /* End PBXProject section */
@@ -178,28 +222,55 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C68F1DB398137822E4F584BB /* Icon.png in Resources */,
-				0FBE1EB43489EAA7E4B52C58 /* MainWindow.xib in Resources */,
-				C5097E4D9D4F83B16BE89FC7 /* init.lisp in Resources */,
-				98D5FD3DCF1383744B8CB8E6 /* slime in Resources */,
+				5A6A922F1180E578E5D916B3 /* Icon.png in Resources */,
+				058AB7A2EE572C791A2670A3 /* MainWindow.xib in Resources */,
+				B486A86CF891239FD5AA4545 /* init.lisp in Resources */,
+				8196D6315C422DE732684FA3 /* slime in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		154B4A8AAA0CFD0A858C390E /* Action "genlibiphone" */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Action \"genlibiphone\"";
+			outputPaths = (
+				libiphone_ios_universal.a,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec make\nexit 1\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8A031D633C218B4DD9295521 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C199CFC418C66707E3B6A392 /* eclshellAppDelegate.m in Sources */,
-				04ADB237B5F4D0DEDC38F19D /* UIButtonCB.m in Sources */,
-				0243723F79AFB5A659BADDA2 /* main.m in Sources */,
-				9FE4935BA4C896E3BF3A03FF /* ecl_boot.c in Sources */,
+				7D42DC32B4374FD9697A0109 /* eclshellAppDelegate.m in Sources */,
+				7A8D2BCE71C39A38CE62E0E2 /* UIButtonCB.m in Sources */,
+				97ACA2E0EDCB7FEDD8351279 /* main.m in Sources */,
+				282E33B434F0669BCFB495F1 /* ecl_boot.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6E45D02F2F9A4256E6B8CB4D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7CE374150F92352DB04990D1 /* All Support */;
+			targetProxy = E1E99EFF5E17F9412D626477 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		99C44F8CC9F3FE1E436A1CB5 /* Release_Base */ = {
@@ -207,6 +278,13 @@
 			buildSettings = {
 				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
 				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Release_Base;
+		};
+		B830284835C973D5B39FE5D6 /* Release_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "eclshell Support";
 			};
 			name = Release_Base;
 		};
@@ -233,13 +311,15 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
-					/opt/ecl/iPhoneUniversal/include,
-					/opt/gmp/iPhoneUniversal/include,
+					"/opt/ecl/iPhoneUniversal/include /opt/gmp/iPhoneUniversal/include",
 					.,
 				);
 				INFOPLIST_FILE = "./eclshell-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/System/Library/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/System/Library/Frameworks",
+					"$(INTERMEDIATE_DIR)",
+				);
 				OTHER_LDFLAGS = (
 					"-L/opt/ecl/iPhoneUniversal/lib",
 					"-L/opt/ecl/iPhoneUniversal/lib/ecl-12.7.1",
@@ -263,12 +343,11 @@
 					"-leclgc",
 					"-lgmp",
 					"-L.",
-					"-leclshell",
 				);
 				PRODUCT_NAME = eclshell;
 				SDKROOT = iphoneos;
 				STRIP_INSTALLED_PRODUCT = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = NO;
 				WRAPPER_PREFIX = "";
 			};
@@ -277,6 +356,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		06B885FAEC1C63100533E83F /* Build configuration list for PBXAggregateTarget "All Support" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B830284835C973D5B39FE5D6 /* Release_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Release_Base;
+		};
 		8F44EF44BB8ECE85DB6F8E92 /* Build configuration list for PBXProject "eclshell" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

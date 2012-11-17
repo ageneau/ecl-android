@@ -10,8 +10,8 @@
 
 extern ECL_CPP_TAG void main_lib_ASDF();
 extern ECL_CPP_TAG void main_lib_SOCKETS();
-extern ECL_CPP_TAG void main_lib_ECLSHELL();
 extern ECL_CPP_TAG void main_lib_ECL_HELP();
+extern ECL_CPP_TAG void main_lib_IPHONE();
 
 #define compiler_data_text NULL
 #define compiler_data_text_size 0
@@ -74,7 +74,7 @@ int ecl_boot(const char *root_dir)
     main_lib_ECL_HELP();
     main_lib_ASDF();
     main_lib_SOCKETS();
-    main_lib_ECLSHELL();
+    main_lib_IPHONE();
 
     si_select_package(ecl_make_simple_base_string("CL-USER", 7));
     char tmp[2048];

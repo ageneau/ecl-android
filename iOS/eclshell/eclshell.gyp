@@ -14,6 +14,7 @@
       'product_name': '<(project_name)',
 
       'dependencies': [
+#        'libiphone',
       ],
       'include_dirs': [
         '<(ECL_INCLUDE_DIRS)',
@@ -40,6 +41,7 @@
           '$(SDKROOT)/System/Library/Frameworks/Foundation.framework',
           '$(SDKROOT)/System/Library/Frameworks/UIKit.framework',
           '$(SDKROOT)/System/Library/Frameworks/CoreGraphics.framework',
+          '<(INTERMEDIATE_DIR)/libiphone_ios_universal.a',
         ],
       },
       'xcode_settings': {
@@ -51,9 +53,31 @@
           '<@(ECL_LDFLAGS)',
           '<@(ECL_LIBRARIES)',
           '-L<(project_root)',
-          '-leclshell',
         ],
       },
+      'actions': [
+        {
+          'action_name': 'genlibiphone',
+          'inputs': [
+          ],
+          'outputs': [
+            'libiphone_ios_universal.a',
+          ],
+          'action': [
+            'make', 
+          ],
+        },
+      ],
+
+      'copies': [
+        {
+          'destination': '<(INTERMEDIATE_DIR)/',
+          'files': [
+            'libiphone_ios_universal.a',
+          ],
+        },
+      ],
+
     },
   ],
 }

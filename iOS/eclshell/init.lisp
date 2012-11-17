@@ -1,5 +1,5 @@
 (in-package :cl-user)
-(use-package 'eclffi)
+(use-package 'iphone)
 
 (defun safe-substr (str start &optional length)
   (subseq str 0 (if length (min (length str) length))))

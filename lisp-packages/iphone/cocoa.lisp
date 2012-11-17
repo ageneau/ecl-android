@@ -1,10 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COCOA
 
-(defpackage :cocoa
-  (:use :cl :ffi :util :eclffi)
-  (:export
-   :show-alert))
 
 (in-package :cocoa)
 

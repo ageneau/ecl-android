@@ -40,8 +40,9 @@
     ],
 
     'mac_bundle_resources': [
-			'<(ECL_INSTALL_ROOT_DIR)/iPhoneOS/lib/ecl-<(ECL_VER)/help.doc',
-		],
+      '<(ECL_INSTALL_ROOT_DIR)/iPhoneOS/lib/ecl-<(ECL_VER)/help.doc',
+    ],
     
+    'ECL_HOST': '<(ECL_INSTALL_ROOT_DIR)/host/bin/ecl',
   },
 }
