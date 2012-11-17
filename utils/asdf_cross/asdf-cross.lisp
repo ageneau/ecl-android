@@ -194,27 +194,28 @@
 			 (move-here nil move-here-p)
 			 &allow-other-keys)  
   (oos 'load-op system)
-  
-  (let ((*features* (cons :cross *features*)))
-	;; This forces reloading of system definitions forms
-	;; Needed for :cross handling
-	(clrhash *defined-systems*)
-  
-	(let* ((operation-name (ecase type
-				 ((:lib :static-library)
-				  (if monolithic 'cross-monolithic-lib-op 'cross-lib-op))
-				 ((:program)
-				  'cross-program-op)))
-	       (move-here-path (if (and move-here
-					(typep move-here '(or pathname string)))
-				   (pathname move-here)
-				   (merge-pathnames "./asdf-output/")))
-	       (operation (apply #'operate operation-name
-				 system
-				 (remove-keys '(monolithic type move-here) args)))
-	       (system (find-system system))
-	       (files (and system (output-files operation system))))
-	  
+
+  (unwind-protect
+       (let ((common-lisp:*features* (cons :cross common-lisp:*features*)))
+	 ;; This forces reloading of system definitions forms
+	 ;; Needed for :cross handling
+	 (clrhash *defined-systems*)
+
+	 (let* ((operation-name (ecase type
+				  ((:lib :static-library)
+				   (if monolithic 'cross-monolithic-lib-op 'cross-lib-op))
+				  ((:program)
+				   'cross-program-op)))
+		(move-here-path (if (and move-here
+					 (typep move-here '(or pathname string)))
+				    (pathname move-here)
+				    (merge-pathnames "./asdf-output/")))
+		(operation (apply #'operate operation-name
+				  system
+				  (remove-keys '(monolithic type move-here) args)))
+		(system (find-system system))
+		(files (and system (output-files operation system))))
+
 	  (if (or move-here (and (null move-here-p)
 				 (member operation-name '(:program :binary))))
 	      (loop with dest-path = (truename (ensure-directories-exist move-here-path))
@@ -227,6 +228,8 @@
 			(delete-file new-f))
 		      (rename-file f new-f))
 		 collect new-f)
-	      files))))
+	      files)))
+    ;; Future compilations need to reload systems without :cross in features
+    (clrhash *defined-systems*)))
 
 (export 'make-cross-build)
