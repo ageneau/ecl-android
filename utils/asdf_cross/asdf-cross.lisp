@@ -90,11 +90,20 @@
 				     :key #'pathname-type :test #'string=)))
     cross-object-files))
 
-(defclass cross-lib-op (lib-op)
+
+(defclass cross-bundle-op (bundle-op)
+  ((arch :initarg :arch)))
+
+(defclass cross-monolithic-bundle-op (cross-bundle-op)
+  ((prologue-code :accessor monolithic-op-prologue-code)
+   (epilogue-code :accessor monolithic-op-epilogue-code)
+   (arch :initarg :arch)))
+
+(defclass cross-lib-op (cross-bundle-op)
   ((type :initform :lib)
    (arch :initarg :arch)))
 
-(defclass cross-monolithic-lib-op (monolithic-lib-op)
+(defclass cross-monolithic-lib-op (cross-monolithic-bundle-op)
   ((type :initform :lib)
    (arch :initarg :arch)))
 
@@ -130,7 +139,7 @@
    (get-compiler (slot-value o 'arch))
    #'call-next-method))
 
-(defmethod initialize-instance :after ((instance cross-monolithic-lib-op) &rest initargs
+(defmethod initialize-instance :after ((instance cross-bundle-op) &rest initargs
                                        &key (arch)
                                        &allow-other-keys)
   (declare (ignorable initargs))
@@ -138,17 +147,18 @@
         (remove-keys '(arch name-suffix)
                      (slot-value instance 'original-initargs))))
 
-(defmethod bundle-op-build-args :around ((op cross-monolithic-lib-op))
+(defmethod bundle-op-build-args :around ((op cross-bundle-op))
   (declare (ignorable op))
   (let ((args (call-next-method)))
     (remf args :arch)
     args))
 
-(defclass cross-program-op (program-op)
-  ((arch :initarg :arch)))
+(defclass cross-program-op (cross-monolithic-bundle-op)
+  ((type :initform :program)
+   (arch :initarg :arch)))
 
 (defmethod perform ((o cross-program-op) (c system))
-  (apply
+  (funcall
    'cross-compile
    (get-compiler (slot-value o 'arch))
    #'(lambda ()
@@ -166,7 +176,7 @@
 
 (defmethod bundle-sub-operations ((o cross-program-op) c)
   (mapcar #'(lambda (x) (cons (make-instance 'cross-lib-op) (cdr x)))
-	  (call-next-method)))
+	  (bundle-sub-operations (make-instance 'program-op) c)))
 
 ;; Prebuilt systems
 
@@ -209,7 +219,7 @@
 					 (merge-pathnames "./asdf-output/")))
 		     (keys (append
 			    (remove-keys '(monolithic type move-here) args)
-			    (list :name-suffix nil
+			    (list ;;:name-suffix nil
 				  :arch arch)))
 		     (operation (apply #'operate operation-name
 				       system
