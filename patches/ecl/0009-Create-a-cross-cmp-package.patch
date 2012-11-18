@@ -1,4 +1,4 @@
-From 77501e47dd98db85e8103d347aef2778d54dc07c Mon Sep 17 00:00:00 2001
+From 92099b2a56f8891baf3eec33616599c4ca740d01 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sat, 17 Nov 2012 01:20:10 -0300
 Subject: [PATCH 9/9] Create a cross-cmp package
@@ -8,7 +8,7 @@ Subject: [PATCH 9/9] Create a cross-cmp package
  1 file changed, 107 insertions(+), 51 deletions(-)
 
 diff --git a/src/cmp/crosscmp.lsp.in b/src/cmp/crosscmp.lsp.in
-index 4407800..1606f56 100644
+index 4407800..42b1976 100644
 --- a/src/cmp/crosscmp.lsp.in
 +++ b/src/cmp/crosscmp.lsp.in
 @@ -11,55 +11,111 @@
@@ -103,10 +103,10 @@ index 4407800..1606f56 100644
 +	      #+msvc "~A -I. -I\"~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -Fo\"~A\"~{ '~A'~}")
 +   
 +   (ld-flags :initform (if (member :dlopen *features*)
-+			   "~a @LDFLAGS@ -L@libdir\@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
++			   "@LDFLAGS@ -L@libdir\@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
 +			   (if (member :mscv *features*)
-+			       "~a @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
-+			       #+msvc "~a @LDFLAGS@ ecl.lib @CLIBS@" user-ld-flags))
++			       "@LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++			       #+msvc "@LDFLAGS@ ecl.lib @CLIBS@" user-ld-flags))
 +	     :accessor ld-flags)
 +   
 +   (ld-shared-flags :initform #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
