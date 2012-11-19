@@ -4,8 +4,7 @@
  "#import <CoreGraphics/CoreGraphics.h>"
  "#import <Foundation/Foundation.h>"
  "#import <UIKit/UIKit.h>"
- "#import \"Classes/UIButtonCB.h\""
- "#import \"ecl_boot.h\""
+ "#import \"UIButtonCB.h\""
  )
 
 #+ffi

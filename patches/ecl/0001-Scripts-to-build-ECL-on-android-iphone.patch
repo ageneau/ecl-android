@@ -1,4 +1,4 @@
-From ed243682f889bf6be0b450d0d8e475bbf727ab3a Mon Sep 17 00:00:00 2001
+From e70559df9b341d9e7c549fcf696acfacfec24d3c Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 01/10] Scripts to build ECL on android/iphone
@@ -7,7 +7,7 @@ Subject: [PATCH 01/10] Scripts to build ECL on android/iphone
  configure_cross                           | 104 ++++++++++++++++++++++++++++++
  configure_gmp_cross                       |  87 +++++++++++++++++++++++++
  iPhone_universal                          |  37 +++++++++++
- make_all                                  |  47 ++++++++++++++
+ make_all                                  |  52 +++++++++++++++
  platforms/android/config.sh               |  85 ++++++++++++++++++++++++
  platforms/android/cross_config.in         |  64 ++++++++++++++++++
  platforms/androidx86/cross_config.in      |  64 ++++++++++++++++++
@@ -16,7 +16,7 @@ Subject: [PATCH 01/10] Scripts to build ECL on android/iphone
  platforms/iPhoneSimulator/config.sh       |  20 ++++++
  platforms/iPhoneSimulator/cross_config.in |  64 ++++++++++++++++++
  scripts.conf                              |   3 +
- 12 files changed, 659 insertions(+)
+ 12 files changed, 664 insertions(+)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
  create mode 100755 iPhone_universal
@@ -278,10 +278,10 @@ index 0000000..0ac83af
 +
 diff --git a/make_all b/make_all
 new file mode 100644
-index 0000000..28056fc
+index 0000000..49967bb
 --- /dev/null
 +++ b/make_all
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,52 @@
 +GMP_INSTALL_ROOT_DIR=/opt/gmp
 +ECL_INSTALL_ROOT_DIR=/opt/ecl
 +
@@ -297,7 +297,12 @@ index 0000000..28056fc
 +
 +iPhoneOS: iPhoneOS.ecl
 +
-+ios: iPhoneOS iPhoneSimulator
++ios: iPhoneUniversal.ecl
++
++iPhoneUniversal.ecl: iPhoneOS iPhoneSimulator
++	-rm -rf $(ECL_INSTALL_ROOT_DIR)/iPhoneUniversal
++	./iPhone_universal
++	touch $@
 +
 +android: android.ecl
 +

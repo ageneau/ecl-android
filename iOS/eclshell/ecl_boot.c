@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <ecl/ecl.h>
-#include "ecl_boot.h"
+#include "lisp_registry.h"
 
 #ifdef __cplusplus
 #define ECL_CPP_TAG "C"
@@ -11,46 +11,7 @@
 extern ECL_CPP_TAG void main_lib_ASDF();
 extern ECL_CPP_TAG void main_lib_SOCKETS();
 extern ECL_CPP_TAG void main_lib_ECL_HELP();
-extern ECL_CPP_TAG void main_lib_IPHONE();
-
-#define compiler_data_text NULL
-#define compiler_data_text_size 0
-#define VV NULL
-#define VM 0
-
-#ifdef __cplusplus
-extern "C"
-#endif
-
-
-cl_object ecl_callbacks = Cnil;
-cl_object Xecl_callbacksX = Cnil;
-static void init_callbacks_registry()
-{
-  int internp;
-  Xecl_callbacksX = ecl_intern(make_simple_base_string("*ECL-CALLBACKS*"),
-                               ecl_find_package_nolock(ecl_make_keyword("SI")),
-                               &internp);
-  ecl_defvar(Xecl_callbacksX, ecl_callbacks);
-  ecl_register_root(&ecl_callbacks);
-}
-
-void add_cb(cl_object fun)
-{
-    if (Cnil != fun && FALSE == ecl_member_eq(fun, ecl_callbacks)) {
-        ecl_callbacks = ecl_cons(fun, ecl_callbacks);
-        cl_set(Xecl_callbacksX, ecl_callbacks);
-    }
-}
-
-void remove_cb(cl_object fun)
-{
-    if (Cnil == fun) return;
-    if (ecl_member_eq(fun, ecl_callbacks)) {
-        ecl_callbacks = ecl_remove_eq(fun, ecl_callbacks);
-        cl_set(Xecl_callbacksX, ecl_callbacks);
-    }
-}
+extern ECL_CPP_TAG void main_lib_IPHONEPSYSTEM();
 
 
 void ecl_toplevel(const char *home)
@@ -74,7 +35,7 @@ int ecl_boot(const char *root_dir)
     main_lib_ECL_HELP();
     main_lib_ASDF();
     main_lib_SOCKETS();
-    main_lib_IPHONE();
+    main_lib_IPHONEPSYSTEM();
 
     si_select_package(ecl_make_simple_base_string("CL-USER", 7));
     char tmp[2048];

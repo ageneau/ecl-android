@@ -10,6 +10,8 @@
           # See http://gcc.gnu.org/onlinedocs/gcc-4.4.2/gcc/Optimize-Options.html
           'mac_release_optimization%': 's', # Use -Os unless overridden
           'mac_debug_optimization%': '0',   # Use -O0 unless overridden
+          'ios_sdk_path%': '<!(xcodebuild -version -sdk iphoneos Path)',
+          'iossim_sdk_path%': '<!(xcodebuild -version -sdk iphonesimulator Path)',
           }, {
           # See http://gcc.gnu.org/onlinedocs/gcc-4.4.2/gcc/Optimize-Options.html
           'mac_release_optimization%': '3', # Use -O3 unless overridden

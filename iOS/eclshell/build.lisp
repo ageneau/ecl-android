@@ -27,56 +27,25 @@
 (defparameter *here* (merge-pathnames "./"))
 (defparameter *cache* (merge-pathnames "./cache/" *here*))
 
+(asdf:initialize-source-registry
+ `(:source-registry
+   :ignore-inherited-configuration
+   (:tree ,(namestring (merge-pathnames "../../lisp-packages/" *here*)))))
+
+(asdf:oos 'asdf:load-op :asdf-cross)
+
 (defun setup-asdf ()
   (ensure-directories-exist *cache*)
   (setf (symbol-value (read-from-string "asdf::*user-cache*"))
 	(list *cache* :implementation)))
 
 (setup-asdf)
-(load "/opt/ecl/iPhoneSimulator/lib/crosscmp")
-(load "/opt/ecl/iPhoneOS/lib/crosscmp")
-(load "../../utils/asdf_cross/asdf-cross")
 
-(asdf:initialize-source-registry
- `(:source-registry
-   :ignore-inherited-configuration
-   (:tree ,(namestring (merge-pathnames "../../lisp-packages/" *here*)))))
 
-(in-package :cross-cmp)
-
-(loop
-   for arch being the hash-keys of (registered-compilers)
-   using (hash-value compiler)
-   when (search "apple-darwin" arch)
-   do (progn 
-	(setf (cc-flags compiler)
-	      (concatenate 'string
-			   "-x objective-c -fobjc-abi-version=2 -fobjc-legacy-dispatch "
-			   (cc-flags compiler)))
-	(setf (ld-flags compiler)
-	      (concatenate 'string
-			   "-x objective-c -fobjc-abi-version=2 -fobjc-legacy-dispatch "
-			   (ld-flags compiler)))))
-
-(in-package :cl-user)
-
-(defun lipo (builds)
-  (let ((arm-lib (find-if #'(lambda (x) (search "arm-apple-darwin" (pathname-name x))) builds))
-	(x86-lib (find-if #'(lambda (x) (search "i686-apple-darwin" (pathname-name x))) builds)))
-    (if (and arm-lib x86-lib)
-	(let ((output-file
-	       (format nil "~a_ios_universal.a"
-		       (subseq (namestring arm-lib) 0 (search "_arm-apple-darwin" (namestring arm-lib))))))
-	  (system:system
-	   (format nil "/usr/bin/lipo -arch armv7 ~A -arch i386 ~A -create -output ~a ~%"
-		   arm-lib
-		   x86-lib
-		   output-file))
-	  output-file)
-	(error "Error: no valid builds found for lipo"))))
-
-(let ((builds (asdf:make-cross-build :iphone :type :lib :monolithic t :move-here #P"./")))
-  (let ((build (lipo builds)))
-    (format t "Successfully created: ~A ~%" build)))
-
-(si:quit)
+(let* ((system :iphone)
+       (sim-compiler (cross-cmp:get-compiler "i686-apple-darwin"))
+       (ios-compiler (cross-cmp:get-compiler "arm-apple-darwin"))
+       (cc-flags (format nil "-I~a" (namestring (merge-pathnames "libiphone" (asdf:component-pathname (asdf:find-system system)))))))
+  (setf (cross-cmp:user-cc-flags sim-compiler) cc-flags)
+  (setf (cross-cmp:user-cc-flags ios-compiler) cc-flags)
+  (asdf-cross:build-ios system))

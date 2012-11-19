@@ -14,8 +14,9 @@
       'product_name': '<(project_name)',
 
       'dependencies': [
-#        'libiphone',
+				'../../lisp-packages/iphone/libiphone.gyp:*',
       ],
+
       'include_dirs': [
         '<(ECL_INCLUDE_DIRS)',
         '<(project_root)',
@@ -23,11 +24,9 @@
       'sources': [
         '<(project_root)/Classes/eclshellAppDelegate.h',
         '<(project_root)/Classes/eclshellAppDelegate.m',
-        '<(project_root)/Classes/UIButtonCB.h',
-        '<(project_root)/Classes/UIButtonCB.m',
-        '<(project_root)/main.m',
-        '<(project_root)/ecl_boot.c',
         '<(project_root)/ecl_boot.h',
+        '<(project_root)/ecl_boot.c',
+        '<(project_root)/main.m',
         '<(project_root)/<(project_name)-Prefix.pch',
       ],
       'mac_bundle_resources': [

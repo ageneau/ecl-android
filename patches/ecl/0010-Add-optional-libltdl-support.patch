@@ -1,4 +1,4 @@
-From 1bd9a85a5014fa2d6d36038e57626a44651cb6dc Mon Sep 17 00:00:00 2001
+From 3b2c9deaff7f6e4c8b8d2f229233d7eda10b2a8b Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sun, 5 Aug 2012 14:56:35 -0300
 Subject: [PATCH 10/10] Add optional libltdl support.
@@ -13,7 +13,7 @@ Subject: [PATCH 10/10] Add optional libltdl support.
  6 files changed, 7117 insertions(+), 929 deletions(-)
 
 diff --git a/src/Makefile.in b/src/Makefile.in
-index 60b087e..dd3d766 100644
+index 8dfb7fe..a97ca5e 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
 @@ -138,6 +138,11 @@ bin/ecl-config: bin/ecl-config.pre

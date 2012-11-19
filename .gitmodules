@@ -7,3 +7,6 @@
 [submodule "slime"]
 	path = slime
 	url = git://common-lisp.net/projects/mirror/slime.git
+[submodule "lisp-packages/cl-opengl"]
+	path = lisp-packages/cl-opengl
+	url = https://github.com/3b/cl-opengl.git

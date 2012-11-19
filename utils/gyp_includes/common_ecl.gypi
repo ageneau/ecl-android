@@ -28,6 +28,7 @@
       '-leclffi',
       '-leclgc',
       '-lgmp',
+      '-lltdl',
     ],
     'ECL_INCLUDE_DIRS': [
       '<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/include',
@@ -44,5 +45,7 @@
     ],
     
     'ECL_HOST': '<(ECL_INSTALL_ROOT_DIR)/host/bin/ecl',
+
+    'GEN_SYM': '<(DEPTH)/utils/ltdl/gen_sym.sh',
   },
 }

@@ -8,7 +8,6 @@
  "#import <CoreGraphics/CoreGraphics.h>"
  "#import <Foundation/Foundation.h>"
  "#import <UIKit/UIKit.h>"
- "#import \"ecl_boot.h\""
  )
 
 (defun show-alert (title &key message (dismiss-label "OK"))
