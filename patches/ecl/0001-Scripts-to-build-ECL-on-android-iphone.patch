@@ -1,22 +1,22 @@
-From 530c58613ebd2545947ee9b1a600a643df972736 Mon Sep 17 00:00:00 2001
+From ed243682f889bf6be0b450d0d8e475bbf727ab3a Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 1/9] Scripts to build ECL on android/iphone
+Subject: [PATCH 01/10] Scripts to build ECL on android/iphone
 
 ---
- configure_cross                           | 103 ++++++++++++++++++++++++++++++
+ configure_cross                           | 104 ++++++++++++++++++++++++++++++
  configure_gmp_cross                       |  87 +++++++++++++++++++++++++
  iPhone_universal                          |  37 +++++++++++
  make_all                                  |  47 ++++++++++++++
  platforms/android/config.sh               |  85 ++++++++++++++++++++++++
- platforms/android/cross_config.in         |  64 +++++++++++++++++++
- platforms/androidx86/cross_config.in      |  64 +++++++++++++++++++
- platforms/iPhoneOS/config.sh              |  19 ++++++
- platforms/iPhoneOS/cross_config.in        |  64 +++++++++++++++++++
- platforms/iPhoneSimulator/config.sh       |  19 ++++++
- platforms/iPhoneSimulator/cross_config.in |  64 +++++++++++++++++++
+ platforms/android/cross_config.in         |  64 ++++++++++++++++++
+ platforms/androidx86/cross_config.in      |  64 ++++++++++++++++++
+ platforms/iPhoneOS/config.sh              |  20 ++++++
+ platforms/iPhoneOS/cross_config.in        |  64 ++++++++++++++++++
+ platforms/iPhoneSimulator/config.sh       |  20 ++++++
+ platforms/iPhoneSimulator/cross_config.in |  64 ++++++++++++++++++
  scripts.conf                              |   3 +
- 12 files changed, 656 insertions(+)
+ 12 files changed, 659 insertions(+)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
  create mode 100755 iPhone_universal
@@ -32,10 +32,10 @@ Subject: [PATCH 1/9] Scripts to build ECL on android/iphone
 
 diff --git a/configure_cross b/configure_cross
 new file mode 100755
-index 0000000..69631bf
+index 0000000..ac9c189
 --- /dev/null
 +++ b/configure_cross
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,104 @@
 +#!/bin/bash
 +
 +usage()
@@ -92,7 +92,8 @@ index 0000000..69631bf
 +	--with-asdf=builtin \
 +	--with-bytecmp=builtin \
 +	--with-serve-event=yes \
-+    	--disable-shared"
++	--disable-shared \
++	--enable-ltdl"
 +	;;
 +
 +    host)
@@ -561,10 +562,10 @@ index 0000000..a593e04
 +
 diff --git a/platforms/iPhoneOS/config.sh b/platforms/iPhoneOS/config.sh
 new file mode 100755
-index 0000000..3977603
+index 0000000..9cba75c
 --- /dev/null
 +++ b/platforms/iPhoneOS/config.sh
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,20 @@
 +#! /bin/bash
 +
 +sdk=iphoneos
@@ -582,6 +583,7 @@ index 0000000..3977603
 +export AR=$(xcodebuild -sdk ${sdk} -find ar)
 +export STRIP=$(xcodebuild -sdk ${sdk} -find strip)
 +export RANLIB=$(xcodebuild -sdk ${sdk} -find ranlib)
++export NM=$(xcodebuild -sdk ${sdk} -find nm)
 +export CFLAGS="-g -arch armv7 -isysroot $SDKROOT -DAPPLE -DIPHONE"
 +export LDFLAGS="-arch armv7 -isysroot $SDKROOT"
 diff --git a/platforms/iPhoneOS/cross_config.in b/platforms/iPhoneOS/cross_config.in
@@ -656,10 +658,10 @@ index 0000000..a593e04
 +
 diff --git a/platforms/iPhoneSimulator/config.sh b/platforms/iPhoneSimulator/config.sh
 new file mode 100755
-index 0000000..cab538b
+index 0000000..b48a325
 --- /dev/null
 +++ b/platforms/iPhoneSimulator/config.sh
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,20 @@
 +#! /bin/bash
 +
 +sdk=iphonesimulator
@@ -677,6 +679,7 @@ index 0000000..cab538b
 +export AR=$(xcodebuild -sdk ${sdk} -find ar)
 +export STRIP=$(xcodebuild -sdk ${sdk} -find strip)
 +export RANLIB=$(xcodebuild -sdk ${sdk} -find ranlib)
++export NM=$(xcodebuild -sdk ${sdk} -find nm)
 +export CFLAGS="-g -arch i386 -isysroot $SDKROOT -DAPPLE -DIPHONE -D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 -DIPHONE_SIMULATOR -DIPHONE_SDK_VER=${sdk_ver} -DIGNORE_DYNAMIC_LOADING -mmacosx-version-min=10.6 -fmessage-length=0 -fasm-blocks"
 +export LDFLAGS="-arch i386 -isysroot $SDKROOT"
 diff --git a/platforms/iPhoneSimulator/cross_config.in b/platforms/iPhoneSimulator/cross_config.in
@@ -759,5 +762,5 @@ index 0000000..68278aa
 +GMP_INSTALL_ROOT_DIR=/opt/gmp
 +ECL_INSTALL_ROOT_DIR=/opt/ecl
 -- 
-1.8.0
+1.7.12.1
 

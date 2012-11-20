@@ -1,7 +1,7 @@
-From 4e7785ff844bf4fe9c8ef90fbfddaf714e93b402 Mon Sep 17 00:00:00 2001
+From 63dbb4a6b752a160e56f55551c421e730d404201 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 7/9] android specific stuff
+Subject: [PATCH 07/10] android specific stuff
 
 ---
  src/Makefile.in         |   7 +-
@@ -50,7 +50,7 @@ index 8b5eab6..60b087e 100644
  flatinstall: build-stamp
  	$(MAKE) DESTDIR=$(DESTDIR) bindir=$(prefix) libdir=$(prefix) \
 diff --git a/src/aclocal.m4 b/src/aclocal.m4
-index 1de1e92..686cbd4 100644
+index 1de1e92..755fd3b 100644
 --- a/src/aclocal.m4
 +++ b/src/aclocal.m4
 @@ -86,7 +86,7 @@ dnl Set up a configuration file for the case when we are cross-
@@ -98,7 +98,7 @@ index 1de1e92..686cbd4 100644
  esac
 +
 +case "${host}" in
-+	i686*-android-*)
++	i686*-android*)
 +		THREAD_LIBS=''
 +		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DNO_GETCONTEXT -DHAVE_GETTIMEOFDAY -DHAVE_SIGPROCMASK ${CFLAGS}"
 +		ECL_ADD_FEATURE([android])
@@ -235,7 +235,7 @@ index 0000000..4407800
 +       (si::pathname-translations "SYS" old-translation))))
 \ No newline at end of file
 diff --git a/src/compile.lsp.in b/src/compile.lsp.in
-index 7b1d6a2..23d5720 100755
+index 15e2dda..3278505 100755
 --- a/src/compile.lsp.in
 +++ b/src/compile.lsp.in
 @@ -115,9 +115,9 @@
@@ -251,7 +251,7 @@ index 7b1d6a2..23d5720 100755
  
  #+:wants-dlopen
 diff --git a/src/configure b/src/configure
-index 20967a1..e4853b4 100755
+index 20967a1..4768429 100755
 --- a/src/configure
 +++ b/src/configure
 @@ -4729,7 +4729,7 @@ else
@@ -301,7 +301,7 @@ index 20967a1..e4853b4 100755
  esac
 +
 +case "${host}" in
-+	i686*-android-*)
++	i686*-android*)
 +		THREAD_LIBS=''
 +		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DNO_GETCONTEXT -DHAVE_GETTIMEOFDAY -DHAVE_SIGPROCMASK ${CFLAGS}"
 +
@@ -820,5 +820,5 @@ index 2d46d6d..6b20a9a 100644
  # On SunOS, sys/resource.h needs sys/time.h (for struct timeval)
  AC_CHECK_HEADERS(sys/resource.h,,,
 -- 
-1.8.0
+1.7.12.1
 

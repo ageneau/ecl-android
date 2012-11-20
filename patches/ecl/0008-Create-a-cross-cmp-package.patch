@@ -1,0 +1,180 @@
+From 8410446b0d263e1a249f9fa96c1125fa74b89cfc Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Sat, 17 Nov 2012 01:20:10 -0300
+Subject: [PATCH 08/10] Create a cross-cmp package
+
+---
+ src/cmp/crosscmp.lsp.in | 158 ++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 107 insertions(+), 51 deletions(-)
+
+diff --git a/src/cmp/crosscmp.lsp.in b/src/cmp/crosscmp.lsp.in
+index 4407800..42b1976 100644
+--- a/src/cmp/crosscmp.lsp.in
++++ b/src/cmp/crosscmp.lsp.in
+@@ -11,55 +11,111 @@
+ 
+ ;;;; CROSSCMP -- Cross compiler
+ 
+-(in-package "COMPILER")
++(defpackage cross-cmp
++  (:export
++   *cross-compilers*
++   cross-compiler
++   get-compiler
++   registered-compilers
++   cross-compile)
++  (:use common-lisp compiler))
+ 
+-(defmacro with-crosscomp-env (body)
+-  `(let ((old-translation (si::pathname-translations "SYS")))
+-     (unwind-protect
+-	  (progn
+-	    (si::pathname-translations "SYS" '(("**;*.*.*" "@ecldir\@/**/*.*")))
+-	    (let ((*features* @LSP_FEATURES@)
+-		  (*cmpinclude* "<ecl/ecl-cmp.h>")
+-		  (*cc* "@ECL_CC@")
+-		  (*ld* "@ECL_CC@")
+-		  (*ranlib* "@RANLIB@")
+-		  (*ar* "@AR@")
+-		  (*cc-flags* "@CPPFLAGS@ @CFLAGS@ @ECL_CFLAGS@")
+-		  (*cc-optimize* #-msvc "-O2"
+-				 #+msvc "@CFLAGS_OPTIMIZE@")
+-		  (*ld-format* #-msvc "~A -o ~S -L~S ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
+-			       #+msvc "~A -Fe~S~* ~{~S ~} ~@[~S~]~{ '~A'~} ~A")
+-		  (*cc-format* #-msvc "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}"
+-			       #+msvc "~A -I. -I\"~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -Fo\"~A\"~{ '~A'~}")
+-		  
+-		  (*ld-flags* (if (member :dlopen *features*)
+-				  "@LDFLAGS@ -L@libdir\@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
+-				  (if (member :mscv *features*)
+-				      "@LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
+-				      #+msvc "@LDFLAGS@ ecl.lib @CLIBS@")))
+-		  
+-		  #+dlopen
+-		  (*ld-shared-flags* #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
+-				     #+msvc "@SHARED_LDFLAGS@ @LDFLAGS@ ecl.lib @CLIBS@")
+-		  #+dlopen
+-		  (*ld-bundle-flags* #-msvc "@BUNDLE_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
+-				     #+msvc "@BUNDLE_LDFLAGS@ @LDFLAGS@ ecl.lib @CLIBS@")
+-		  
+-		  (+shared-library-prefix+ "@SHAREDPREFIX@")
+-		  (+shared-library-extension+ "@SHAREDEXT@")
+-		  (+shared-library-format+ "@SHAREDPREFIX@~a.@SHAREDEXT@")
+-		  (+static-library-prefix+ "@LIBPREFIX@")
+-		  (+static-library-extension+ "@LIBEXT@")
+-		  (+static-library-format+ "@LIBPREFIX@~a.@LIBEXT@")
+-		  (+object-file-extension+ "@OBJEXT@")
+-		  (+executable-file-format+ "~a@EXEEXT@")
+-		  
+-		  (*ecl-include-directory* "@includedir\@")
+-		  (*ecl-library-directory* "@libdir\@")
+-		  
+-		  (*ld-rpath*
+-		   (let ((x "@ECL_LDRPATH@"))
+-		     (and (plusp (length x))
+-			  (format nil x *ecl-library-directory*)))))
+-	      (,@body)))
+-       (si::pathname-translations "SYS" old-translation))))
+\ No newline at end of file
++(in-package cross-cmp)
++
++(defvar *cross-compilers* (make-hash-table :test #'equalp))
++
++(defun get-compiler (arch)
++  (gethash arch *cross-compilers*))
++
++(defun registered-compilers ()
++  *cross-compilers*)
++
++(defclass cross-compiler ()
++  ((features :initform @LSP_FEATURES@ :accessor features)
++   (sys-pathname-translation :initform '(("**;*.*.*" "@ecldir\@/**/*.*")))
++   (cmpinclude :initform "<ecl/ecl-cmp.h>")
++   (cc :initform "@ECL_CC@" :accessor cc)
++   (ld :initform "@ECL_CC@" :accessor ld)
++   (ranlib :initform "@RANLIB@")
++   (ar :initform "@AR@")
++   (cc-flags :initform "@CPPFLAGS@ @CFLAGS@ @ECL_CFLAGS@" :accessor cc-flags)
++   (cc-optimize :initform #-msvc "-O2"
++		#+msvc "@CFLAGS_OPTIMIZE@")
++   (ld-format :initform #-msvc "~A -o ~S -L~S ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
++	      #+msvc "~A -Fe~S~* ~{~S ~} ~@[~S~]~{ '~A'~} ~A")
++   (cc-format :initform #-msvc "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}"
++	      #+msvc "~A -I. -I\"~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -Fo\"~A\"~{ '~A'~}")
++   
++   (ld-flags :initform (if (member :dlopen *features*)
++			   "@LDFLAGS@ -L@libdir\@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
++			   (if (member :mscv *features*)
++			       "@LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++			       #+msvc "@LDFLAGS@ ecl.lib @CLIBS@" user-ld-flags))
++	     :accessor ld-flags)
++   
++   (ld-shared-flags :initform #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++		    #+msvc "@SHARED_LDFLAGS@ @LDFLAGS@ ecl.lib @CLIBS@")
++
++   (ld-bundle-flags :initform #-msvc "@BUNDLE_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++		    #+msvc "@BUNDLE_LDFLAGS@ @LDFLAGS@ ecl.lib @CLIBS@")
++   
++   (shared-library-prefix :initform "@SHAREDPREFIX@")
++   (shared-library-extension :initform "@SHAREDEXT@")
++   (shared-library-format :initform "@SHAREDPREFIX@~a.@SHAREDEXT@")
++   (static-library-prefix :initform "@LIBPREFIX@")
++   (static-library-extension :initform "@LIBEXT@")
++   (static-library-format :initform "@LIBPREFIX@~a.@LIBEXT@")
++   (object-file-extension :initform "@OBJEXT@")
++   (executable-file-format :initform "~a@EXEEXT@")
++   
++   (ecl-include-directory :initform "@includedir\@")
++   (ecl-library-directory :initform "@libdir\@")
++   
++   (ld-rpath :initform
++	     (let ((x "@ECL_LDRPATH@"))
++	       (and (plusp (length x))
++		    (format nil x ecl-library-directory))))
++   (user-cc-flags :initform nil :accessor user-cc-flags)
++   (user-ld-flags :initform nil :accessor user-ld-flags)))
++
++(defmethod cross-compile ((compiler cross-compiler) func)
++  (let ((old-translation (si::pathname-translations "SYS")))
++    (unwind-protect
++	 (progn
++	   (si::pathname-translations "SYS" (slot-value compiler 'sys-pathname-translation))
++	   (let ((common-lisp::*features* (slot-value compiler 'features))
++		 (c::*user-cc-flags* (slot-value compiler 'user-cc-flags))
++		 (c::*user-ld-flags* (slot-value compiler 'user-ld-flags))
++		 (c::*cmpinclude* (slot-value compiler 'cmpinclude))
++		 (c::*cc* (slot-value compiler 'cc))
++		 (c::*ld* (slot-value compiler 'ld))
++		 (c::*ranlib* (slot-value compiler 'ranlib))
++		 (c::*ar* (slot-value compiler 'ar))
++		 (c::*cc-flags* (slot-value compiler 'cc-flags))
++		 (c::*cc-optimize* (slot-value compiler 'cc-optimize))
++		 (c::*ld-format* (slot-value compiler 'ld-format))
++		 (c::*cc-format* (slot-value compiler 'cc-format))
++		 
++		 (c::*ld-flags* (slot-value compiler 'ld-flags))
++		 
++		 (c::*ld-shared-flags* (slot-value compiler 'ld-shared-flags))
++		 (c::*ld-bundle-flags* (slot-value compiler 'ld-bundle-flags))
++		 
++		 (c::+shared-library-prefix+ (slot-value compiler 'shared-library-prefix))
++		 (c::+shared-library-extension+ (slot-value compiler 'shared-library-extension))
++		 (c::+shared-library-format+ (slot-value compiler 'shared-library-format))
++		 (c::+static-library-prefix+ (slot-value compiler 'static-library-prefix))
++		 (c::+static-library-extension+ (slot-value compiler 'static-library-extension))
++		 (c::+static-library-format+ (slot-value compiler 'static-library-format))
++		 (c::+object-file-extension+ (slot-value compiler 'object-file-extension))
++		 (c::+executable-file-format+ (slot-value compiler 'executable-file-format))
++		 
++		 (c::*ecl-include-directory* (slot-value compiler 'ecl-include-directory))
++		 (c::*ecl-library-directory* (slot-value compiler 'ecl-library-directory))
++		 
++		 (c::*ld-rpath* (slot-value compiler 'ld-rpath)))
++	     (funcall func)))
++      (si::pathname-translations "SYS" old-translation))))
++
++(setf (gethash  "@host@" *cross-compilers*)
++      (make-instance 'cross-compiler))
+-- 
+1.7.12.1
+
