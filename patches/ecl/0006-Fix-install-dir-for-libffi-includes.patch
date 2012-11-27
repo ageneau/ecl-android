@@ -1,7 +1,7 @@
-From 415d23393f08db7e1469be63500b79c80a558ddd Mon Sep 17 00:00:00 2001
+From 248f05f3176b9502c0aa04a47f50fdb17ed9a73c Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <sylvain@nimbuzz.com>
 Date: Sun, 7 Aug 2011 11:18:08 -0300
-Subject: [PATCH 06/10] Fix install dir for libffi includes
+Subject: [PATCH 6/8] Fix install dir for libffi includes
 
 ---
  src/libffi/include/Makefile.am | 2 +-
@@ -33,5 +33,5 @@ index 91c0b28..5141d0f 100644
  all: all-am
  
 -- 
-1.7.12.1
+1.8.0
 

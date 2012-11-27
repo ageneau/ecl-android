@@ -1,7 +1,7 @@
-From 0b1511a3a7fa57145bb6bd012c4545cdc655eae1 Mon Sep 17 00:00:00 2001
+From 125dca4be44748aba5a7d000bf4bc39b46bcb1eb Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 04/10] invert limb patch
+Subject: [PATCH 4/8] invert limb patch
 
 ---
  src/gmp/mpn/arm/invert_limb.asm | 143 +++++++++++++++++++---------------------
@@ -173,5 +173,5 @@ index cbfd6db..78ed37b 100644
 +ASM_END()
 \ No newline at end of file
 -- 
-1.7.12.1
+1.8.0
 

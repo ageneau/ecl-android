@@ -1,7 +1,7 @@
-From fad781a68e784c39c80970ec7e7c17341ce8aff9 Mon Sep 17 00:00:00 2001
+From bb2a565e888eb455e3adf6dd873f50dbdc10205f Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sat, 17 Nov 2012 01:20:10 -0300
-Subject: [PATCH 08/10] Create a cross-cmp package
+Subject: [PATCH 8/8] Create a cross-cmp package
 
 ---
  src/Makefile.in         |   2 +-
@@ -132,5 +132,5 @@ index 4407800..3038a60 100644
 +		     :user-cc-flags nil
 +		     :user-ld-flags nil))
 -- 
-1.7.12.1
+1.8.0
 

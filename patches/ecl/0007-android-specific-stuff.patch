@@ -1,7 +1,7 @@
-From 86935ea66b8a4256035ac42528b0739b9fa85d66 Mon Sep 17 00:00:00 2001
+From 2e05f6c26a6638f3af6ee2cc467286d1718c063d Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 07/10] android specific stuff
+Subject: [PATCH 7/8] android specific stuff
 
 ---
  src/Makefile.in         |   7 +-
@@ -820,5 +820,5 @@ index 2d46d6d..6b20a9a 100644
  # On SunOS, sys/resource.h needs sys/time.h (for struct timeval)
  AC_CHECK_HEADERS(sys/resource.h,,,
 -- 
-1.7.12.1
+1.8.0
 
