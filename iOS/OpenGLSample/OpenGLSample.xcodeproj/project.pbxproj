@@ -1,0 +1,523 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		9A85099A2B59C329BEE23A75 /* All Support */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 6FCEA91EF698E5836FF17824 /* Build configuration list for PBXAggregateTarget "All Support" */;
+			buildPhases = (
+				F63166A3E9325E4229AECC85 /* Action "genlibiphone" */,
+				9377E1B05E9190C3DBB4212A /* Action "gensymboltable" */,
+			);
+			dependencies = (
+				1AF1AA496554474E69C8F797 /* PBXTargetDependency */,
+			);
+			name = "All Support";
+			productName = "OpenGLSample Support";
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		05D0052BAC78317834362CB2 /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = 4DC524E6BA2BADE02F85F4B0 /* init.lisp */; };
+		081C6D98F47FC0580037F737 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E80B55F0935645D166B0C /* InfoPlist.strings */; };
+		1A12353C2EE11A7B6BEB92F2 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2F15D5CC7B1F8D1C3975B6B /* GLKit.framework */; };
+		1BBD0FE1B4470C9631DBB825 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A83B27A3F62A059652948C82 /* UIKit.framework */; };
+		45655D944A14651E04D0B8AF /* libopenglsample.a in Copy to $(INTERMEDIATE_DIR)/ */ = {isa = PBXBuildFile; fileRef = 846DE8924A410E48E5DBCC6A /* libopenglsample.a */; };
+		4D2BF6DD55BD7DCB304BC0E2 /* libopenglsample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FFD6A8800985FDB9CDEBAAD4 /* libopenglsample.a */; };
+		51A0E90ED12ED87E712FA4D1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 859FF7E44F7E68B7D8B30082 /* CoreGraphics.framework */; };
+		53F1ADAB30532FDB4B4988E9 /* libiphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7759F9E120731333885E4762 /* libiphone.a */; };
+		56488D772C06608BDED7C473 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F465DC85C10C7DA444B0641 /* OpenGLES.framework */; };
+		646D6F9F25077FC825745610 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AED2CC25044A5BDF6E62BD89 /* AppDelegate.m */; };
+		68B090C8577A83065756EB9C /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = B35E96CD63CB63522A8F08BD /* ecl_boot.c */; };
+		8E11D1F45E7341DA0DD98C1B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1043EF1F284790EC11AD1C6 /* main.m */; };
+		94AC3913E3B323B184E6398F /* help.doc in Resources */ = {isa = PBXBuildFile; fileRef = 18A497F946461CB5B21F400E /* help.doc */; };
+		95336ADC0A8687902423AEA8 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 577558266C6B98070A0AD085 /* Default.png */; };
+		9BFCF7C0A2EA6B45592E5A4E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40B4DFA8E09FEF0F4008469 /* Foundation.framework */; };
+		A87CC87D2B549CDD3339DA5A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 74A70728F63705B01B6F5759 /* Default@2x.png */; };
+		D74C72B14A6F4A0B6B304338 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0760FF10440234C98E112684 /* Default-568h@2x.png */; };
+		E14D10A23A24EEA6D8B4FFE8 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = 345E65E51892C615F0F081BB /* slime */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		35F4D2201C26E94C6089AA2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3DA5C763E653C64A1B9A3B9C /* libiphone.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DF9EFCE07E9B268B2E0F33E0;
+			remoteInfo = All;
+		};
+		42C509518F108B2C1F1D9541 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3DA5C763E653C64A1B9A3B9C /* libiphone.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F9C06C99875FECBDA37ACDB1;
+			remoteInfo = All;
+		};
+		892217DB1545A4A4D9E2E17F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E6EFECBF3BFB66F94806ED2A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9A85099A2B59C329BEE23A75;
+			remoteInfo = "All Support";
+		};
+		CDF4C5A76B630D9ABD68CFC1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3DA5C763E653C64A1B9A3B9C /* libiphone.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DF9EFCE07E9B268B2E0F33E0;
+			remoteInfo = All;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A05CBAC09397EB1AD78B8A2A /* Copy to $(INTERMEDIATE_DIR)/ */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(INTERMEDIATE_DIR)/";
+			dstSubfolderSpec = 0;
+			files = (
+				45655D944A14651E04D0B8AF /* libopenglsample.a in Copy to $(INTERMEDIATE_DIR)/ */,
+			);
+			name = "Copy to $(INTERMEDIATE_DIR)/";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0760FF10440234C98E112684 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		083306DADA696D153E5083C2 /* common_ecl.gypi */ = {isa = PBXFileReference; lastKnownFileType = text; name = common_ecl.gypi; path = ../../utils/gyp_includes/common_ecl.gypi; sourceTree = "<group>"; };
+		0AED4D20B5BA733494B9F01D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		18A497F946461CB5B21F400E /* help.doc */ = {isa = PBXFileReference; lastKnownFileType = text; path = help.doc; sourceTree = "<group>"; };
+		1F465DC85C10C7DA444B0641 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		345E65E51892C615F0F081BB /* slime */ = {isa = PBXFileReference; lastKnownFileType = text; path = slime; sourceTree = "<group>"; };
+		3DA5C763E653C64A1B9A3B9C /* libiphone.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libiphone.xcodeproj; path = "../../lisp-packages/iphone/libiphone.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		4DC524E6BA2BADE02F85F4B0 /* init.lisp */ = {isa = PBXFileReference; lastKnownFileType = text; path = init.lisp; sourceTree = "<group>"; };
+		577558266C6B98070A0AD085 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		6A8D50E94F6FBB25261765DE /* OpenGLSample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = text; path = "OpenGLSample-Prefix.pch"; sourceTree = "<group>"; };
+		74A70728F63705B01B6F5759 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		846DE8924A410E48E5DBCC6A /* libopenglsample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopenglsample.a; sourceTree = "<group>"; };
+		859FF7E44F7E68B7D8B30082 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		866AC095E3603CBAFCDD8D13 /* common.gypi */ = {isa = PBXFileReference; lastKnownFileType = text; name = common.gypi; path = ../../utils/gyp_includes/common.gypi; sourceTree = "<group>"; };
+		915B4460D6A5C3EDEB03A9E1 /* OpenGLSample.gyp */ = {isa = PBXFileReference; lastKnownFileType = text; path = OpenGLSample.gyp; sourceTree = "<group>"; };
+		9483716485FAD5251A56C07E /* ltdl-symbol-table.oS.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ltdl-symbol-table.oS.c"; sourceTree = "<group>"; };
+		977A9132133E026249A8FC0C /* OpenGLES */ = {isa = PBXFileReference; lastKnownFileType = text; path = OpenGLES; sourceTree = "<group>"; };
+		A83B27A3F62A059652948C82 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		AED2CC25044A5BDF6E62BD89 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B2F15D5CC7B1F8D1C3975B6B /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		B35E96CD63CB63522A8F08BD /* ecl_boot.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ecl_boot.c; sourceTree = "<group>"; };
+		C20B12B4F658118A49263DAB /* OpenGLSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenGLSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5B1E33A3609824353CCB401 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		D1043EF1F284790EC11AD1C6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		E0AABC8DFF39EB30F5BB5E34 /* ecl_boot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ecl_boot.h; sourceTree = "<group>"; };
+		E40B4DFA8E09FEF0F4008469 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FFD6A8800985FDB9CDEBAAD4 /* libopenglsample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libopenglsample.a; sourceTree = INTERMEDIATE_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		26FFA5A7448C4E068E32586F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				53F1ADAB30532FDB4B4988E9 /* libiphone.a in Frameworks */,
+				9BFCF7C0A2EA6B45592E5A4E /* Foundation.framework in Frameworks */,
+				1BBD0FE1B4470C9631DBB825 /* UIKit.framework in Frameworks */,
+				56488D772C06608BDED7C473 /* OpenGLES.framework in Frameworks */,
+				1A12353C2EE11A7B6BEB92F2 /* GLKit.framework in Frameworks */,
+				51A0E90ED12ED87E712FA4D1 /* CoreGraphics.framework in Frameworks */,
+				4D2BF6DD55BD7DCB304BC0E2 /* libopenglsample.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0519D5713646F02F7CFC0ED0 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				D70AFD3656F7EC9D49A663A0 /* ../.. */,
+				A48A6468762691A50562C65C /* OpenGLSample */,
+				0E5246393307DE74F21F0678 /* SDKROOT */,
+				846DE8924A410E48E5DBCC6A /* libopenglsample.a */,
+				9483716485FAD5251A56C07E /* ltdl-symbol-table.oS.c */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		0E5246393307DE74F21F0678 /* SDKROOT */ = {
+			isa = PBXGroup;
+			children = (
+				977A9132133E026249A8FC0C /* OpenGLES */,
+			);
+			name = SDKROOT;
+			path = System/Library/Frameworks/OpenGLES.framework;
+			sourceTree = SDKROOT;
+		};
+		1974D544E75E994204817134 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				859FF7E44F7E68B7D8B30082 /* CoreGraphics.framework */,
+				E40B4DFA8E09FEF0F4008469 /* Foundation.framework */,
+				B2F15D5CC7B1F8D1C3975B6B /* GLKit.framework */,
+				1F465DC85C10C7DA444B0641 /* OpenGLES.framework */,
+				A83B27A3F62A059652948C82 /* UIKit.framework */,
+				FFD6A8800985FDB9CDEBAAD4 /* libopenglsample.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		26229AB0EEBFE9AEA03D01C0 = {
+			isa = PBXGroup;
+			children = (
+				0519D5713646F02F7CFC0ED0 /* Source */,
+				5050580396BD0F721851A259 /* Projects */,
+				1974D544E75E994204817134 /* Frameworks */,
+				A0E1520481294DD91F0B314C /* Products */,
+				6D7E6E3F8256E715B0985FEA /* Build */,
+			);
+			sourceTree = "<group>";
+		};
+		5050580396BD0F721851A259 /* Projects */ = {
+			isa = PBXGroup;
+			children = (
+				3DA5C763E653C64A1B9A3B9C /* libiphone.xcodeproj */,
+			);
+			name = Projects;
+			sourceTree = "<group>";
+		};
+		6D7E6E3F8256E715B0985FEA /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				915B4460D6A5C3EDEB03A9E1 /* OpenGLSample.gyp */,
+				866AC095E3603CBAFCDD8D13 /* common.gypi */,
+				083306DADA696D153E5083C2 /* common_ecl.gypi */,
+			);
+			name = Build;
+			sourceTree = "<group>";
+		};
+		94415A4BF4300D98E83C973E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				18A497F946461CB5B21F400E /* help.doc */,
+				4DC524E6BA2BADE02F85F4B0 /* init.lisp */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A0E1520481294DD91F0B314C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C20B12B4F658118A49263DAB /* OpenGLSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A48A6468762691A50562C65C /* OpenGLSample */ = {
+			isa = PBXGroup;
+			children = (
+				94415A4BF4300D98E83C973E /* Resources */,
+				C5B1E33A3609824353CCB401 /* AppDelegate.h */,
+				AED2CC25044A5BDF6E62BD89 /* AppDelegate.m */,
+				0760FF10440234C98E112684 /* Default-568h@2x.png */,
+				577558266C6B98070A0AD085 /* Default.png */,
+				74A70728F63705B01B6F5759 /* Default@2x.png */,
+				0F0E80B55F0935645D166B0C /* InfoPlist.strings */,
+				6A8D50E94F6FBB25261765DE /* OpenGLSample-Prefix.pch */,
+				B35E96CD63CB63522A8F08BD /* ecl_boot.c */,
+				E0AABC8DFF39EB30F5BB5E34 /* ecl_boot.h */,
+				D1043EF1F284790EC11AD1C6 /* main.m */,
+			);
+			path = OpenGLSample;
+			sourceTree = "<group>";
+		};
+		C54F86625959F8290E3B5658 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7759F9E120731333885E4762 /* libiphone.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D70AFD3656F7EC9D49A663A0 /* ../.. */ = {
+			isa = PBXGroup;
+			children = (
+				345E65E51892C615F0F081BB /* slime */,
+			);
+			path = ../..;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D41E049E7F6E65515D5D6E26 /* All */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 684629BC1AD13A5C4D295B3B /* Build configuration list for PBXNativeTarget "All" */;
+			buildPhases = (
+				A05CBAC09397EB1AD78B8A2A /* Copy to $(INTERMEDIATE_DIR)/ */,
+				0FA06259D9D199ABF2BBA255 /* Resources */,
+				D307633387378ECD89932905 /* Sources */,
+				26FFA5A7448C4E068E32586F /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F607145F66B418071BFD42D9 /* PBXTargetDependency */,
+				C9AE3227A46C7FD56C0612AE /* PBXTargetDependency */,
+			);
+			name = All;
+			productName = OpenGLSample;
+			productReference = C20B12B4F658118A49263DAB /* OpenGLSample.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E6EFECBF3BFB66F94806ED2A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+			};
+			buildConfigurationList = BC5903404158DCD4C8DDE518 /* Build configuration list for PBXProject "OpenGLSample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 26229AB0EEBFE9AEA03D01C0;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C54F86625959F8290E3B5658 /* Products */;
+					ProjectRef = 3DA5C763E653C64A1B9A3B9C /* libiphone.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				D41E049E7F6E65515D5D6E26 /* All */,
+				9A85099A2B59C329BEE23A75 /* All Support */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		7759F9E120731333885E4762 /* libiphone.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libiphone.a;
+			remoteRef = 42C509518F108B2C1F1D9541 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0FA06259D9D199ABF2BBA255 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D74C72B14A6F4A0B6B304338 /* Default-568h@2x.png in Resources */,
+				95336ADC0A8687902423AEA8 /* Default.png in Resources */,
+				A87CC87D2B549CDD3339DA5A /* Default@2x.png in Resources */,
+				081C6D98F47FC0580037F737 /* InfoPlist.strings in Resources */,
+				05D0052BAC78317834362CB2 /* init.lisp in Resources */,
+				94AC3913E3B323B184E6398F /* help.doc in Resources */,
+				E14D10A23A24EEA6D8B4FFE8 /* slime in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9377E1B05E9190C3DBB4212A /* Action "gensymboltable" */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SDKROOT)/System/Library/Frameworks/OpenGLES.framework/OpenGLES",
+			);
+			name = "Action \"gensymboltable\"";
+			outputPaths = (
+				"ltdl-symbol-table.oS.c",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec make ltdl-symbol-table.oS.c\nexit 1\n";
+			showEnvVarsInLog = 0;
+		};
+		F63166A3E9325E4229AECC85 /* Action "genlibiphone" */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Action \"genlibiphone\"";
+			outputPaths = (
+				libopenglsample.a,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec make libopenglsample.a\nexit 1\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D307633387378ECD89932905 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				646D6F9F25077FC825745610 /* AppDelegate.m in Sources */,
+				8E11D1F45E7341DA0DD98C1B /* main.m in Sources */,
+				68B090C8577A83065756EB9C /* ecl_boot.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1AF1AA496554474E69C8F797 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = All;
+			targetProxy = 35F4D2201C26E94C6089AA2C /* PBXContainerItemProxy */;
+		};
+		C9AE3227A46C7FD56C0612AE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = All;
+			targetProxy = CDF4C5A76B630D9ABD68CFC1 /* PBXContainerItemProxy */;
+		};
+		F607145F66B418071BFD42D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9A85099A2B59C329BEE23A75 /* All Support */;
+			targetProxy = 892217DB1545A4A4D9E2E17F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		0F0E80B55F0935645D166B0C /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0AED4D20B5BA733494B9F01D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		01F73B6E8F71068052B1D27A /* Release_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(CONFIGURATION)";
+				SHARED_INTERMEDIATE_DIR = "$(SYMROOT)/DerivedSources/$(CONFIGURATION)";
+			};
+			name = Release_Base;
+		};
+		31939E0EE668CC41309F4ACC /* Release_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_CW_ASM_SYNTAX = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_OBJC_CALL_CXX_CDTORS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "OpenGLSample/OpenGLSample-Prefix.pch";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				HEADER_SEARCH_PATHS = (
+					/opt/ecl/iPhoneUniversal/include,
+					/opt/gmp/iPhoneUniversal/include,
+					OpenGLSample/Lisp,
+					"../../lisp-packages/iphone/libiphone",
+				);
+				INFOPLIST_FILE = "OpenGLSample/OpenGLSample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/System/Library/Frameworks",
+					"$(INTERMEDIATE_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-L/opt/ecl/iPhoneUniversal/lib",
+					"-L/opt/ecl/iPhoneUniversal/lib/ecl-12.7.1",
+					"-L/opt/gmp/iPhoneUniversal/lib",
+					"-lasdf",
+					"-ldeflate",
+					"-ldefsystem",
+					"-lecl-cdb",
+					"-lecl-curl",
+					"-lecl-help",
+					"-lecl-quicklisp",
+					"-lprofile",
+					"-lql-minitar",
+					"-lrt",
+					"-lsb-bsd-sockets",
+					"-lserve-event",
+					"-lsockets",
+					"-lecl",
+					"-leclatomic",
+					"-leclgc",
+					"-lgmp",
+				);
+				PRODUCT_NAME = OpenGLSample;
+				SDKROOT = /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk;
+				STRIP_INSTALLED_PRODUCT = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				USE_HEADERMAP = NO;
+				WRAPPER_PREFIX = "";
+			};
+			name = Release_Base;
+		};
+		E277DFD3294684E67A77C87A /* Release_Base */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "OpenGLSample Support";
+			};
+			name = Release_Base;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		684629BC1AD13A5C4D295B3B /* Build configuration list for PBXNativeTarget "All" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31939E0EE668CC41309F4ACC /* Release_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Release_Base;
+		};
+		6FCEA91EF698E5836FF17824 /* Build configuration list for PBXAggregateTarget "All Support" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E277DFD3294684E67A77C87A /* Release_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Release_Base;
+		};
+		BC5903404158DCD4C8DDE518 /* Build configuration list for PBXProject "OpenGLSample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01F73B6E8F71068052B1D27A /* Release_Base */,
+			);
+			defaultConfigurationIsVisible = 1;
+			defaultConfigurationName = Release_Base;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E6EFECBF3BFB66F94806ED2A /* Project object */;
+}

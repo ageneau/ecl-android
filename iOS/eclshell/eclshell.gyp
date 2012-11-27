@@ -41,6 +41,11 @@
           '$(SDKROOT)/System/Library/Frameworks/Foundation.framework',
           '$(SDKROOT)/System/Library/Frameworks/UIKit.framework',
           '$(SDKROOT)/System/Library/Frameworks/CoreGraphics.framework',
+
+          # These framework are added here because the iphone package depends on them.
+          # You can remove that dependency by removing the GLKit/OpenGLES stuff from lisp-packages/iphone
+          '$(SDKROOT)/System/Library/Frameworks/OpenGLES.framework',
+          '$(SDKROOT)/System/Library/Frameworks/GLKit.framework',
           '<(INTERMEDIATE_DIR)/libiphone_ios_universal.a',
         ],
       },

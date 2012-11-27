@@ -1,10 +1,9 @@
 This project contains the needed patches to run ECL on android.
 
-The included Makefile will download and patch ECL (git and cvs are needed).
+The included Makefile will download and patch ECL (git is needed).
+See INSTALL for details.
 
 You'll need the android SDK + NDK to compile / run this project
-(assumed to be in /opt/android/android-sdk-linux_86 and
-/opt/android/android-ndk-r5)
 
 The included "hello-jni" android application demonstrates how to
 start/run ecl from an android app using JNI. Right now it just loads

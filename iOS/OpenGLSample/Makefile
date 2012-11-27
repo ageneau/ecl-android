@@ -2,12 +2,13 @@
 # We can't invoke ecl directly in the script because it hangs the build process
 # (not sure why)
 
+ECL=/opt/ecl/host/bin/ecl
 IOS_SDK_PATH:=$(shell xcodebuild -version -sdk iphonesimulator Path)
 
 all: libopenglsample.a
 
 libopenglsample.a:
-	ecl -norc -shell build
+	$(ECL) -norc -shell build
 	mv libopenglsample.system_ios_universal.a $@
 
 ltdl-symbol-table.oS.c:

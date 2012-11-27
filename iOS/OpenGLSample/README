@@ -1,0 +1,7 @@
+This project show how you can use cl-opengl with iOS (adapted from http://www.raywenderlich.com/3664/opengl-es-2-0-for-iphone-tutorial).
+You can use the gyp_ios script to recreate the Xcode project.
+
+The Makefile is used to create the libopenglsample.a that contains cl-opengl + the sample application. You might want to change the path to the ECL binary for your particular install.
+The code for the app itself is in OpenGLSample/Lisp/shader-vao.lisp
+
+The script to recreate libopenglsample.a is run automatically by Xcode and the first run might take a while so don't panic :).
