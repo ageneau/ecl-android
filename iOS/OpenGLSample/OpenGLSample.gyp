@@ -70,24 +70,6 @@
             '<(_outputs)',
           ],
         },
-        {
-          'action_name': 'gensymboltable',
-          'inputs': [
-            '$(SDKROOT)/System/Library/Frameworks/OpenGLES.framework/OpenGLES',
-          ],
-          'outputs': [
-            'ltdl-symbol-table.oS.c',
-          ],
-          'action': [
-						# This should work but gyp has a strange way of generating
-						# script rules in Xcode...
-            # '<(GEN_SYM)',
-            # '<(_inputs)',
-            'make', 
-            '<(_outputs)',
-          ],
-#          'process_outputs_as_sources': 1,
-        },
       ],
 
       'copies': [

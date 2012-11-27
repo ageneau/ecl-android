@@ -12,7 +12,6 @@
 			buildConfigurationList = 6FCEA91EF698E5836FF17824 /* Build configuration list for PBXAggregateTarget "All Support" */;
 			buildPhases = (
 				F63166A3E9325E4229AECC85 /* Action "genlibiphone" */,
-				9377E1B05E9190C3DBB4212A /* Action "gensymboltable" */,
 			);
 			dependencies = (
 				1AF1AA496554474E69C8F797 /* PBXTargetDependency */,
@@ -23,24 +22,24 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		05D0052BAC78317834362CB2 /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = 4DC524E6BA2BADE02F85F4B0 /* init.lisp */; };
-		081C6D98F47FC0580037F737 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E80B55F0935645D166B0C /* InfoPlist.strings */; };
+		0A8F2FFE56EFFCD0B77BFB02 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0F0E80B55F0935645D166B0C /* InfoPlist.strings */; };
+		110155A3F4312091F8FAD5C1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 577558266C6B98070A0AD085 /* Default.png */; };
 		1A12353C2EE11A7B6BEB92F2 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2F15D5CC7B1F8D1C3975B6B /* GLKit.framework */; };
 		1BBD0FE1B4470C9631DBB825 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A83B27A3F62A059652948C82 /* UIKit.framework */; };
-		45655D944A14651E04D0B8AF /* libopenglsample.a in Copy to $(INTERMEDIATE_DIR)/ */ = {isa = PBXBuildFile; fileRef = 846DE8924A410E48E5DBCC6A /* libopenglsample.a */; };
+		2B17DED56F4FE5C624E3FE2F /* libopenglsample.a in Copy to $(INTERMEDIATE_DIR)/ */ = {isa = PBXBuildFile; fileRef = 846DE8924A410E48E5DBCC6A /* libopenglsample.a */; };
+		407A68BC1186008DDE0E687C /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0760FF10440234C98E112684 /* Default-568h@2x.png */; };
 		4D2BF6DD55BD7DCB304BC0E2 /* libopenglsample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FFD6A8800985FDB9CDEBAAD4 /* libopenglsample.a */; };
 		51A0E90ED12ED87E712FA4D1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 859FF7E44F7E68B7D8B30082 /* CoreGraphics.framework */; };
 		53F1ADAB30532FDB4B4988E9 /* libiphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7759F9E120731333885E4762 /* libiphone.a */; };
 		56488D772C06608BDED7C473 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F465DC85C10C7DA444B0641 /* OpenGLES.framework */; };
-		646D6F9F25077FC825745610 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AED2CC25044A5BDF6E62BD89 /* AppDelegate.m */; };
-		68B090C8577A83065756EB9C /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = B35E96CD63CB63522A8F08BD /* ecl_boot.c */; };
-		8E11D1F45E7341DA0DD98C1B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1043EF1F284790EC11AD1C6 /* main.m */; };
-		94AC3913E3B323B184E6398F /* help.doc in Resources */ = {isa = PBXBuildFile; fileRef = 18A497F946461CB5B21F400E /* help.doc */; };
-		95336ADC0A8687902423AEA8 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 577558266C6B98070A0AD085 /* Default.png */; };
+		59BA9523D96D542F9FEA55DB /* init.lisp in Resources */ = {isa = PBXBuildFile; fileRef = 4DC524E6BA2BADE02F85F4B0 /* init.lisp */; };
 		9BFCF7C0A2EA6B45592E5A4E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E40B4DFA8E09FEF0F4008469 /* Foundation.framework */; };
-		A87CC87D2B549CDD3339DA5A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 74A70728F63705B01B6F5759 /* Default@2x.png */; };
-		D74C72B14A6F4A0B6B304338 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0760FF10440234C98E112684 /* Default-568h@2x.png */; };
-		E14D10A23A24EEA6D8B4FFE8 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = 345E65E51892C615F0F081BB /* slime */; };
+		C5BEAD07D0398062AA22F254 /* slime in Resources */ = {isa = PBXBuildFile; fileRef = 345E65E51892C615F0F081BB /* slime */; };
+		C9378104569E26C9EFE55F4F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D1043EF1F284790EC11AD1C6 /* main.m */; };
+		D2FD9AE35BF8C6047FE3008F /* ecl_boot.c in Sources */ = {isa = PBXBuildFile; fileRef = B35E96CD63CB63522A8F08BD /* ecl_boot.c */; };
+		D5F154A1A17003414DE2FF5F /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 74A70728F63705B01B6F5759 /* Default@2x.png */; };
+		D75125B9253EA7BF0B218F13 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AED2CC25044A5BDF6E62BD89 /* AppDelegate.m */; };
+		FEB84D31C81F950DAB9297C3 /* help.doc in Resources */ = {isa = PBXBuildFile; fileRef = 18A497F946461CB5B21F400E /* help.doc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,7 +80,7 @@
 			dstPath = "$(INTERMEDIATE_DIR)/";
 			dstSubfolderSpec = 0;
 			files = (
-				45655D944A14651E04D0B8AF /* libopenglsample.a in Copy to $(INTERMEDIATE_DIR)/ */,
+				2B17DED56F4FE5C624E3FE2F /* libopenglsample.a in Copy to $(INTERMEDIATE_DIR)/ */,
 			);
 			name = "Copy to $(INTERMEDIATE_DIR)/";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,8 +103,6 @@
 		859FF7E44F7E68B7D8B30082 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		866AC095E3603CBAFCDD8D13 /* common.gypi */ = {isa = PBXFileReference; lastKnownFileType = text; name = common.gypi; path = ../../utils/gyp_includes/common.gypi; sourceTree = "<group>"; };
 		915B4460D6A5C3EDEB03A9E1 /* OpenGLSample.gyp */ = {isa = PBXFileReference; lastKnownFileType = text; path = OpenGLSample.gyp; sourceTree = "<group>"; };
-		9483716485FAD5251A56C07E /* ltdl-symbol-table.oS.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ltdl-symbol-table.oS.c"; sourceTree = "<group>"; };
-		977A9132133E026249A8FC0C /* OpenGLES */ = {isa = PBXFileReference; lastKnownFileType = text; path = OpenGLES; sourceTree = "<group>"; };
 		A83B27A3F62A059652948C82 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		AED2CC25044A5BDF6E62BD89 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B2F15D5CC7B1F8D1C3975B6B /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
@@ -136,27 +133,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0519D5713646F02F7CFC0ED0 /* Source */ = {
-			isa = PBXGroup;
-			children = (
-				D70AFD3656F7EC9D49A663A0 /* ../.. */,
-				A48A6468762691A50562C65C /* OpenGLSample */,
-				0E5246393307DE74F21F0678 /* SDKROOT */,
-				846DE8924A410E48E5DBCC6A /* libopenglsample.a */,
-				9483716485FAD5251A56C07E /* ltdl-symbol-table.oS.c */,
-			);
-			name = Source;
-			sourceTree = "<group>";
-		};
-		0E5246393307DE74F21F0678 /* SDKROOT */ = {
-			isa = PBXGroup;
-			children = (
-				977A9132133E026249A8FC0C /* OpenGLES */,
-			);
-			name = SDKROOT;
-			path = System/Library/Frameworks/OpenGLES.framework;
-			sourceTree = SDKROOT;
-		};
 		1974D544E75E994204817134 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -170,10 +146,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		1D30AB8EF647B7C7737D5280 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				D70AFD3656F7EC9D49A663A0 /* ../.. */,
+				A48A6468762691A50562C65C /* OpenGLSample */,
+				846DE8924A410E48E5DBCC6A /* libopenglsample.a */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
 		26229AB0EEBFE9AEA03D01C0 = {
 			isa = PBXGroup;
 			children = (
-				0519D5713646F02F7CFC0ED0 /* Source */,
+				1D30AB8EF647B7C7737D5280 /* Source */,
 				5050580396BD0F721851A259 /* Projects */,
 				1974D544E75E994204817134 /* Frameworks */,
 				A0E1520481294DD91F0B314C /* Products */,
@@ -319,36 +305,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D74C72B14A6F4A0B6B304338 /* Default-568h@2x.png in Resources */,
-				95336ADC0A8687902423AEA8 /* Default.png in Resources */,
-				A87CC87D2B549CDD3339DA5A /* Default@2x.png in Resources */,
-				081C6D98F47FC0580037F737 /* InfoPlist.strings in Resources */,
-				05D0052BAC78317834362CB2 /* init.lisp in Resources */,
-				94AC3913E3B323B184E6398F /* help.doc in Resources */,
-				E14D10A23A24EEA6D8B4FFE8 /* slime in Resources */,
+				407A68BC1186008DDE0E687C /* Default-568h@2x.png in Resources */,
+				110155A3F4312091F8FAD5C1 /* Default.png in Resources */,
+				D5F154A1A17003414DE2FF5F /* Default@2x.png in Resources */,
+				0A8F2FFE56EFFCD0B77BFB02 /* InfoPlist.strings in Resources */,
+				59BA9523D96D542F9FEA55DB /* init.lisp in Resources */,
+				FEB84D31C81F950DAB9297C3 /* help.doc in Resources */,
+				C5BEAD07D0398062AA22F254 /* slime in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		9377E1B05E9190C3DBB4212A /* Action "gensymboltable" */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SDKROOT)/System/Library/Frameworks/OpenGLES.framework/OpenGLES",
-			);
-			name = "Action \"gensymboltable\"";
-			outputPaths = (
-				"ltdl-symbol-table.oS.c",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "exec make ltdl-symbol-table.oS.c\nexit 1\n";
-			showEnvVarsInLog = 0;
-		};
 		F63166A3E9325E4229AECC85 /* Action "genlibiphone" */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -372,9 +341,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				646D6F9F25077FC825745610 /* AppDelegate.m in Sources */,
-				8E11D1F45E7341DA0DD98C1B /* main.m in Sources */,
-				68B090C8577A83065756EB9C /* ecl_boot.c in Sources */,
+				D75125B9253EA7BF0B218F13 /* AppDelegate.m in Sources */,
+				C9378104569E26C9EFE55F4F /* main.m in Sources */,
+				D2FD9AE35BF8C6047FE3008F /* ecl_boot.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

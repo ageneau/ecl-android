@@ -11,10 +11,6 @@ libopenglsample.a:
 	$(ECL) -norc -shell build
 	mv libopenglsample.system_ios_universal.a $@
 
-ltdl-symbol-table.oS.c:
-	../../utils/ltdl/gen_sym.sh $(IOS_SDK_PATH)/System/Library/Frameworks/OpenGLES.framework/OpenGLES
-	sed -i -e 's/{"OpenGLES", (void \*) 0},/{"libOpenGLES.dylib", (void *) 0},/' $@
-
 .PHONY: clean libopenglsample.a
 
 clean:
