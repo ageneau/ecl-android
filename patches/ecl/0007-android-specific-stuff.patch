@@ -1,19 +1,19 @@
-From 2e05f6c26a6638f3af6ee2cc467286d1718c063d Mon Sep 17 00:00:00 2001
+From ddcb0677b2e7f9b5478875ee4c1fd432e63f684a Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 7/8] android specific stuff
 
 ---
- src/Makefile.in         |   7 +-
- src/aclocal.m4          |  30 +++++++-
- src/c/Makefile.in       |   3 +-
- src/c/tcp.d             |   4 +
- src/cmp/crosscmp.lsp.in |  65 +++++++++++++++++
- src/compile.lsp.in      |   4 +-
- src/configure           |  65 ++++++++++++++++-
- src/configure.in        |  14 +++-
- src/gmp/configure       | 189 ++++++++++++++++++++++++++++++++++++++++--------
- src/gmp/configure.in    |  15 +++-
+ src/Makefile.in         |    7 +-
+ src/aclocal.m4          |   30 +++++++-
+ src/c/Makefile.in       |    3 +-
+ src/c/tcp.d             |    4 +
+ src/cmp/crosscmp.lsp.in |   65 ++++++++++++++++
+ src/compile.lsp.in      |    4 +-
+ src/configure           |   65 +++++++++++++++-
+ src/configure.in        |   14 +++-
+ src/gmp/configure       |  189 +++++++++++++++++++++++++++++++++++++++--------
+ src/gmp/configure.in    |   15 +++-
  10 files changed, 354 insertions(+), 42 deletions(-)
  create mode 100644 src/cmp/crosscmp.lsp.in
 
@@ -235,7 +235,7 @@ index 0000000..4407800
 +       (si::pathname-translations "SYS" old-translation))))
 \ No newline at end of file
 diff --git a/src/compile.lsp.in b/src/compile.lsp.in
-index 15e2dda..3278505 100755
+index 7b1d6a2..23d5720 100755
 --- a/src/compile.lsp.in
 +++ b/src/compile.lsp.in
 @@ -115,9 +115,9 @@
@@ -820,5 +820,5 @@ index 2d46d6d..6b20a9a 100644
  # On SunOS, sys/resource.h needs sys/time.h (for struct timeval)
  AC_CHECK_HEADERS(sys/resource.h,,,
 -- 
-1.8.0
+1.7.10.4
 

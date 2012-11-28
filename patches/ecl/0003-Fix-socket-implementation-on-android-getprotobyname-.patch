@@ -1,11 +1,11 @@
-From 47ea7542217ff6d974a181d2df8c11a5c2b40f60 Mon Sep 17 00:00:00 2001
+From 42041d118368d700efa14a53f09c5d01f026fc24 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 3/8] Fix socket implementation on android (getprotobyname is
  not implemented in bionic libc)
 
 ---
- contrib/sockets/sockets.lisp | 53 ++++++++++++++++++++++++++++++++++++++++++--
+ contrib/sockets/sockets.lisp |   53 ++++++++++++++++++++++++++++++++++++++++--
  1 file changed, 51 insertions(+), 2 deletions(-)
 
 diff --git a/contrib/sockets/sockets.lisp b/contrib/sockets/sockets.lisp
@@ -90,5 +90,5 @@ index e85df1f..184ca80 100755
  
  (define-sockopt sockopt-tcp-nodelay "IPPROTO_TCP" "TCP_NODELAY" bool)
 -- 
-1.8.0
+1.7.10.4
 

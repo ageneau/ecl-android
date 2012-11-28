@@ -1,21 +1,21 @@
-From 0ad358e6956eeac1d3a8f986a38f095177a2f857 Mon Sep 17 00:00:00 2001
+From 3c6f8486f4b9fd5267109b6f1df732eaa61852ea Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 1/8] Scripts to build ECL on android/iphone
 
 ---
- configure_cross                           | 103 ++++++++++++++++++++++++++++++
- configure_gmp_cross                       |  87 +++++++++++++++++++++++++
- iPhone_universal                          |  37 +++++++++++
- make_all                                  |  53 +++++++++++++++
- platforms/android/config.sh               |  85 ++++++++++++++++++++++++
- platforms/android/cross_config.in         |  64 +++++++++++++++++++
- platforms/androidx86/cross_config.in      |  64 +++++++++++++++++++
- platforms/iPhoneOS/config.sh              |  20 ++++++
- platforms/iPhoneOS/cross_config.in        |  64 +++++++++++++++++++
- platforms/iPhoneSimulator/config.sh       |  20 ++++++
- platforms/iPhoneSimulator/cross_config.in |  64 +++++++++++++++++++
- scripts.conf                              |   3 +
+ configure_cross                           |  103 +++++++++++++++++++++++++++++
+ configure_gmp_cross                       |   87 ++++++++++++++++++++++++
+ iPhone_universal                          |   37 +++++++++++
+ make_all                                  |   53 +++++++++++++++
+ platforms/android/config.sh               |   85 ++++++++++++++++++++++++
+ platforms/android/cross_config.in         |   64 ++++++++++++++++++
+ platforms/androidx86/cross_config.in      |   64 ++++++++++++++++++
+ platforms/iPhoneOS/config.sh              |   20 ++++++
+ platforms/iPhoneOS/cross_config.in        |   64 ++++++++++++++++++
+ platforms/iPhoneSimulator/config.sh       |   20 ++++++
+ platforms/iPhoneSimulator/cross_config.in |   64 ++++++++++++++++++
+ scripts.conf                              |    3 +
  12 files changed, 664 insertions(+)
  create mode 100755 configure_cross
  create mode 100755 configure_gmp_cross
@@ -336,7 +336,7 @@ index 0000000..1b30edd
 +
 diff --git a/platforms/android/config.sh b/platforms/android/config.sh
 new file mode 100755
-index 0000000..4f5c115
+index 0000000..481ae6b
 --- /dev/null
 +++ b/platforms/android/config.sh
 @@ -0,0 +1,85 @@
@@ -385,7 +385,7 @@ index 0000000..4f5c115
 +
 +case "${host_os}" in
 +  "linux")
-+    toolchain_dir="linux-x86_64"
++    toolchain_dir="linux-x86"
 +    ;;
 +  "mac")
 +    toolchain_dir="darwin-x86"
@@ -767,5 +767,5 @@ index 0000000..68278aa
 +GMP_INSTALL_ROOT_DIR=/opt/gmp
 +ECL_INSTALL_ROOT_DIR=/opt/ecl
 -- 
-1.8.0
+1.7.10.4
 
