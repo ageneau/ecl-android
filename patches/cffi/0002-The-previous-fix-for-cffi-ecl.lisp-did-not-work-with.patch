@@ -1,0 +1,29 @@
+From ca9e99d6eb781348b495a3255ffa34a9dcf19f41 Mon Sep 17 00:00:00 2001
+From: Juan Jose Garcia Ripoll <jjgarcia@users.sourceforge.net>
+Date: Thu, 22 Nov 2012 21:40:40 +0100
+Subject: [PATCH 2/3] The previous fix for cffi-ecl.lisp did not work with
+ functions that return no values.
+
+---
+ src/cffi-ecl.lisp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/cffi-ecl.lisp b/src/cffi-ecl.lisp
+index 9f9500b..f397698 100644
+--- a/src/cffi-ecl.lisp
++++ b/src/cffi-ecl.lisp
+@@ -290,9 +290,9 @@ WITH-POINTER-TO-VECTOR-DATA."
+                 ;; On AMD64, the following code only works with the extra
+                 ;; argument ",...". If this is not present, functions
+                 ;; like sprintf do not work
+-                (format s "extern ~A ~A(~@[~{~A~^, ~}~]);
+-@(return) = ~A(~A);"
++                (format s "extern ~A ~A(~@[~{~A~^, ~}~]); ~A~A(~A);"
+                         (ecl-type->c-type return-type) pointer types
++                        (if (eq return-type :void) "" "@(return) = ")
+                         pointer
+                         (subseq +ecl-inline-codes+ 0
+                                 (max 0 (1- (* (length values) 3)))))))
+-- 
+1.8.0
+

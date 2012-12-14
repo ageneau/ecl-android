@@ -1,0 +1,27 @@
+From 1a01ef56370bf16efc1c21418838a79bf3ff3d55 Mon Sep 17 00:00:00 2001
+From: Juanjo Garcia-Ripoll <jjgarcia@users.sourcerforge.net>
+Date: Fri, 23 Nov 2012 16:20:41 +0100
+Subject: [PATCH 3/3] Surround the code in cffi-ecl.lisp with braces, so that
+ the C compiler does not complain about the extern
+ declaration.
+
+---
+ src/cffi-ecl.lisp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/cffi-ecl.lisp b/src/cffi-ecl.lisp
+index f397698..62a3c4e 100644
+--- a/src/cffi-ecl.lisp
++++ b/src/cffi-ecl.lisp
+@@ -290,7 +290,7 @@ WITH-POINTER-TO-VECTOR-DATA."
+                 ;; On AMD64, the following code only works with the extra
+                 ;; argument ",...". If this is not present, functions
+                 ;; like sprintf do not work
+-                (format s "extern ~A ~A(~@[~{~A~^, ~}~]); ~A~A(~A);"
++                (format s "{ extern ~A ~A(~@[~{~A~^, ~}~]); ~A~A(~A); }"
+                         (ecl-type->c-type return-type) pointer types
+                         (if (eq return-type :void) "" "@(return) = ")
+                         pointer
+-- 
+1.8.0
+

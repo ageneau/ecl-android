@@ -1,4 +1,4 @@
-all: update-modules patch-ecl copy-slime
+all: update-modules patch-ecl patch-cffi copy-slime
 	echo "ECL directory patched for android"
 
 update-modules:
@@ -8,6 +8,9 @@ update-modules:
 patch-ecl:
 	cd ecl && for i in ../patches/ecl/*.patch; do patch -p1 < $$i; done
 	chmod +x ecl/configure_cross ecl/configure_gmp_cross
+
+patch-cffi:
+	cd lisp-packages/cffi && for i in ../../patches/cffi/*.patch; do patch -p1 < $$i; done
 
 copy-slime:
 	-mkdir -p android/hello-jni/assets/lisp/slime/contrib/
