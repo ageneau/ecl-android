@@ -24,7 +24,7 @@ LOCAL_PATH := $(BASE_PATH)
 LOCAL_SRC_FILES := hello-jni.c ecl_boot.c
 LOCAL_CFLAGS += -I$(ECL_HOME)/include -I$(GMP_HOME)/include
 LOCAL_CFLAGS += -g -Wall -DPLATFORM_ANDROID
-LOCAL_LDLIBS := -L$(ECL_HOME)/lib -lecl -L$(GMP_HOME)/lib -lgmp -leclgc -leclffi -L$(ECL_HOME)/lib/ecl-12.7.1 -lasdf -lsockets -lsb-bsd-sockets -lserve-event -lecl-help -lecl-cdb
+LOCAL_LDLIBS := -L$(ECL_HOME)/lib -lecl -L$(GMP_HOME)/lib -lgmp -leclgc -L$(ECL_HOME)/lib/ecl-12.7.1 -lasdf -lsockets -lsb-bsd-sockets -lserve-event -lecl-help -lecl-cdb
 LOCAL_LDLIBS += -llog
 
 include $(BUILD_SHARED_LIBRARY)
