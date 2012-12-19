@@ -1,0 +1,53 @@
+From 6c0908705550f60625c8f751568905104550839a Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Wed, 19 Dec 2012 18:07:43 -0300
+Subject: [PATCH 2/2] Recognize android in yasm config.sub
+
+---
+ yasm/config/config.sub |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+ mode change 100644 => 100755 yasm/config/config.sub
+
+diff --git a/yasm/config/config.sub b/yasm/config/config.sub
+old mode 100644
+new mode 100755
+index 8748d61..13a299f
+--- a/yasm/config/config.sub
++++ b/yasm/config/config.sub
+@@ -3,7 +3,7 @@
+ #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ #   2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+ 
+-timestamp='2003-07-04'
++timestamp='2012-12-19'
+ 
+ # This file is (in principle) common to ALL GNU software.
+ # The presence of a machine in this file suggests that SOME GNU software
+@@ -118,10 +118,14 @@ esac
+ # Here we must recognize all the valid KERNEL-OS combinations.
+ maybe_os=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\2/'`
+ case $maybe_os in
+-  nto-qnx* | linux-gnu* | kfreebsd*-gnu* | netbsd*-gnu* | storm-chaos* | os2-emx* | rtmk-nova*)
++  nto-qnx* | linux-gnu* | linux-android* | kfreebsd*-gnu* | netbsd*-gnu* | storm-chaos* | os2-emx* | rtmk-nova*)
+     os=-$maybe_os
+     basic_machine=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\1/'`
+     ;;
++  android-linux)
++    os=-linux-android
++    basic_machine=`echo $1 | sed 's/^\(.*\)-\([^-]*-[^-]*\)$/\1/'`-unknown
++    ;;
+   *)
+     basic_machine=`echo $1 | sed 's/-[^-]*$//'`
+     if [ $basic_machine != $1 ]
+@@ -1134,7 +1138,7 @@ case $os in
+ 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
+ 	      | -chorusos* | -chorusrdb* \
+ 	      | -cygwin* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
+-	      | -mingw32* | -linux-gnu* | -uxpv* | -beos* | -mpeix* | -udk* \
++	      | -mingw32* | -linux-gnu* | -linux-android* | -uxpv* | -beos* | -mpeix* | -udk* \
+ 	      | -interix* | -uwin* | -mks* | -rhapsody* | -darwin* | -opened* \
+ 	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
+ 	      | -storm-chaos* | -tops10* | -tenex* | -tops20* | -its* \
+-- 
+1.7.10.4
+
