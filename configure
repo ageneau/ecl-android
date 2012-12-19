@@ -16,7 +16,7 @@ platform=$2
 
 PROJECT_ROOT=$(cd $(dirname ${0}) && pwd -P)
 
-ECL_INSTALL_ROOT_DIR=$PROJECT_ROOT/install
+ECL_INSTALL_ROOT_DIR=$PROJECT_ROOT/local-install
 PROJECT_INSTALL_DIR=$ECL_INSTALL_ROOT_DIR/$platform
 export PKG_CONFIG_PATH=$PROJECT_INSTALL_DIR/lib/pkgconfig
 
@@ -43,6 +43,9 @@ case $platform in
 	;;
     iPhoneOS|iPhoneSimulator)
 	. $PROJECT_ROOT/platforms/$platform/config.sh || exit 1
+	;;
+    *)
+	usage; exit 1
 	;;
 esac
 
@@ -113,7 +116,7 @@ case $project in
 			${base_config_opts}"
 
 		# MPIR-2.5.1: must use applenopic on sandybridge
-		if [[ "$host" == "sandybridge-apple-darwin"* ]]; then 
+		if [[ "${host_platform}" = *"-apple-darwin"* ]]; then
 		    host=core2-apple-darwin
 		fi
 		;;
@@ -144,6 +147,9 @@ case $project in
 
 	srcdir=$PROJECT_ROOT/bdwgc
 	;;
+    *)
+	usage; exit 1
+	;;
 esac
 
 if [ ! -f ${srcdir}/configure ] ; then
@@ -153,7 +159,7 @@ fi
 
 
 cd ${builddir}
-${srcdir}/configure --srcdir=${srcdir} --prefix=$PROJECT_INSTALL_DIR --host=${host} ${config_opts}
+${srcdir}/configure --srcdir=${srcdir} --prefix=$PROJECT_INSTALL_DIR --target=${host} --host=${host} ${config_opts}
 
 if [[ $? == 0 ]]; then
     echo "$project configured in ${builddir}."

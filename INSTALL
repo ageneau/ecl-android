@@ -1,42 +1,6 @@
 Install procedure:
- 
-$ make 
 
-This will download ECL into the ecl/ directory.
-
-You might want to check the file 
-
-   ecl/scripts.conf
-
-before installing. There you can configure the GMP library and ECL
-installation directories.
-
-Depending on where you plan to install ECL, you might need to use
-`sudo' for configuring, compiling and installing.
-
-$ PROJECT_ROOT=$(pwd)
-
-$ cd $(PROJECT_ROOT)/ecl
-
-# Compile a 32-bits host ECL to do the cross compilation. If you're
-running x86_64 linux, you'll need a multilib enabled GCC (aptitude
-install gcc-multilib on debian/ubuntu)
-
-$ cd $PROJECT_ROOT/ecl
-$ ./configure_gmp_cross host
-$ (cd $PROJECT_ROOT/ecl/build/host/gmp && make && make install)
-
-Important note: on MacOS the bundled gmp library doesn't compile with
--m32 so you need to use the compatible MPIR library instead, I use this
-version: http://www.mpir.org/mpir-2.5.1.tar.bz2. Use the
-configure_gmp_cross to compile it ( do export
-MPIR_SRC_DIR=/path/to/mpir-2.5.1 before running it )
-
-$ ./configure_cross host
-$ (cd $PROJECT_ROOT/ecl/build/host/ecl && make && make install)
-
-If you only want to build for one type of system, feel free to skip
-the steps for the other.
+$ make update # This download and patches the externals needed by the project
 
 __Android__
 
@@ -44,50 +8,27 @@ __Android__
 $ export ANDROID_SDK_ROOT=/opt/android/android-sdk # Adjust for your environment
 $ export ANDROID_NDK_ROOT=/opt/android/android-ndk # Adjust for your environment
 
-# cross-compile the GMP library for Android
-$ ./configure_gmp_cross android
-$ (cd $PROJECT_ROOT/ecl/build/android/gmp && make && make install)
-
-# cross-compile ECL for android
-$ ./configure_cross android
-$ (cd $PROJECT_ROOT/ecl/build/android/ecl && make && make install)
+$ make android
 
 At this point you should have a working ECL executable in
-/opt/ecl/android/bin/ecl. You can "adb push" it to the android
+./local-install/android/bin/ecl. You can "adb push" it to the android
 emulator and just execute it.
 
 __iPhone__
 
-# cross-compile the GMP library for the iPhone
-$ ./configure_gmp_cross iPhoneOS
-$ (cd $PROJECT_ROOT/ecl/build/iPhoneOS/gmp && make && make install)
+$ make ios
 
-# cross-compile ECL for the iPhone
-$ ./configure_cross iPhoneOS
-$ (cd $PROJECT_ROOT/ecl/build/iPhoneOS/ecl && make && make install)
-
-# cross-compile the GMP library for the iPhone simulator
-$ ./configure_gmp_cross iPhoneSimulator
-$ (cd $PROJECT_ROOT/ecl/build/iPhoneSimulator/gmp && make && make install)
-
-# cross-compile ECL for the iPhone simulator
-$ ./configure_cross iPhoneSimulator
-$ (cd $PROJECT_ROOT/ecl/build/iPhoneSimulator/ecl && make && make install)
-
-# In order to make it easy to configure the Xcode projects, let's make
-FAT binaries of the static libraries.
-$ ./iPhone_universal
+The compiled libraries should be in ./local-install/iPhoneUniversal
 
 __Android projects__
 
-You may want to edit the path to your ECL installation in this file
+To run ecl using JNI from an android app see the hello-jni project (android/hello-jni)
+You might need to adapt the project to your environment first: 
+$ android update project -t android-10 -p .
 
-   android/hello-jni/jni/Android.mk
-
-To run ecl using JNI from an android app, use the hello-jni project.
-You can compile it using:
-1. ndk-build
-2. ant install
+To compile it:
+$ ndk-build
+$ ant debug install
 
 
 

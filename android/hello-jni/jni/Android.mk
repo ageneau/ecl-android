@@ -15,7 +15,7 @@
 BASE_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-ECL_HOME := ../../install/android
+ECL_HOME := ../../local-install/android
 LOCAL_MODULE    := hello-jni
 LOCAL_PATH := $(BASE_PATH)
 LOCAL_SRC_FILES := hello-jni.c ecl_boot.c

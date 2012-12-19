@@ -1,9 +1,6 @@
 #!/bin/bash
 
-ECLROOT=$(cd $(dirname ${0}) && pwd -P)
-
-# include ECL directory definition
-. $ECLROOT/scripts.conf
+ECL_INSTALL_ROOT_DIR=$1
 
 do_lipo()
 {
@@ -19,7 +16,7 @@ do_lipo()
 
 shopt -s nullglob
 
-LIBS="$ECL_INSTALL_ROOT_DIR/iPhoneSimulator/lib/*.a $ECL_INSTALL_ROOT_DIR/iPhoneSimulator/lib/ecl-*/*.a $GMP_INSTALL_ROOT_DIR/iPhoneSimulator/lib/*.a"
+LIBS="$ECL_INSTALL_ROOT_DIR/iPhoneSimulator/lib/*.a $ECL_INSTALL_ROOT_DIR/iPhoneSimulator/lib/ecl-*/*.a"
 
 for i386lib in $LIBS; do
     armlib=${i386lib/iPhoneSimulator/iPhoneOS}
@@ -31,7 +28,6 @@ for i386lib in $LIBS; do
 done
 
 ln -sf $ECL_INSTALL_ROOT_DIR/iPhoneOS/include $ECL_INSTALL_ROOT_DIR/iPhoneUniversal/include
-ln -sf $GMP_INSTALL_ROOT_DIR/iPhoneOS/include $GMP_INSTALL_ROOT_DIR/iPhoneUniversal/include
 
 echo "All done"
 

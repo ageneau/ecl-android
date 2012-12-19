@@ -1,4 +1,4 @@
-ECL_INSTALL_ROOT_DIR=./install
+ECL_INSTALL_ROOT_DIR=./local-install
 
 TARGETS=host64 host iPhoneOS iPhoneSimulator android androidx86
 TARGETS_ECL=$(TARGETS:=.ecl)
@@ -25,8 +25,6 @@ patch-cffi:
 
 patch-mpir:
 	cd mpir && git clean -dxf && git checkout HEAD . && for i in ../patches/mpir/*.patch; do patch -p1 < $$i; done
-	cp config.sub config.guess mpir/yasm/config/
-	chmod +x mpir/yasm/config/config.*
 
 patch-bdwgc:
 	cd bdwgc && git clean -dxf && git checkout HEAD . && for i in ../patches/bdwgc/*.patch; do patch -p1 < $$i; done
@@ -45,25 +43,19 @@ ios: iPhoneUniversal.ecl
 
 iPhoneUniversal.ecl: iPhoneOS iPhoneSimulator
 	-rm -rf $(ECL_INSTALL_ROOT_DIR)/iPhoneUniversal
-	./iPhone_universal
+	./bin/iphone_universal $(ECL_INSTALL_ROOT_DIR)
 	touch $@
 
 android: android.ecl
 
+
 androidx86: androidx86.ecl
+
 
 iPhoneOS.ecl iPhoneSimulator.ecl android.ecl androidx86.ecl : host.ecl
 
-android.ecl: android.gmp android.bdwgc
 
-androidx86.ecl: androidx86.gmp androidx86.bdwgc
-
-iPhoneOS.ecl: iPhoneOS.gmp iPhoneOS.bdwgc
-
-iPhoneSimulator.ecl: iPhoneSimulator.gmp iPhoneSimulator.bdwgc
-
-
-%.ecl: %.gmp
+%.ecl: %.gmp %.bdwgc
 	-rm -rf build/$(@:.ecl=)/ecl
 	./configure ecl $(@:.ecl=)
 	cd build/$(@:.ecl=)/ecl && make all install
