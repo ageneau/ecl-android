@@ -143,6 +143,7 @@ case $project in
 	esac
 	config_opts="\
 		--disable-shared \
+		--enable-handle-fork=no \
 		--enable-threads=posix"
 
 	srcdir=$PROJECT_ROOT/bdwgc
