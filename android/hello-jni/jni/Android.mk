@@ -15,16 +15,13 @@
 BASE_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-ECL_HOME := /opt/ecl/android
-GMP_HOME := /opt/gmp/android
-#ECL_HOME := /opt/ecl/android
-#GMP_HOME := /opt/gmp/android
+ECL_HOME := ../../install/android
 LOCAL_MODULE    := hello-jni
 LOCAL_PATH := $(BASE_PATH)
 LOCAL_SRC_FILES := hello-jni.c ecl_boot.c
-LOCAL_CFLAGS += -I$(ECL_HOME)/include -I$(GMP_HOME)/include
+LOCAL_CFLAGS += -I$(ECL_HOME)/include
 LOCAL_CFLAGS += -g -Wall -DPLATFORM_ANDROID
-LOCAL_LDLIBS := -L$(ECL_HOME)/lib -lecl -L$(GMP_HOME)/lib -lgmp -leclgc -L$(ECL_HOME)/lib/ecl-12.7.1 -lasdf -lsockets -lsb-bsd-sockets -lserve-event -lecl-help -lecl-cdb
+LOCAL_LDLIBS := -L$(ECL_HOME)/lib -lecl -lgmp -L$(ECL_HOME)/lib/ecl-12.7.1 -lasdf -lsockets -lsb-bsd-sockets -lserve-event -lecl-help -lecl-cdb -lgc -latomic_ops
 LOCAL_LDLIBS += -llog
 
 include $(BUILD_SHARED_LIBRARY)

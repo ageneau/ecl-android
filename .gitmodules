@@ -14,3 +14,12 @@
 	path = lisp-packages/cffi
 	url = https://github.com/cffi/cffi.git
 
+[submodule "mpir"]
+	path = mpir
+	url = https://github.com/wbhart/mpir.git
+[submodule "bdwgc"]
+	path = bdwgc
+	url = https://github.com/ivmai/bdwgc.git
+[submodule "libatomic_ops"]
+	path = libatomic_ops
+	url = https://github.com/ivmai/libatomic_ops.git

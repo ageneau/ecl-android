@@ -1,0 +1,96 @@
+From c49f45c0a5d0855dcb15e06383f66ea30a995319 Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Sat, 17 Nov 2012 01:20:10 -0300
+Subject: [PATCH 3/4] Create a cross-cmp package
+
+---
+ src/Makefile.in         |    2 +-
+ src/cmp/crosscmp.lsp.in |   63 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 1 deletion(-)
+ create mode 100644 src/cmp/crosscmp.lsp.in
+
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 60b087e..8dfb7fe 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -203,7 +203,7 @@ install:
+ 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man$(manext)
+ 	$(INSTALL_DATA) doc/ecl.man $(DESTDIR)$(mandir)/man$(manext)/ecl.$(manext)
+ 	$(INSTALL_DATA) doc/ecl-config.man $(DESTDIR)$(mandir)/man$(manext)/ecl-config.$(manext)
+-	$(INSTALL_DATA) cmp/crosscmp.lsp $(DESTDIR)$(libdir)
++	$(INSTALL_DATA) cmp/crosscmp.lsp $(DESTDIR)$(ecldir)
+ 
+ flatinstall: build-stamp
+ 	$(MAKE) DESTDIR=$(DESTDIR) bindir=$(prefix) libdir=$(prefix) \
+diff --git a/src/cmp/crosscmp.lsp.in b/src/cmp/crosscmp.lsp.in
+new file mode 100644
+index 0000000..3038a60
+--- /dev/null
++++ b/src/cmp/crosscmp.lsp.in
+@@ -0,0 +1,63 @@
++;;;;  -*- Mode: Lisp; Syntax: Common-Lisp; Package: C -*-
++;;;;
++;;;;  Copyright (c) 2011, Sylvain Ageneau
++;;;;
++;;;;    This program is free software; you can redistribute it and/or
++;;;;    modify it under the terms of the GNU Library General Public
++;;;;    License as published by the Free Software Foundation; either
++;;;;    version 2 of the License, or (at your option) any later version.
++;;;;
++;;;;    See file '../Copyright' for full details.
++
++;;;; CROSSCMP -- Cross compiler
++
++(in-package cross-cmp)
++
++(setf (gethash  "@host@" *cross-compilers*)
++      (make-instance 'cross-compiler
++		     :features @LSP_FEATURES@
++		     :sys-pathname-translation '(("**;*.*.*" "@ecldir\@/**/*.*"))
++		     :cmpinclude "<ecl/ecl-cmp.h>"
++		     :cc "@ECL_CC@"
++		     :ld "@ECL_CC@"
++		     :ranlib "@RANLIB@"
++		     :ar "@AR@"
++		     :cc-flags "@CPPFLAGS@ @CFLAGS@ @ECL_CFLAGS@"
++		     :cc-optimize #-msvc "-O2"
++		     #+msvc "@CFLAGS_OPTIMIZE@"
++		     
++		     :ld-format #-msvc "~A -o ~S -L~S ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
++		     #+msvc "~A -Fe~S~* ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
++      
++		     :cc-format #-msvc "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}"
++		     #+msvc "~A -I. -I\"~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -Fo\"~A\"~{ '~A'~}"
++		      
++		     :ld-flags (if (member :dlopen *features*)
++				   "@LDFLAGS@ -L@libdir\@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
++				   (if (member :mscv *features*)
++				       "@LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++				       #+msvc "@LDFLAGS@ ecl.lib @CLIBS@" user-ld-flags))
++		      
++		     :ld-shared-flags #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++		     #+msvc "@SHARED_LDFLAGS@ @LDFLAGS@ ecl.lib @CLIBS@"
++
++		     :ld-bundle-flags #-msvc "@BUNDLE_LDFLAGS@ @LDFLAGS@ -L@libdir\@ -lecl @FASL_LIBS@ @LIBS@"
++		     #+msvc "@BUNDLE_LDFLAGS@ @LDFLAGS@ ecl.lib @CLIBS@"
++		      
++		     :shared-library-prefix "@SHAREDPREFIX@"
++		     :shared-library-extension "@SHAREDEXT@"
++		     :shared-library-format "@SHAREDPREFIX@~a.@SHAREDEXT@"
++		     :static-library-prefix "@LIBPREFIX@"
++		     :static-library-extension "@LIBEXT@"
++		     :static-library-format "@LIBPREFIX@~a.@LIBEXT@"
++		     :object-file-extension "@OBJEXT@"
++		     :executable-file-format "~a@EXEEXT@"
++		      
++		     :ecl-include-directory "@includedir\@"
++		     :ecl-library-directory "@libdir\@"
++		      
++		     :ld-rpath (let ((x "@ECL_LDRPATH@"))
++				 (and (plusp (length x))
++				      (format nil x ecl-library-directory)))
++		     :user-cc-flags nil
++		     :user-ld-flags nil))
+-- 
+1.7.10.4
+

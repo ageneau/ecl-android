@@ -1,0 +1,37 @@
+#!/bin/bash
+
+ECLROOT=$(cd $(dirname ${0}) && pwd -P)
+
+# include ECL directory definition
+. $ECLROOT/scripts.conf
+
+do_lipo()
+{
+    armlib=$1
+    i386lib=$2
+    lipolib=$3
+
+    if [[ -f $armlib && -f $i386lib ]]; then
+	echo "Making fat binary from $armlib and $i386lib into $lipolib"
+	/usr/bin/lipo -arch arm $armlib -arch i386 $i386lib -create -output $lipolib
+    fi
+}
+
+shopt -s nullglob
+
+LIBS="$ECL_INSTALL_ROOT_DIR/iPhoneSimulator/lib/*.a $ECL_INSTALL_ROOT_DIR/iPhoneSimulator/lib/ecl-*/*.a $GMP_INSTALL_ROOT_DIR/iPhoneSimulator/lib/*.a"
+
+for i386lib in $LIBS; do
+    armlib=${i386lib/iPhoneSimulator/iPhoneOS}
+    lipolib=${i386lib/iPhoneSimulator/iPhoneUniversal}
+    if [[ ! -d $(dirname $lipolib) ]]; then
+	mkdir -p $(dirname $lipolib)
+    fi
+    do_lipo $armlib $i386lib $lipolib
+done
+
+ln -sf $ECL_INSTALL_ROOT_DIR/iPhoneOS/include $ECL_INSTALL_ROOT_DIR/iPhoneUniversal/include
+ln -sf $GMP_INSTALL_ROOT_DIR/iPhoneOS/include $GMP_INSTALL_ROOT_DIR/iPhoneUniversal/include
+
+echo "All done"
+

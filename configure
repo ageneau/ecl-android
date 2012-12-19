@@ -1,0 +1,162 @@
+#!/bin/bash
+
+usage()
+{
+    echo "Usage: `basename $0` project platform"
+    echo ""
+    echo " project     -- one of: ecl, mpir, libatomic_ops, bdwgc, libatomic_ops"
+    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86"
+}
+
+[ $# == 2 ] || { usage; exit 1; }
+
+project=$1
+platform=$2
+
+
+PROJECT_ROOT=$(cd $(dirname ${0}) && pwd -P)
+
+ECL_INSTALL_ROOT_DIR=$PROJECT_ROOT/install
+PROJECT_INSTALL_DIR=$ECL_INSTALL_ROOT_DIR/$platform
+export PKG_CONFIG_PATH=$PROJECT_INSTALL_DIR/lib/pkgconfig
+
+template_config=platforms/$platform/cross_config.in
+ecl_to_run=$ECL_INSTALL_ROOT_DIR/host/bin/ecl
+host_platform=$($PROJECT_ROOT/config.guess)
+
+builddir=$PROJECT_ROOT/build/$platform/$project
+
+if [ ! -d ${builddir} ] ; then
+    echo Creating directory "\`${builddir}'"
+    mkdir -p ${builddir}
+fi
+
+
+case $platform in
+    host)
+	export CFLAGS="-m32"
+	export LDFLAGS="-m32"
+	;;
+    android|androidx86)
+	. $PROJECT_ROOT/platforms/android/config.sh $platform || exit 1
+	CFLAGS="-DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING"
+	;;
+    iPhoneOS|iPhoneSimulator)
+	. $PROJECT_ROOT/platforms/$platform/config.sh || exit 1
+	;;
+esac
+
+case $project in
+    ecl)
+	srcdir=$PROJECT_ROOT/ecl/src
+	CFLAGS="$CFLAGS -I$PROJECT_INSTALL_DIR/include"
+	LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -latomic_ops"
+	case $platform in
+	    android|androidx86|iPhoneOS|iPhoneSimulator)
+		(cat $template_config; echo "ECL_TO_RUN=$ecl_to_run") > $builddir/cross_config
+		config_opts="\
+			--with-cross-config=$builddir/cross_config \
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=yes \
+			--disable-longdouble \
+			--enable-boehm=system \
+			--with-dffi=no \
+			--with-cmp=no \
+			--with-asdf=builtin \
+			--with-bytecmp=builtin \
+			--with-serve-event=yes \
+			--disable-shared"
+		;;
+
+	    host)
+		export ABI=32
+		config_opts="\
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=yes \
+			--disable-longdouble \
+        		--enable-boehm=system \
+			--with-dffi=no"
+		;;
+
+	    host64)
+		config_opts="\
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=yes \
+			--enable-boehm=system \
+			--with-dffi=included"
+		;;
+
+	    host64nodl)
+		config_opts="\
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=yes \
+			--enable-boehm=system \
+			--with-dffi=no \
+			--with-cmp=builtin \
+    			--disable-shared"
+		;;
+	esac	
+	;;
+
+    mpir)
+	srcdir=$PROJECT_ROOT/mpir
+	base_config_opts="\
+		--enable-gmpcompat \
+		--disable-shared"
+
+	case $platform in
+	    host)
+		export ABI=32
+
+		config_opts="\
+			--with-pic \
+			${base_config_opts}"
+
+		# MPIR-2.5.1: must use applenopic on sandybridge
+		if [[ "$host" == "sandybridge-apple-darwin"* ]]; then 
+		    host=core2-apple-darwin
+		fi
+		;;
+	    host64)
+		config_opts="\
+			--with-pic \
+			${base_config_opts}"
+		;;
+	    *)
+		config_opts="${base_config_opts}"
+		;;
+	esac
+	;;
+
+    libatomic_ops)
+	config_opts="--disable-shared"
+	srcdir=$PROJECT_ROOT/libatomic_ops
+	;;
+    bdwgc)
+	case $platform in
+	    android*)
+		export CFLAGS="$CFLAGS -DGC_LINUX_THREADS -D_REENTRANT"
+		;;
+	esac
+	config_opts="\
+		--disable-shared \
+		--enable-threads=posix"
+
+	srcdir=$PROJECT_ROOT/bdwgc
+	;;
+esac
+
+if [ ! -f ${srcdir}/configure ] ; then
+    echo "Running autogen.sh in ${srcdir} (autotools needed)"
+    (cd ${srcdir} && ./autogen.sh)
+fi
+
+
+cd ${builddir}
+${srcdir}/configure --srcdir=${srcdir} --prefix=$PROJECT_INSTALL_DIR --host=${host} ${config_opts}
+
+if [[ $? == 0 ]]; then
+    echo "$project configured in ${builddir}."
+    echo "To build do:"
+    echo "cd ${builddir}; make && make install"
+fi

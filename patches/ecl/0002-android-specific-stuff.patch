@@ -1,0 +1,368 @@
+From 7e3263df04f296051a18b6eef05d8ef2af98a87a Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Mon, 4 Apr 2011 19:57:38 -0300
+Subject: [PATCH 2/4] android specific stuff
+
+---
+ src/Makefile.in    |    7 +++++-
+ src/aclocal.m4     |   31 ++++++++++++++++++++++--
+ src/c/Makefile.in  |    3 ++-
+ src/c/tcp.d        |    4 ++++
+ src/compile.lsp.in |    4 ++--
+ src/configure      |   66 ++++++++++++++++++++++++++++++++++++++++++++++++----
+ src/configure.in   |   14 ++++++++++-
+ 7 files changed, 118 insertions(+), 11 deletions(-)
+
+diff --git a/src/Makefile.in b/src/Makefile.in
+index 8b5eab6..60b087e 100644
+--- a/src/Makefile.in
++++ b/src/Makefile.in
+@@ -96,6 +96,10 @@ $(ECL_CMPDIR)/cmpdefs.lsp: $(ECL_CMPDIR)/cmpdefs.pre
+ 	sed -e 's,@ecldir\\@,"$(ecldir)",g' \
+ 	    -e 's,@libdir\\@,"$(libdir)",g' \
+ 	    -e 's,@includedir\\@,"$(includedir)",g' < $(ECL_CMPDIR)/cmpdefs.pre > $@
++$(ECL_CMPDIR)/crosscmp.lsp: $(ECL_CMPDIR)/crosscmp.pre
++	sed -e 's,@ecldir\\@,$(ecldir),g' \
++	    -e 's,@libdir\\@,$(libdir),g' \
++	    -e 's,@includedir\\@,$(includedir),g' < $(ECL_CMPDIR)/crosscmp.pre > $@
+ compile.lsp: compile.pre
+ 	sed -e 's,@ecldir\\@,$(ecldir),g' \
+ 	    -e 's,@libdir\\@,$(libdir),g' < compile.pre > compile.lsp
+@@ -105,7 +109,7 @@ bin/ecl-config: bin/ecl-config.pre
+ 	    -e 's,~A,$(libdir),' bin/ecl-config.pre > bin/ecl-config
+ 
+ 
+-@LIBPREFIX@eclmin.@LIBEXT@: @LIBPREFIX@eclgmp.@LIBEXT@ @LIBPREFIX@eclatomic.@LIBEXT@ @LIBPREFIX@eclgc.@LIBEXT@ @LIBPREFIX@eclffi.@LIBEXT@ lsp/config.lsp $(ECL_CMPDIR)/cmpdefs.lsp ecl/external.h $(top_srcdir)/c/*.d
++@LIBPREFIX@eclmin.@LIBEXT@: @LIBPREFIX@eclgmp.@LIBEXT@ @LIBPREFIX@eclatomic.@LIBEXT@ @LIBPREFIX@eclgc.@LIBEXT@ @LIBPREFIX@eclffi.@LIBEXT@ lsp/config.lsp $(ECL_CMPDIR)/cmpdefs.lsp $(ECL_CMPDIR)/crosscmp.lsp ecl/external.h $(top_srcdir)/c/*.d
+ 	cd c; $(MAKE)
+ @LIBPREFIX@eclgc.@LIBEXT@:
+ 	test -d ecl/gc || mkdir ecl/gc
+@@ -199,6 +203,7 @@ install:
+ 	$(mkinstalldirs) $(DESTDIR)$(mandir)/man$(manext)
+ 	$(INSTALL_DATA) doc/ecl.man $(DESTDIR)$(mandir)/man$(manext)/ecl.$(manext)
+ 	$(INSTALL_DATA) doc/ecl-config.man $(DESTDIR)$(mandir)/man$(manext)/ecl-config.$(manext)
++	$(INSTALL_DATA) cmp/crosscmp.lsp $(DESTDIR)$(libdir)
+ 
+ flatinstall: build-stamp
+ 	$(MAKE) DESTDIR=$(DESTDIR) bindir=$(prefix) libdir=$(prefix) \
+diff --git a/src/aclocal.m4 b/src/aclocal.m4
+index 1de1e92..ba9790e 100644
+--- a/src/aclocal.m4
++++ b/src/aclocal.m4
+@@ -86,7 +86,7 @@ dnl Set up a configuration file for the case when we are cross-
+ dnl compiling
+ dnl
+ AC_DEFUN(ECL_CROSS_CONFIG,[
+-if test "x${cross_compiling}" = "xyes"; then
++if test "x${cross_compiling}" = "xyes" || test "x${force_cross_compiling}" = "xyes"; then
+   if test -n "${with_cross_config}" -a -f "${with_cross_config}"; then
+     . ${with_cross_config}
+   elif test -f ./cross_config; then
+@@ -253,6 +253,22 @@ clibs=''
+ SONAME=''
+ SONAME_LDFLAGS=''
+ case "${host_os}" in
++	linux-androideabi)
++		thehost='android'
++		THREAD_CFLAGS='-D_THREAD_SAFE'
++#		THREAD_LIBS='-lpthread'
++		SHARED_LDFLAGS="-shared ${LDFLAGS}"
++		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
++		ECL_LDRPATH='-Wl,--rpath,~A'
++		clibs="-ldl"
++		# Maybe CFLAGS="-D_ISOC99_SOURCE ${CFLAGS}" ???
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DAO_REQUIRE_CAS ${CFLAGS}"
++		SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
++		SONAME_LDFLAGS="-Wl,-soname,SONAME"
++		ECL_ADD_FEATURE([android])
++		;;
++
+ 	# libdir may have a dollar expression inside
+ 	linux*)
+ 		thehost='linux'
+@@ -260,6 +276,7 @@ case "${host_os}" in
+ 		THREAD_LIBS='-lpthread'
+ 		SHARED_LDFLAGS="-shared ${LDFLAGS}"
+ 		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
+ 		ECL_LDRPATH='-Wl,--rpath,~A'
+ 		clibs="-ldl"
+ 		# Maybe CFLAGS="-D_ISOC99_SOURCE ${CFLAGS}" ???
+@@ -427,6 +444,14 @@ case "${host_os}" in
+ 		shared="no"
+ 		;;
+ esac
++
++case "${host}" in
++	i686*-android*)
++		THREAD_LIBS=''
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DNO_GETCONTEXT -DHAVE_GETTIMEOFDAY -DHAVE_SIGPROCMASK ${CFLAGS}"
++		ECL_ADD_FEATURE([android])
++esac
++
+ case "${host_cpu}" in
+ 	alpha*)
+ 		CFLAGS="${CFLAGS} -mieee";;
+@@ -853,7 +878,7 @@ dnl ----------------------------------------------------------------------
+ dnl Check "char **environ" is available
+ AC_DEFUN([ECL_POSIX_ENVIRON],[
+ AC_MSG_CHECKING(working environ)
+-if test -z "$ECL_WORKING_ENVIRON"; then
++if test -z "$ECL_WORKING_ENVIRON" && test "x${cross_compiling}" != "xyes"; then
+   AC_RUN_IFELSE([AC_LANG_SOURCE([[
+ #include <stdlib.h>
+ extern char **environ;
+@@ -862,6 +887,8 @@ int main() {
+     exit(0);
+   exit(1);
+ }]])],[ECL_WORKING_ENVIRON=yes],[ECL_WORKING_ENVIRON=no],[])
++elif test "x${cross_compiling}" != "xyes"; then
++ECL_WORKING_ENVIRON=yes
+ fi
+ AC_MSG_RESULT([$ECL_WORKING_ENVIRON])
+ if test $ECL_WORKING_ENVIRON = yes ; then
+diff --git a/src/c/Makefile.in b/src/c/Makefile.in
+index 2ea344a..2e34498 100644
+--- a/src/c/Makefile.in
++++ b/src/c/Makefile.in
+@@ -21,6 +21,7 @@ RM	= @RM@
+ EXE	= @EXEEXT@
+ DPP	= ./dpp$(EXE)
+ RANLIB	= @RANLIB@
++AR	= @AR@
+ 
+ # Data for installation
+ #
+@@ -104,7 +105,7 @@ ffi_x86_64.c: $(srcdir)/arch/ffi_x86_64.d $(DPP) $(HFILES)
+ 
+ ../libeclmin.a: $(OBJS) all_symbols.o all_symbols2.o
+ 	$(RM) $@
+-	ar cr $@ $(OBJS)
++	$(AR) cr $@ $(OBJS)
+ 	$(RANLIB) $@
+ 
+ clean:
+diff --git a/src/c/tcp.d b/src/c/tcp.d
+index 75a20d9..1dba1c7 100644
+--- a/src/c/tcp.d
++++ b/src/c/tcp.d
+@@ -21,7 +21,11 @@
+ #if defined(ECL_MS_WINDOWS_HOST)
+ #include <winsock.h>
+ #else
++#ifdef __ANDROID__
++#include <errno.h>
++#else
+ extern int errno;
++#endif
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <sys/un.h>
+diff --git a/src/compile.lsp.in b/src/compile.lsp.in
+index 7b1d6a2..23d5720 100755
+--- a/src/compile.lsp.in
++++ b/src/compile.lsp.in
+@@ -115,9 +115,9 @@
+ 	(concatenate 'string
+ "sh -c 'rm -rf tmp; mkdir tmp;"
+ "cp @LIBPREFIX@eclmin.@LIBEXT@ @LIBPREFIX@ecl.@LIBEXT@;"
+-"cd tmp; ar -x ../@LIBPREFIX@lsp.@LIBEXT@;"
++"cd tmp; @AR@ -x ../@LIBPREFIX@lsp.@LIBEXT@;"
+ "for i in *.@OBJEXT@; do mv $i lsp_`basename $i`; done;"
+-"ar -r ../@LIBPREFIX@ecl.@LIBEXT@ *.@OBJEXT@ ../c/all_symbols2.@OBJEXT@; rm *.@OBJEXT@;"
++"@AR@ -r ../@LIBPREFIX@ecl.@LIBEXT@ *.@OBJEXT@ ../c/all_symbols2.@OBJEXT@; rm *.@OBJEXT@;"
+ "@RANLIB@ ../@LIBPREFIX@ecl.@LIBEXT@'"))
+ 
+ #+:wants-dlopen
+diff --git a/src/configure b/src/configure
+index 20967a1..4384cb7 100755
+--- a/src/configure
++++ b/src/configure
+@@ -4729,7 +4729,7 @@ else
+ fi
+ 
+ 
+-if test "x${cross_compiling}" = "xyes"; then
++if test "x${cross_compiling}" = "xyes" || test "x${force_cross_compiling}" = "xyes"; then
+   if test -n "${with_cross_config}" -a -f "${with_cross_config}"; then
+     . ${with_cross_config}
+   elif test -f ./cross_config; then
+@@ -4860,6 +4860,24 @@ clibs=''
+ SONAME=''
+ SONAME_LDFLAGS=''
+ case "${host_os}" in
++	linux-androideabi)
++		thehost='android'
++		THREAD_CFLAGS='-D_THREAD_SAFE'
++#		THREAD_LIBS='-lpthread'
++		SHARED_LDFLAGS="-shared ${LDFLAGS}"
++		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
++		ECL_LDRPATH='-Wl,--rpath,~A'
++		clibs="-ldl"
++		# Maybe CFLAGS="-D_ISOC99_SOURCE ${CFLAGS}" ???
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DAO_REQUIRE_CAS ${CFLAGS}"
++		SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
++		SONAME_LDFLAGS="-Wl,-soname,SONAME"
++
++LSP_FEATURES="(cons :android ${LSP_FEATURES})"
++
++		;;
++
+ 	# libdir may have a dollar expression inside
+ 	linux*)
+ 		thehost='linux'
+@@ -4867,6 +4885,7 @@ case "${host_os}" in
+ 		THREAD_LIBS='-lpthread'
+ 		SHARED_LDFLAGS="-shared ${LDFLAGS}"
+ 		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
+ 		ECL_LDRPATH='-Wl,--rpath,~A'
+ 		clibs="-ldl"
+ 		# Maybe CFLAGS="-D_ISOC99_SOURCE ${CFLAGS}" ???
+@@ -5034,6 +5053,16 @@ case "${host_os}" in
+ 		shared="no"
+ 		;;
+ esac
++
++case "${host}" in
++	i686*-android*)
++		THREAD_LIBS=''
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DNO_GETCONTEXT -DHAVE_GETTIMEOFDAY -DHAVE_SIGPROCMASK ${CFLAGS}"
++
++LSP_FEATURES="(cons :android ${LSP_FEATURES})"
++
++esac
++
+ case "${host_cpu}" in
+ 	alpha*)
+ 		CFLAGS="${CFLAGS} -mieee";;
+@@ -6748,7 +6777,7 @@ done
+ 
+ 
+ for ac_header in sys/resource.h sys/utsname.h float.h pwd.h dlfcn.h link.h \
+-                  mach-o/dyld.h ulimit.h dirent.h sys/ioctl.h sys/select.h \
++                  mach-o/dyld.h dirent.h sys/ioctl.h sys/select.h \
+                   sys/wait.h semaphore.h
+ do :
+   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+@@ -6764,6 +6793,24 @@ done
+ 
+ 
+ 
++for ac_header in ulimit.h
++do :
++  ac_fn_c_check_header_compile "$LINENO" "ulimit.h" "ac_cv_header_ulimit_h" "#ifdef HAVE_ULIMIT_H
++# include <ulimit.h>
++#endif
++
++"
++if test "x$ac_cv_header_ulimit_h" = xyes; then :
++  cat >>confdefs.h <<_ACEOF
++#define HAVE_ULIMIT_H 1
++_ACEOF
++
++fi
++
++done
++
++
++
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
+ $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
+ if ${ac_cv_c_const+:} false; then :
+@@ -9067,7 +9114,7 @@ fi
+ 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking working environ" >&5
+ $as_echo_n "checking working environ... " >&6; }
+-if test -z "$ECL_WORKING_ENVIRON"; then
++if test -z "$ECL_WORKING_ENVIRON" && test "x${cross_compiling}" != "xyes"; then
+   if test "$cross_compiling" = yes; then :
+   { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+ $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+@@ -9094,6 +9141,8 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+   conftest.$ac_objext conftest.beam conftest.$ac_ext
+ fi
+ 
++elif test "x${cross_compiling}" != "xyes"; then
++ECL_WORKING_ENVIRON=yes
+ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ECL_WORKING_ENVIRON" >&5
+ $as_echo "$ECL_WORKING_ENVIRON" >&6; }
+@@ -9271,6 +9320,14 @@ else
+   CLX_INFO=""
+ fi
+ 
++if test "${with_tcp}" = "builtin"; then
++
++
++LSP_FEATURES="(cons :builtin-sockets ${LSP_FEATURES})"
++
++
++  with_tcp=yes
++fi
+ if test "${with_tcp}" = "yes"; then
+ 
+ $as_echo "#define TCP 1" >>confdefs.h
+@@ -9429,7 +9486,7 @@ $as_echo "#define ECL_RELATIVE_PACKAGE_NAMES 1" >>confdefs.h
+ 
+ fi
+ 
+-ac_config_files="$ac_config_files bare.lsp lsp/load.lsp clos/load.lsp cmp/load.lsp new-cmp/load.lsp ../Makefile Makefile c/Makefile doc/Makefile doc/ecl.man doc/ecl-config.man ecl/configpre.h:h/config.h.in bin/ecl-config.pre:util/ecl-config lsp/config.pre:lsp/config.lsp.in compile.pre:compile.lsp.in cmp/cmpdefs.pre:cmp/cmpdefs.lsp tests/config.lsp tests/Makefile"
++ac_config_files="$ac_config_files bare.lsp lsp/load.lsp clos/load.lsp cmp/load.lsp new-cmp/load.lsp ../Makefile Makefile c/Makefile doc/Makefile doc/ecl.man doc/ecl-config.man ecl/configpre.h:h/config.h.in bin/ecl-config.pre:util/ecl-config lsp/config.pre:lsp/config.lsp.in compile.pre:compile.lsp.in cmp/cmpdefs.pre:cmp/cmpdefs.lsp cmp/crosscmp.pre:cmp/crosscmp.lsp.in tests/config.lsp tests/Makefile"
+ 
+ ac_config_headers="$ac_config_headers ecl/config.h:ecl/configpre.h"
+  # FIXME
+@@ -10140,6 +10197,7 @@ do
+     "lsp/config.pre") CONFIG_FILES="$CONFIG_FILES lsp/config.pre:lsp/config.lsp.in" ;;
+     "compile.pre") CONFIG_FILES="$CONFIG_FILES compile.pre:compile.lsp.in" ;;
+     "cmp/cmpdefs.pre") CONFIG_FILES="$CONFIG_FILES cmp/cmpdefs.pre:cmp/cmpdefs.lsp" ;;
++    "cmp/crosscmp.pre") CONFIG_FILES="$CONFIG_FILES cmp/crosscmp.pre:cmp/crosscmp.lsp.in" ;;
+     "tests/config.lsp") CONFIG_FILES="$CONFIG_FILES tests/config.lsp" ;;
+     "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
+     "ecl/config.h") CONFIG_HEADERS="$CONFIG_HEADERS ecl/config.h:ecl/configpre.h" ;;
+diff --git a/src/configure.in b/src/configure.in
+index f1f72ec..74d296e 100644
+--- a/src/configure.in
++++ b/src/configure.in
+@@ -610,9 +610,16 @@ AC_CHECK_HEADERS( [fcntl.h limits.h netdb.h netinet/in.h] \
+ dnl !!! end autoscan
+ 
+ AC_CHECK_HEADERS( [sys/resource.h sys/utsname.h float.h pwd.h dlfcn.h link.h] \
+-                  [mach-o/dyld.h ulimit.h dirent.h sys/ioctl.h sys/select.h] \
++                  [mach-o/dyld.h dirent.h sys/ioctl.h sys/select.h] \
+                   [sys/wait.h semaphore.h] )
+ 
++
++AC_CHECK_HEADERS([ulimit.h], [], [],
++[[#ifdef HAVE_ULIMIT_H
++# include <ulimit.h>
++#endif
++]])
++
+ dnl =====================================================================
+ dnl Checks for typedefs, structures, and compiler characteristics.
+ 
+@@ -778,6 +785,10 @@ else
+   CLX_INFO=""
+ fi
+ 
++if test "${with_tcp}" = "builtin"; then
++  ECL_ADD_BUILTIN_MODULE([sockets])
++  with_tcp=yes
++fi
+ if test "${with_tcp}" = "yes"; then
+   AC_DEFINE(TCP, [1], [Network streams])
+   EXTRA_OBJS="${EXTRA_OBJS} tcp.${OBJEXT}"
+@@ -882,6 +893,7 @@ AC_CONFIG_FILES([
+   ecl/configpre.h:h/config.h.in bin/ecl-config.pre:util/ecl-config
+   lsp/config.pre:lsp/config.lsp.in compile.pre:compile.lsp.in
+   cmp/cmpdefs.pre:cmp/cmpdefs.lsp
++  cmp/crosscmp.pre:cmp/crosscmp.lsp.in
+   tests/config.lsp tests/Makefile
+  ])
+ AC_CONFIG_HEADERS([ecl/config.h:ecl/configpre.h]) # FIXME
+-- 
+1.7.10.4
+
