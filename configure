@@ -34,15 +34,16 @@ fi
 
 case $platform in
     host)
-	export CFLAGS="-m32"
-	export LDFLAGS="-m32"
+	export CFLAGS="-m32 -g -O2"
+	export LDFLAGS="-m32 -g -O2"
 	;;
     android|androidx86)
 	. $PROJECT_ROOT/platforms/android/config.sh $platform || exit 1
-	CFLAGS="-DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING"
+	CFLAGS="$CFLAGS -g -O2 -DANDROID -DPLATFORM_ANDROID"
 	;;
     iPhoneOS|iPhoneSimulator)
 	. $PROJECT_ROOT/platforms/$platform/config.sh || exit 1
+	CFLAGS="$CFLAGS -g -O2"
 	;;
     *)
 	usage; exit 1
@@ -137,12 +138,16 @@ case $project in
 	;;
     bdwgc)
 	case $platform in
+	    host)
+		export CFLAGS="$CFLAGS -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -fPIC -D_THREAD_SAFE"
+		;;
 	    android*)
-		export CFLAGS="$CFLAGS -DGC_LINUX_THREADS -D_REENTRANT"
+		export CFLAGS="$CFLAGS -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DGC_LINUX_THREADS -D_REENTRANT"
 		;;
 	esac
 	config_opts="\
 		--disable-shared \
+		--enable-large-config \
 		--enable-handle-fork=no \
 		--enable-threads=posix"
 

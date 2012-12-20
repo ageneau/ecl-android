@@ -1,4 +1,4 @@
-From a1cc569bc87d3ef96522dc8775df0780d60a99f1 Mon Sep 17 00:00:00 2001
+From 847310f9bb91f472a939e5dcd731cd490d73914b Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 3 Dec 2012 17:19:53 -0300
 Subject: [PATCH 4/4] Load dynamic libraries lazyly so that we can

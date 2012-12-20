@@ -1,4 +1,4 @@
-From 30f9d482c98d314c185add3954fc167cd4534f2e Mon Sep 17 00:00:00 2001
+From 974ae8eab0a4f89d284f057d6352ca2cb212ea38 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 1/4] Fix socket implementation on android (getprotobyname is

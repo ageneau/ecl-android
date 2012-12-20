@@ -1,4 +1,4 @@
-From 7e3263df04f296051a18b6eef05d8ef2af98a87a Mon Sep 17 00:00:00 2001
+From af5887ec5fb7e33c9cbbe4bac1ce47c7416e58e3 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
 Subject: [PATCH 2/4] android specific stuff
@@ -123,7 +123,7 @@ index 1de1e92..ba9790e 100644
  AC_MSG_RESULT([$ECL_WORKING_ENVIRON])
  if test $ECL_WORKING_ENVIRON = yes ; then
 diff --git a/src/c/Makefile.in b/src/c/Makefile.in
-index 2ea344a..2e34498 100644
+index 7e7afc4..6079049 100644
 --- a/src/c/Makefile.in
 +++ b/src/c/Makefile.in
 @@ -21,6 +21,7 @@ RM	= @RM@
@@ -134,7 +134,7 @@ index 2ea344a..2e34498 100644
  
  # Data for installation
  #
-@@ -104,7 +105,7 @@ ffi_x86_64.c: $(srcdir)/arch/ffi_x86_64.d $(DPP) $(HFILES)
+@@ -105,7 +106,7 @@ ffi_x86_64.c: $(srcdir)/arch/ffi_x86_64.d $(DPP) $(HFILES)
  
  ../libeclmin.a: $(OBJS) all_symbols.o all_symbols2.o
  	$(RM) $@
@@ -160,10 +160,10 @@ index 75a20d9..1dba1c7 100644
  #include <sys/socket.h>
  #include <sys/un.h>
 diff --git a/src/compile.lsp.in b/src/compile.lsp.in
-index 7b1d6a2..23d5720 100755
+index 5806626..441deb6 100755
 --- a/src/compile.lsp.in
 +++ b/src/compile.lsp.in
-@@ -115,9 +115,9 @@
+@@ -131,9 +131,9 @@
  	(concatenate 'string
  "sh -c 'rm -rf tmp; mkdir tmp;"
  "cp @LIBPREFIX@eclmin.@LIBEXT@ @LIBPREFIX@ecl.@LIBEXT@;"
@@ -176,7 +176,7 @@ index 7b1d6a2..23d5720 100755
  
  #+:wants-dlopen
 diff --git a/src/configure b/src/configure
-index 20967a1..4384cb7 100755
+index 81c3102..cde1fd8 100755
 --- a/src/configure
 +++ b/src/configure
 @@ -4729,7 +4729,7 @@ else
@@ -323,7 +323,7 @@ index 20967a1..4384cb7 100755
      "tests/Makefile") CONFIG_FILES="$CONFIG_FILES tests/Makefile" ;;
      "ecl/config.h") CONFIG_HEADERS="$CONFIG_HEADERS ecl/config.h:ecl/configpre.h" ;;
 diff --git a/src/configure.in b/src/configure.in
-index f1f72ec..74d296e 100644
+index 9aec498..caf1e79 100644
 --- a/src/configure.in
 +++ b/src/configure.in
 @@ -610,9 +610,16 @@ AC_CHECK_HEADERS( [fcntl.h limits.h netdb.h netinet/in.h] \
