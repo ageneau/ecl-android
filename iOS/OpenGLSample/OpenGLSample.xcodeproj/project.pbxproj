@@ -407,11 +407,9 @@
 				GCC_PREFIX_HEADER = "OpenGLSample/OpenGLSample-Prefix.pch";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_THREADSAFE_STATICS = NO;
-				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				HEADER_SEARCH_PATHS = (
-					/opt/ecl/iPhoneUniversal/include,
-					/opt/gmp/iPhoneUniversal/include,
+					"../../local-install/iPhoneUniversal/include",
 					OpenGLSample/Lisp,
 					"../../lisp-packages/iphone/libiphone",
 				);
@@ -422,9 +420,8 @@
 					"$(INTERMEDIATE_DIR)",
 				);
 				OTHER_LDFLAGS = (
-					"-L/opt/ecl/iPhoneUniversal/lib",
-					"-L/opt/ecl/iPhoneUniversal/lib/ecl-12.12.1",
-					"-L/opt/gmp/iPhoneUniversal/lib",
+					"-L../../local-install/iPhoneUniversal/lib",
+					"-L../../local-install/iPhoneUniversal/lib/ecl-12.12.1",
 					"-lasdf",
 					"-ldeflate",
 					"-ldefsystem",
@@ -439,8 +436,8 @@
 					"-lserve-event",
 					"-lsockets",
 					"-lecl",
-					"-leclatomic",
-					"-leclgc",
+					"-latomic_ops",
+					"-lgc",
 					"-lgmp",
 				);
 				PRODUCT_NAME = OpenGLSample;

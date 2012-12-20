@@ -1,19 +1,4 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.example.hellojni;
+package org.lisp.ecl;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,6 +8,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.SharedPreferences;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,16 +25,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 
-public class HelloJni extends Activity
+public class HelloEclActivity extends Activity
 {
-    private static String TAG = "HelloJni";
+    private static String TAG = "HelloEcl";
     private static String RESOURCES_DIR = "lisp";
     private static String APP_RESOURCES_DIR = "resources";
     private static boolean DEBUG = false;
-    
-    static AssetManager assetManager;
+
+	static AssetManager assetManager;
 	static File uncompressedFilesDir;
 
     /** Called when the activity is first created. */
@@ -55,20 +45,23 @@ public class HelloJni extends Activity
         super.onCreate(savedInstanceState);
         assetManager = getAssets();
 
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        boolean assetsUncompressed = settings.getBoolean("assetsUncompressed", false);
         uncompressedFilesDir = getDir(APP_RESOURCES_DIR,MODE_PRIVATE);
-        uncompressDir(RESOURCES_DIR,uncompressedFilesDir);
 
-        Log.w(TAG,"ECL Starting...");        
+        if(!assetsUncompressed)
+        {
+	        uncompressDir(RESOURCES_DIR,uncompressedFilesDir);
+	        SharedPreferences.Editor editor = settings.edit();
+	        editor.putBoolean("assetsUncompressed", true);
+	        editor.commit();
+        }
+
+        Log.w(TAG,"ECL Starting...");
         startECL();
         Log.w(TAG,"ECL Started");
 
-        /* Create a TextView and set its content.
-         * the text is retrieved by calling a native
-         * function.
-         */
-        TextView  tv = new TextView(this);
-        tv.setText("DONE");
-        setContentView(tv);
+        setContentView(R.layout.main);
 
 		String result = eclExec("(format nil \"Hello from lisp\")");
 		System.out.println("Result: " + result);
@@ -114,6 +107,32 @@ public class HelloJni extends Activity
 		}
     }
 
+	// Initiating Menu XML file (menu.xml)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.layout.menu, menu);
+        return true;
+    }
+
+	/**
+     * Event Handling for Individual menu item selected
+     * Identify single menu item by it's id
+     * */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+        case R.id.menu_uncompress:
+	        uncompressDir(RESOURCES_DIR,uncompressedFilesDir);
+	        return true;
+        default:
+	        return super.onOptionsItemSelected(item);
+        }
+    }
+
 	public static String getResourcesPath()
 	{
 		return uncompressedFilesDir.getAbsolutePath();
@@ -144,7 +163,7 @@ public class HelloJni extends Activity
     
     static
     {
-        System.loadLibrary("hello-jni");
+        System.loadLibrary("hello-ecl");
         Log.w(TAG,"Done loading library");
     }
 }

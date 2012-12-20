@@ -2,11 +2,10 @@
   'includes': [ './common.gypi' ],
 
   'variables': {
-    'GMP_INSTALL_ROOT_DIR': '/opt/gmp',
-    'ECL_INSTALL_ROOT_DIR': '/opt/ecl',
+    'ECL_INSTALL_ROOT_DIR': '../../local-install',
     'SLIME_ROOT_DIR' : '../../slime',
-    'ECL_VER': '12.12.1',
     'ecl_platform': 'iPhoneUniversal',
+    'ECL_VER': '<!(basename <(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib/ecl-* |cut -d "-" -f2)',
     'LIB_EXT': '.a',
 
     'ECL_LIBRARIES': [
@@ -24,24 +23,20 @@
       '-lserve-event',
       '-lsockets',
       '-lecl',
-      '-leclatomic',
-      '-leclgc',
+      '-latomic_ops',
+      '-lgc',
       '-lgmp',
     ],
 
     'ECL_INCLUDE_DIRS': [
       '<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/include',
-      '<(GMP_INSTALL_ROOT_DIR)/<(ecl_platform)/include',
     ],
 
     'ECL_LDFLAGS': [
       '-L<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib',
       '-L<(ECL_INSTALL_ROOT_DIR)/<(ecl_platform)/lib/ecl-<(ECL_VER)',
-      '-L<(GMP_INSTALL_ROOT_DIR)/<(ecl_platform)/lib',
     ],
     
     'ECL_HOST': '<(ECL_INSTALL_ROOT_DIR)/host/bin/ecl',
-
-    'GEN_SYM': '<(DEPTH)/utils/ltdl/gen_sym.sh',
   },
 }

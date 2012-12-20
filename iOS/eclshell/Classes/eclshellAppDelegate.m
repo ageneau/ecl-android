@@ -5,8 +5,8 @@
 //
 
 #import "eclshellAppDelegate.h"
-#import "ecl/ecl.h"
-#import "ecl/gc/gc.h"
+#import <ecl/ecl.h>
+#import <gc/gc.h>
 #import "ecl_boot.h"
 
 @implementation eclshellAppDelegate

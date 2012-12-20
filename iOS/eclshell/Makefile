@@ -2,7 +2,7 @@
 # We can't invoke ecl directly in the script because it hangs the build process
 # (not sure why)
 
-ECL=/opt/ecl/host/bin/ecl
+ECL=../../local-install/host/bin/ecl
 
 all: libiphone_ios_universal.a
 

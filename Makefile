@@ -30,9 +30,10 @@ patch-bdwgc:
 	cd bdwgc && git clean -dxf && git checkout HEAD . && for i in ../patches/bdwgc/*.patch; do patch -p1 < $$i; done
 
 copy-slime:
-	-mkdir -p android/hello-jni/assets/lisp/slime/contrib/
-	cp slime/*.lisp android/hello-jni/assets/lisp/slime/
-	cp slime/contrib/*.lisp android/hello-jni/assets/lisp/slime/contrib/
+	-mkdir -p android/HelloEcl/assets/lisp/slime/contrib/
+	cp slime/*.lisp android/HelloEcl/assets/lisp/slime/
+	cp slime/*.asd android/HelloEcl/assets/lisp/slime/
+	cp slime/contrib/*.lisp android/HelloEcl/assets/lisp/slime/contrib/
 
 
 iPhoneSimulator: iPhoneSimulator.ecl

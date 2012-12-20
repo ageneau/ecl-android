@@ -22,7 +22,7 @@ The compiled libraries should be in ./local-install/iPhoneUniversal
 
 __Android projects__
 
-To run ecl using JNI from an android app see the hello-jni project (android/hello-jni)
+To run ecl using JNI from an android app see the HelloEcl project (android/HelloEcl)
 You might need to adapt the project to your environment first: 
 $ android update project -t android-10 -p .
 

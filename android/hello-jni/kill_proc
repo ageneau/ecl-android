@@ -1,3 +1,0 @@
-#!/bin/bash
-PROC=$(adb shell ps |grep hellojni | cut -d ' ' -f1)
-adb shell kill $PROC

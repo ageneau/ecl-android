@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ECL_INSTALL_ROOT_DIR=$1
+ECL_INSTALL_ROOT_DIR=$(cd $1 && pwd -P)
 
 do_lipo()
 {
