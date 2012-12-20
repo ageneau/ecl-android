@@ -5,7 +5,7 @@
     'GMP_INSTALL_ROOT_DIR': '/opt/gmp',
     'ECL_INSTALL_ROOT_DIR': '/opt/ecl',
     'SLIME_ROOT_DIR' : '../../slime',
-    'ECL_VER': '12.7.1',
+    'ECL_VER': '12.12.1',
     'ecl_platform': 'iPhoneUniversal',
     'LIB_EXT': '.a',
 

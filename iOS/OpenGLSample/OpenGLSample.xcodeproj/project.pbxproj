@@ -423,7 +423,7 @@
 				);
 				OTHER_LDFLAGS = (
 					"-L/opt/ecl/iPhoneUniversal/lib",
-					"-L/opt/ecl/iPhoneUniversal/lib/ecl-12.7.1",
+					"-L/opt/ecl/iPhoneUniversal/lib/ecl-12.12.1",
 					"-L/opt/gmp/iPhoneUniversal/lib",
 					"-lasdf",
 					"-ldeflate",
