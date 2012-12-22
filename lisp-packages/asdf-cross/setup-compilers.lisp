@@ -25,15 +25,19 @@
 (in-package :cross-cmp)
 
 (defvar *ecl-host-root* (or (sys:getenv "ECL_INSTALL_ROOT_DIR")
-			    (namestring (truename (merge-pathnames "../.." (translate-logical-pathname "SYS:"))))))
+			    (merge-pathnames "../../" (translate-logical-pathname "SYS:"))))
 (defvar *ecl-iphonesim-root* (or (sys:getenv "ECL_IPHONESIM_ROOT_DIR")
-				 (namestring (truename (merge-pathnames "../iPhoneSimulator/" *ecl-host-root*)))))
+				 (merge-pathnames "../iPhoneSimulator/" *ecl-host-root*)))
 (defvar *ecl-iphoneos-root* (or (sys:getenv "ECL_IPHONEOS_ROOT_DIR")
-				(namestring (truename (merge-pathnames "../iPhoneOS/" *ecl-host-root*)))))
+				(merge-pathnames "../iPhoneOS/" *ecl-host-root*)))
 (defvar *ecl-android-arm-root* (or (sys:getenv "ECL_ANDROID_ARM_ROOT_DIR")
-				   (namestring (truename (merge-pathnames "../android/" *ecl-host-root*)))))
+				   (merge-pathnames "../android/" *ecl-host-root*)))
 (defvar *ecl-android-x86-root* (or (sys:getenv "ECL_ANDROID_X86_ROOT_DIR")
-				   (namestring (truename (merge-pathnames "../androidx86/" *ecl-host-root*)))))
+				   (merge-pathnames "../androidx86/" *ecl-host-root*)))
+(defvar *ecl-nacl32-root* (or (sys:getenv "ECL_NACL32_ROOT_DIR")
+				   (merge-pathnames "../nacl32/" *ecl-host-root*)))
+(defvar *ecl-nacl64-root* (or (sys:getenv "ECL_NACL64_ROOT_DIR")
+				   (merge-pathnames "../nacl64/" *ecl-host-root*)))
 
 
 (defvar *cross-compilers* (make-hash-table :test #'equalp))
@@ -122,12 +126,20 @@
      for dir in (list *ecl-iphonesim-root*
 		      *ecl-iphoneos-root*
 		      *ecl-android-arm-root*
-		      *ecl-android-x86-root*)
-     do (let ((cross-cmp (merge-pathnames (enough-namestring (translate-logical-pathname "SYS:crosscmp.lsp") *ecl-host-root*)
-					  dir)))
-	  (if (probe-file cross-cmp)
-	      (load cross-cmp)
-	      (warn "File not found ~a" cross-cmp))))
+		      *ecl-android-x86-root*
+		      *ecl-nacl32-root*
+		      *ecl-nacl64-root*)
+     do (if (probe-file dir)
+	    (let* ((platform-dir (namestring (truename dir)))
+		   (crosscmp-host (enough-namestring
+				   (truename (translate-logical-pathname "SYS:crosscmp.lsp"))
+				   (truename *ecl-host-root*)))
+		   (cross-cmp (merge-pathnames crosscmp-host
+					       platform-dir)))
+	      (if (probe-file cross-cmp)
+		  (load cross-cmp)
+		  (warn "No cross-compiler found at ~a" cross-comp)))
+	    (warn "Directory not found ~a" dir)))
 
   (loop
      for arch being the hash-keys of (registered-compilers)

@@ -1,0 +1,207 @@
+From 619dd45c1fc6079f74ef372a6c3b180d0b43bcbd Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Sat, 22 Dec 2012 00:54:47 -0300
+Subject: [PATCH 5/5] Nacl
+
+---
+ src/aclocal.m4    | 14 ++++++++++++++
+ src/c/stacks.d    |  2 +-
+ src/c/unixint.d   |  4 ++--
+ src/c/unixsys.d   | 22 ++++++++++++++++++++--
+ src/configure     | 16 ++++++++++++++++
+ src/h/config.h.in |  4 ++++
+ 6 files changed, 57 insertions(+), 5 deletions(-)
+
+diff --git a/src/aclocal.m4 b/src/aclocal.m4
+index ba9790e..855b23d 100644
+--- a/src/aclocal.m4
++++ b/src/aclocal.m4
+@@ -446,10 +446,24 @@ case "${host_os}" in
+ esac
+ 
+ case "${host}" in
++	*-nacl)
++		thehost='linux'
++		THREAD_CFLAGS='-D_THREAD_SAFE'
++		THREAD_LIBS='-lpthread'
++		SHARED_LDFLAGS="-shared ${LDFLAGS}"
++		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
++		ECL_LDRPATH='-Wl,--rpath,~A'
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 ${CFLAGS}"
++		SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
++		SONAME_LDFLAGS="-Wl,-soname,SONAME"
++		ECL_ADD_FEATURE([nacl])
++                ;;
+ 	i686*-android*)
+ 		THREAD_LIBS=''
+ 		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DNO_GETCONTEXT -DHAVE_GETTIMEOFDAY -DHAVE_SIGPROCMASK ${CFLAGS}"
+ 		ECL_ADD_FEATURE([android])
++                ;;
+ esac
+ 
+ case "${host_cpu}" in
+diff --git a/src/c/stacks.d b/src/c/stacks.d
+index a720b6e..7c51aac 100644
+--- a/src/c/stacks.d
++++ b/src/c/stacks.d
+@@ -84,7 +84,7 @@ ecl_cs_set_org(cl_env_ptr env)
+ 	 */
+ 	env->cs_org = (char*)(&env);
+ 	env->cs_barrier = env->cs_org;
+-#if defined(HAVE_SYS_RESOURCE_H) && defined(RLIMIT_STACK)
++#if defined(HAVE_SYS_RESOURCE_H) && defined(RLIMIT_STACK) && !defined(NACL)
+ 	{
+ 		struct rlimit rl;
+ 		cl_index size;
+diff --git a/src/c/unixint.d b/src/c/unixint.d
+index e0cbbdd..d904e1b 100644
+--- a/src/c/unixint.d
++++ b/src/c/unixint.d
+@@ -669,7 +669,7 @@ handler_fn_prototype(fpe_signal_handler, int sig, siginfo_t *info, void *data)
+ 	feclearexcept(FE_ALL_EXCEPT);
+ # endif
+ #endif /* !_MSC_VER */
+-#ifdef SA_SIGINFO
++#if defined(SA_SIGINFO) && !defined(NACL)
+ 	if (info) {
+ 		if (info->si_code == FPE_INTDIV || info->si_code == FPE_FLTDIV) {
+ 			condition = @'division-by-zero';
+@@ -722,7 +722,7 @@ handler_fn_prototype(sigsegv_handler, int sig, siginfo_t *info, void *aux)
+ 	the_env = ecl_process_env();
+ 	unlikely_if (zombie_process(the_env))
+ 		return;
+-#if defined(SA_SIGINFO)
++#if defined(SA_SIGINFO) && !defined(NACL)
+ # if defined(ECL_USE_MPROTECT)
+ 	/* We access the environment when it was protected. That
+ 	 * means there was a pending signal. */
+diff --git a/src/c/unixsys.d b/src/c/unixsys.d
+index 15379a5..091bcc3 100644
+--- a/src/c/unixsys.d
++++ b/src/c/unixsys.d
+@@ -45,7 +45,12 @@
+ cl_object
+ si_getpid(void)
+ {
++#if defined(NACL)
++        FElibc_error("si_getpid not implemented",1);
++        @(return Cnil)
++#else
+ 	@(return ecl_make_fixnum(getpid()))
++#endif
+ }
+ 
+ cl_object
+@@ -64,6 +69,10 @@ ecl_def_ct_base_string(fake_out_name, "PIPE-WRITE-ENDPOINT", 19, static, const);
+ cl_object
+ si_make_pipe()
+ {
++#if defined(NACL)
++	FElibc_error("si_make_pipe not implemented",1);
++	@(return Cnil)
++#else
+ 	cl_object output;
+ 	int fds[2], ret;
+ #if defined(ECL_MS_WINDOWS_HOST)
+@@ -82,6 +91,7 @@ si_make_pipe()
+ 		output = cl_make_two_way_stream(in, out);
+ 	}
+ 	@(return output)
++#endif
+ }
+ 
+ static cl_object
+@@ -233,7 +243,10 @@ static cl_object
+ ecl_waitpid(cl_object pid, cl_object wait)
+ {
+         cl_object status, code;
+-#if defined(ECL_MS_WINDOWS_HOST)
++#if defined(NACL)
++        FElibc_error("ecl_waitpid not implemented",1);
++        @(return Cnil)
++#elif defined(ECL_MS_WINDOWS_HOST)
+         cl_env_ptr the_env = ecl_process_env();
+         HANDLE *hProcess = ecl_foreign_data_pointer_safe(pid);
+         DWORD exitcode;
+@@ -644,7 +657,7 @@ ecl_stream_to_HANDLE(cl_object s, bool output)
+ 	if (child_stdout) CloseHandle(child_stdout);
+ 	if (child_stderr) CloseHandle(child_stderr);
+ }
+-#else /* mingw */
++#elif !defined(NACL) /* mingw */
+ {
+ 	int child_stdin, child_stdout, child_stderr;
+ 	int pipe_fd[2];
+@@ -791,6 +804,11 @@ ecl_stream_to_HANDLE(cl_object s, bool output)
+ 	close(child_stdout);
+ 	close(child_stderr);
+ }
++#else
++{
++		FElibc_error("ext::run-program not implemented",1);
++		@(return Cnil)
++}
+ #endif /* mingw */
+ 	if (Null(pid)) {
+ 		if (parent_write) close(parent_write);
+diff --git a/src/configure b/src/configure
+index cde1fd8..f4d766a 100755
+--- a/src/configure
++++ b/src/configure
+@@ -5055,12 +5055,28 @@ LSP_FEATURES="(cons :android ${LSP_FEATURES})"
+ esac
+ 
+ case "${host}" in
++	*-nacl)
++		thehost='linux'
++		THREAD_CFLAGS='-D_THREAD_SAFE'
++		THREAD_LIBS='-lpthread'
++		SHARED_LDFLAGS="-shared ${LDFLAGS}"
++		BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
++		ECL_LDRPATH='-Wl,--rpath,~A'
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 ${CFLAGS}"
++		SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
++		SONAME_LDFLAGS="-Wl,-soname,SONAME"
++
++LSP_FEATURES="(cons :nacl ${LSP_FEATURES})"
++
++                ;;
+ 	i686*-android*)
+ 		THREAD_LIBS=''
+ 		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -DANDROID -DPLATFORM_ANDROID -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DNO_GETCONTEXT -DHAVE_GETTIMEOFDAY -DHAVE_SIGPROCMASK ${CFLAGS}"
+ 
+ LSP_FEATURES="(cons :android ${LSP_FEATURES})"
+ 
++                ;;
+ esac
+ 
+ case "${host_cpu}" in
+diff --git a/src/h/config.h.in b/src/h/config.h.in
+index 822e226..d0c3886 100644
+--- a/src/h/config.h.in
++++ b/src/h/config.h.in
+@@ -122,7 +122,9 @@
+ #undef ECL_RELATIVE_PACKAGE_NAMES
+ 
+ /* Use mprotect for fast interrupt dispatch				*/
++#ifndef NACL
+ #undef ECL_USE_MPROTECT
++#endif
+ #if defined(ECL_MS_WINDOWS_HOST)
+ # define ECL_USE_GUARD_PAGE
+ #endif
+@@ -351,7 +353,9 @@ typedef unsigned char ecl_base_char;
+ #undef HAVE_LINK_H
+ #undef HAVE_MACH_O_DYLD_H
+ /* POSIX signals							*/
++#ifndef NACL
+ #undef HAVE_SIGPROCMASK
++#endif
+ /* isatty() checks whether a file is connected to a			*/
+ #undef HAVE_ISATTY
+ /* can manipulate floating point environment				*/
+-- 
+1.8.0.2
+

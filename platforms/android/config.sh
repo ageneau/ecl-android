@@ -11,6 +11,7 @@ usage()
 [ $# == 1 ] || { usage; return 1; }
 
 platform=$1
+export force_cross_compiling=yes
 
 case $platform in
     android)

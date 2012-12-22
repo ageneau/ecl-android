@@ -10,3 +10,6 @@ out
 *.eclh
 __MACOSX
 *.oS.c
+*.nexe
+*.d
+*.nmf

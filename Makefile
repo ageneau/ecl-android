@@ -1,11 +1,29 @@
 ECL_INSTALL_ROOT_DIR=./local-install
 
-TARGETS=host64 host iPhoneOS iPhoneSimulator android androidx86
-TARGETS_ECL=$(TARGETS:=.ecl)
-TARGETS_GMP=$(TARGETS:=.gmp)
+TARGETS:=host64 host hostnothreads host64nothreads
+TARGET_LIST:=
+
+ifeq ($(UNAME),Darwin)
+TARGETS+=iPhoneOS iPhoneSimulator
+endif
+
+ifneq ($(ANDROID_NDK_ROOT),"")
+TARGETS+=android androidx86
+endif
+
+ifneq ($(NACL_SDK_ROOT),"")
+TARGETS+=nacl32 nacl64
+endif
+
+TARGETS_ECL:=$(TARGETS:=.ecl)
+TARGETS_GMP:=$(TARGETS:=.gmp)
+TARGETS_ATOMIC:=$(TARGETS:=.atomic)
+TARGETS_BDWGC:=$(TARGETS:=.bdwgc)
+
+UNAME:=$(shell uname)
 
 
-all: $(TARGETS_ECL) $(TARGETS_GMP)
+all: $(TARGETS_ECL) $(TARGETS_GMP) $(TARGETS_ATOMIC) $(TARGETS_GMP)
 
 update: update-modules patch-ecl patch-mpir patch-bdwgc patch-cffi copy-slime
 	echo "ECL directory patched for android"
@@ -41,6 +59,12 @@ iPhoneSimulator: iPhoneSimulator.ecl
 iPhoneOS: iPhoneOS.ecl
 
 ios: iPhoneUniversal.ecl
+
+nacl: nacl32.ecl nacl64.ecl
+
+nacl32.ecl: hostnothreads.ecl
+
+nacl64.ecl: host64nothreads.ecl
 
 iPhoneUniversal.ecl: iPhoneOS iPhoneSimulator
 	-rm -rf $(ECL_INSTALL_ROOT_DIR)/iPhoneUniversal

@@ -5,7 +5,7 @@ usage()
     echo "Usage: `basename $0` project platform"
     echo ""
     echo " project     -- one of: ecl, mpir, libatomic_ops, bdwgc, libatomic_ops"
-    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86"
+    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86, nacl32, nacl64"
 }
 
 [ $# == 2 ] || { usage; exit 1; }
@@ -21,7 +21,7 @@ PROJECT_INSTALL_DIR=$ECL_INSTALL_ROOT_DIR/$platform
 export PKG_CONFIG_PATH=$PROJECT_INSTALL_DIR/lib/pkgconfig
 
 template_config=platforms/$platform/cross_config.in
-ecl_to_run=$ECL_INSTALL_ROOT_DIR/host/bin/ecl
+cross_compiler_platform=host
 host_platform=$($PROJECT_ROOT/config.guess)
 
 builddir=$PROJECT_ROOT/build/$platform/$project
@@ -33,9 +33,11 @@ fi
 
 
 case $platform in
-    host)
+    host|hostnothreads)
 	export CFLAGS="-m32 -g -O2"
 	export LDFLAGS="-m32 -g -O2"
+	;;
+    host*64*)
 	;;
     android|androidx86)
 	. $PROJECT_ROOT/platforms/android/config.sh $platform || exit 1
@@ -45,16 +47,33 @@ case $platform in
 	. $PROJECT_ROOT/platforms/$platform/config.sh || exit 1
 	CFLAGS="$CFLAGS -g -O2"
 	;;
+    nacl*|pnacl)
+	. $PROJECT_ROOT/platforms/nacl32/config.sh $platform || exit 1
+	CFLAGS="$CFLAGS -g -O2 -DNACL"
+	;;
     *)
 	usage; exit 1
 	;;
 esac
 
+export CFLAGS
+ecl_to_run=$ECL_INSTALL_ROOT_DIR/${cross_compiler_platform}/bin/ecl
+
 case $project in
     ecl)
 	srcdir=$PROJECT_ROOT/ecl/src
 	CFLAGS="$CFLAGS -I$PROJECT_INSTALL_DIR/include"
-	LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -latomic_ops"
+
+	case $platform in
+	    nacl*|pnacl)
+		# For NACL we use Naclports libgc
+		export LIBS="$LIBS -lnosys -L$PROJECT_INSTALL_DIR/lib -lpthread"
+		;;
+	    *)
+		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -latomic_ops"
+		;;
+	esac
+
 	case $platform in
 	    android|androidx86|iPhoneOS|iPhoneSimulator)
 		(cat $template_config; echo "ECL_TO_RUN=$ecl_to_run") > $builddir/cross_config
@@ -72,13 +91,39 @@ case $project in
 			--disable-shared"
 		;;
 
+	    nacl*|pnacl)
+		(cat $template_config; echo "ECL_TO_RUN=$ecl_to_run") > $builddir/cross_config
+		config_opts="\
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=no \
+			--disable-longdouble \
+			--enable-boehm=system \
+			--with-dffi=no \
+			--with-cmp=no \
+			--with-asdf=builtin \
+			--with-bytecmp=builtin \
+			--with-tcp=no \
+			--with-serve-event=no \
+			--disable-shared"
+		;;
+
 	    host)
 		export ABI=32
 		config_opts="\
 			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
 			--enable-threads=yes \
 			--disable-longdouble \
-        		--enable-boehm=system \
+        		--enable-boehm=included \
+			--with-dffi=no"
+		;;
+
+	    hostnothreads)
+		export ABI=32
+		config_opts="\
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=no \
+			--disable-longdouble \
+        		--enable-boehm=included \
 			--with-dffi=no"
 		;;
 
@@ -86,6 +131,15 @@ case $project in
 		config_opts="\
 			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
 			--enable-threads=yes \
+			--enable-boehm=system \
+			--with-dffi=included"
+		;;
+
+	    host64nothreads)
+		config_opts="\
+			--with-gmp-prefix=$PROJECT_INSTALL_DIR \
+			--enable-threads=no \
+			--disable-longdouble \
 			--enable-boehm=system \
 			--with-dffi=included"
 		;;
@@ -109,7 +163,7 @@ case $project in
 		--disable-shared"
 
 	case $platform in
-	    host)
+	    host|hostnothreads)
 		export ABI=32
 
 		config_opts="\
@@ -121,7 +175,30 @@ case $project in
 		    host=core2-apple-darwin
 		fi
 		;;
-	    host64)
+	    pnacl)
+		# export ABI=32
+		host=none-pc-nacl # The ASM version compiles for nacl but not on 64 bits
+
+		config_opts="\
+			--with-pic \
+			${base_config_opts}"
+		;;
+	    nacl32)
+		# export ABI=32
+		host=none-pc-nacl # The ASM version compiles for nacl but not on 64 bits
+
+		config_opts="\
+			--with-pic \
+			${base_config_opts}"
+		;;
+	    nacl64)
+		host=none-pc-nacl
+
+		config_opts="\
+			--with-pic \
+			${base_config_opts}"
+		;;
+	    host64*)
 		config_opts="\
 			--with-pic \
 			${base_config_opts}"
@@ -137,21 +214,34 @@ case $project in
 	srcdir=$PROJECT_ROOT/libatomic_ops
 	;;
     bdwgc)
+	srcdir=$PROJECT_ROOT/bdwgc
 	case $platform in
 	    host)
 		export CFLAGS="$CFLAGS -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -fPIC -D_THREAD_SAFE"
+		config_opts="\
+			--disable-shared \
+			--enable-large-config \
+			--enable-handle-fork=no \
+			--enable-threads=posix"
 		;;
 	    android*)
 		export CFLAGS="$CFLAGS -DUSE_GET_STACKBASE_FOR_MAIN -DIGNORE_DYNAMIC_LOADING -DGC_LINUX_THREADS -D_REENTRANT"
+		config_opts="\
+			--disable-shared \
+			--enable-large-config \
+			--enable-handle-fork=no \
+			--enable-threads=posix"
+		;;
+	    nacl*|pnacl)
+		config_opts="\
+			--disable-shared \
+			--disable-threads \
+			--enable-large-config \
+			--enable-handle-fork=no \
+			--enable-threads=posix"
+		srcdir=$PROJECT_ROOT/nacl/libgc
 		;;
 	esac
-	config_opts="\
-		--disable-shared \
-		--enable-large-config \
-		--enable-handle-fork=no \
-		--enable-threads=posix"
-
-	srcdir=$PROJECT_ROOT/bdwgc
 	;;
     *)
 	usage; exit 1

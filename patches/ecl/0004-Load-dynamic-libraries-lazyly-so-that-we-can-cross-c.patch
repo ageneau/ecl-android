@@ -1,13 +1,12 @@
-From 847310f9bb91f472a939e5dcd731cd490d73914b Mon Sep 17 00:00:00 2001
+From 040e00686c9309554742b73825f96f5fecf7cdc0 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 3 Dec 2012 17:19:53 -0300
-Subject: [PATCH 4/4] Load dynamic libraries lazyly so that we can
- cross-compile cffi libraries without the cross-compiler
- having to resolve all the symbols of the wrapped
- library
+Subject: [PATCH 4/5] Load dynamic libraries lazyly so that we can
+ cross-compile cffi libraries without the cross-compiler having to resolve all
+ the symbols of the wrapped library
 
 ---
- src/c/ffi/libraries.d |    2 +-
+ src/c/ffi/libraries.d | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/c/ffi/libraries.d b/src/c/ffi/libraries.d
@@ -24,5 +23,5 @@ index 82cb931..33a00c2 100644
  #ifdef HAVE_MACH_O_DYLD_H
  	{
 -- 
-1.7.10.4
+1.8.0.2
 

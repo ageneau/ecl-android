@@ -31,4 +31,13 @@ $ ndk-build
 $ ant debug install
 
 
+__Native client__
+
+export NACL_SDK_ROOT=/opt/nacl/pepper_23 # Adjust for your environment
+
+You need to first compile "nacl-mounts" from naclports.
+cd $NACL_PORTS_ROOT/src
+NACL_GLIBC=1 make nacl-mounts
+NACL_GLIBC=1 NACL_PACKAGES_BITSIZE=64 make nacl-mounts
+
 

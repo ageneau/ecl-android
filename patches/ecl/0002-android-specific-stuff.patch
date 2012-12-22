@@ -1,16 +1,16 @@
-From af5887ec5fb7e33c9cbbe4bac1ce47c7416e58e3 Mon Sep 17 00:00:00 2001
+From 3fd2c06a17cfc15d5175920ab5539f0dda8f0ff3 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 2/4] android specific stuff
+Subject: [PATCH 2/5] android specific stuff
 
 ---
- src/Makefile.in    |    7 +++++-
- src/aclocal.m4     |   31 ++++++++++++++++++++++--
- src/c/Makefile.in  |    3 ++-
- src/c/tcp.d        |    4 ++++
- src/compile.lsp.in |    4 ++--
- src/configure      |   66 ++++++++++++++++++++++++++++++++++++++++++++++++----
- src/configure.in   |   14 ++++++++++-
+ src/Makefile.in    |  7 +++++-
+ src/aclocal.m4     | 31 +++++++++++++++++++++++--
+ src/c/Makefile.in  |  3 ++-
+ src/c/tcp.d        |  4 ++++
+ src/compile.lsp.in |  4 ++--
+ src/configure      | 66 ++++++++++++++++++++++++++++++++++++++++++++++++++----
+ src/configure.in   | 14 +++++++++++-
  7 files changed, 118 insertions(+), 11 deletions(-)
 
 diff --git a/src/Makefile.in b/src/Makefile.in
@@ -160,10 +160,10 @@ index 75a20d9..1dba1c7 100644
  #include <sys/socket.h>
  #include <sys/un.h>
 diff --git a/src/compile.lsp.in b/src/compile.lsp.in
-index 5806626..441deb6 100755
+index 1a72f0d..6c8eb12 100755
 --- a/src/compile.lsp.in
 +++ b/src/compile.lsp.in
-@@ -131,9 +131,9 @@
+@@ -115,9 +115,9 @@
  	(concatenate 'string
  "sh -c 'rm -rf tmp; mkdir tmp;"
  "cp @LIBPREFIX@eclmin.@LIBEXT@ @LIBPREFIX@ecl.@LIBEXT@;"
@@ -364,5 +364,5 @@ index 9aec498..caf1e79 100644
   ])
  AC_CONFIG_HEADERS([ecl/config.h:ecl/configpre.h]) # FIXME
 -- 
-1.7.10.4
+1.8.0.2
 
