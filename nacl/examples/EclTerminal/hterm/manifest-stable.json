@@ -1,0 +1,34 @@
+{
+
+
+
+  "minimum_chrome_version": "18",
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self'; object-src 'self'",
+  "name": "Secure Shell",
+  "version": "0.8.7",
+  "default_locale": "en",
+  "icons": {
+    "512": "images/shell-512.png",
+    "128": "images/shell-128.png",
+    "32": "images/shell-32.png",
+    "16": "images/shell-16.png"
+  },
+  "description": "Terminal emulator and SSH client.",
+  "offline_enabled": true,
+  "permissions": [
+    "clipboardRead",
+    "clipboardWrite",
+    "unlimitedStorage",
+    "terminalPrivate"
+  ],
+  "web_accessible_resources": [
+    "html/nassh_google_relay.html",
+    "html/nassh_connect_dialog.html"
+  ],
+  "app": {
+    "launch": {
+      "local_path": "html/nassh.html"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+#! /bin/bash
+
+case $(uname) in
+    Linux)
+	    GDB_SCRIPT=gdb_script_linux
+	    TOOLCHAIN=linux_x86_glibc
+	    ;;
+    Darwin)
+	    GDB_SCRIPT=gdb_script_darwin
+	    TOOLCHAIN=mac_x86_glibc
+	    ;;
+    *)
+	    ;;
+esac
+
+$NACL_SDK_ROOT/toolchain/$TOOLCHAIN/bin/x86_64-nacl-gdb -x $GDB_SCRIPT
+#$NACL_SDK_ROOT/toolchain/$TOOLCHAIN/bin/i686-nacl-gdb -x $GDB_SCRIPT

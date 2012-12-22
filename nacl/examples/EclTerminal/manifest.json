@@ -1,0 +1,17 @@
+{
+  "name": "HTML5 Terminal",
+  "description": "Command-line terminal shell running on top of HTML5 APIs",
+  "version": "1.0.0",
+  "icons": {
+    "16": "terminal-icon.png",
+    "128": "terminal-icon.png"
+  },
+  "minimum_chrome_version": "11",
+  /*"urls": [
+    "*://localhost/"
+  ],*/
+  "launch_url": "terminal.html",
+  "permissions": [
+    "unlimitedStorage"
+  ]
+}
