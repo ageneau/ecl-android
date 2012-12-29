@@ -19,6 +19,10 @@ THIS_MAKEFILE:=$(abspath $(lastword $(MAKEFILE_LIST)))
 NACL_SDK_ROOT?=$(abspath $(dir $(THIS_MAKEFILE))../..)
 CHROME_PATH?=Undefined
 
+
+NACL_SDK_VER:=$(shell basename "$(NACL_SDK_ROOT)" | cut -d '_' -f2)
+NACL_SDK_VERSION_GT_25:=$(shell expr $(NACL_SDK_VER) \>= 25)
+
 #
 # Defaults
 #
@@ -28,7 +32,7 @@ NACL_WARNINGS:=-Wno-long-long -Wall -Wswitch-enum
 #
 # Project Settings
 #
-VALID_TOOLCHAINS:=newlib glibc linux
+VALID_TOOLCHAINS:=newlib glibc linux pnacl
 TOOLCHAIN?=glibc
 
 
@@ -36,14 +40,16 @@ ECL_ROOT_INSTALL_DIR:=../../../local-install
 
 ECL=$(ECL_ROOT_INSTALL_DIR)/host/bin/ecl
 
-ECL_ROOT32=$(ECL_ROOT_INSTALL_DIR)/nacl32/
-ECL_ROOT64=$(ECL_ROOT_INSTALL_DIR)/nacl64/
+ECL_ROOT32=$(ECL_ROOT_INSTALL_DIR)/nacl32
+ECL_ROOT64=$(ECL_ROOT_INSTALL_DIR)/nacl64
+ECL_ROOTPNACL=$(ECL_ROOT_INSTALL_DIR)/pnacl
 
 ECL_CFLAGS=-I$(ECL_ROOT32)/include
 ECL_VER := $(shell basename $(ECL_ROOT32)/lib/ecl-* |cut -d "-" -f2)
 
 ECL_LIBS32=-L$(ECL_ROOT32)/lib -lecl -lgmp -lgc -L$(ECL_ROOT32)/lib/ecl-$(ECL_VER) -lasdf -lecl-cdb -lecl-help -lnacl-mounts
 ECL_LIBS64=-L$(ECL_ROOT64)/lib -lecl -lgmp -lgc -L$(ECL_ROOT64)/lib/ecl-$(ECL_VER) -lasdf -lecl-cdb -lecl-help -lnacl-mounts
+ECL_LIBSPNACL=-L$(ECL_ROOTPNACL)/lib -lecl -lgmp -lgc -L$(ECL_ROOTPNACL)/lib/ecl-$(ECL_VER) -lasdf -lecl-cdb -lecl-help -lnacl-mounts
 
 #
 # Default target
@@ -120,6 +126,15 @@ GLIBC_CXXFLAGS?=-MMD -pthread $(NACL_WARNINGS) -idirafter $(NACL_SDK_ROOT)/inclu
 GLIBC_LDFLAGS?=-pthread
 GLIBC_LIBS32=$(ECL_LIBS32) -lppapi_cpp -lppapi -lpthread
 GLIBC_LIBS64=$(ECL_LIBS64) -lppapi_cpp -lppapi -lpthread
+
+PNACL_CC?=$(TC_PATH)/$(OSNAME)_x86_pnacl/newlib/bin/pnacl-clang -c
+PNACL_CXX?=$(TC_PATH)/$(OSNAME)_x86_pnacl/newlib/bin/pnacl-clang++ -c
+PNACL_LINK?=$(TC_PATH)/$(OSNAME)_x86_pnacl/newlib/bin/pnacl-clang++
+PNACL_LIB?=$(TC_PATH)/$(OSNAME)_x86_pnacl/newlib/bin/pnacl-ar r
+PNACL_CXXFLAGS?=-MMD -pthread $(NACL_WARNINGS) -idirafter $(NACL_SDK_ROOT)/include $(ECL_CFLAGS)
+PNACL_LDFLAGS?=-pthread
+PNACL_LIBS=$(ECL_LIBSPNACL) -lppapi_cpp -lppapi -lpthread
+TRANSLATE:=$(TC_PATH)/$(OSNAME)_x86_pnacl/newlib/bin/pnacl-translate
 
 LINUX_CC?=gcc -c
 LINUX_CXX?=g++ -c -std=gnu++98
@@ -315,6 +330,72 @@ linux/Release/lib$(PROJECT).so : $(PROJECT_LINUX_RELEASE__O)
 #ALL_TARGETS+=linux/Release/$(PROJECT).nmf
 linux/Release/$(PROJECT).nmf : linux/Release/lib$(PROJECT).so | linux/Release
 	echo {} > $@
+
+#
+# Rules for pnacl toolchain
+#
+pnacl:
+	$(MKDIR) pnacl
+pnacl/Debug: | pnacl
+	$(MKDIR) pnacl/Debug
+pnacl/Release: | pnacl
+	$(MKDIR) pnacl/Release
+
+# Include header dependency files.
+-include pnacl/Debug/*.d
+-include pnacl/Release/*.d
+
+PPAPI_DEBUG:=$(abspath pnacl/Debug/$(PROJECT).pexe);application/x-ppapi-debug
+pnacl/Debug/%.o : %.cc $(THIS_MAKE) | pnacl/Debug
+	$(PNACL_CXX) -o $@ $< -g -O0  $(PNACL_CXXFLAGS) $(PROJECT_CCFLAGS)  
+
+
+PROJECT_PNACL_DEBUG_O:=$(patsubst %,pnacl/Debug/%.o,$(PROJECT_OBJS))
+pnacl/Debug/$(PROJECT).pexe : $(PROJECT_PNACL_DEBUG_O)
+	$(PNACL_LINK) -o $@ $^ -g $(PNACL_LDFLAGS) $(PROJECT_LDFLAGS) -L$(NACL_SDK_ROOT)/lib/pnacl/Debug $(PNACL_LIBS)
+
+pnacl/Debug/$(PROJECT)_x86_32.nexe : pnacl/Debug/$(PROJECT).pexe
+	$(TRANSLATE) -arch x86-32 $< -o $@
+
+pnacl/Debug/$(PROJECT)_x86_64.nexe : pnacl/Debug/$(PROJECT).pexe
+	$(TRANSLATE) -arch x86-64 $< -o $@
+
+pnacl/Debug/$(PROJECT)_arm.nexe : pnacl/Debug/$(PROJECT).pexe
+	$(TRANSLATE) -arch arm $< -o $@
+
+
+ifeq "$(NACL_SDK_VERSION_GT_25)" "1"
+ALL_TARGETS+=pnacl/Debug/$(PROJECT).nmf
+endif
+
+pnacl/Debug/$(PROJECT).nmf : pnacl/Debug/$(PROJECT)_x86_32.nexe pnacl/Debug/$(PROJECT)_x86_64.nexe pnacl/Debug/$(PROJECT)_arm.nexe
+	$(NMF) -o $@ $^ -s pnacl/Debug
+
+PPAPI_RELEASE:=$(abspath pnacl/Release/$(PROJECT).pexe);application/x-ppapi-release
+pnacl/Release/$(PROJECT).o : $(PROJECT).c $(THIS_MAKE) | pnacl/Release
+	$(PNACL_CC) -o $@ $< -O2  $(PNACL_CCFLAGS) $(PROJECT_CCFLAGS)  
+
+
+PROJECT_PNACL_RELEASE_O:=$(patsubst %,pnacl/Release/%.o,$(PROJECT_OBJS))
+pnacl/Release/$(PROJECT).pexe : $(PROJECT_PNACL_RELEASE_O)
+	$(PNACL_LINK) -o $@ $^ $(PNACL_LDFLAGS) $(PROJECT_LDFLAGS) -L$(NACL_SDK_ROOT)/lib/pnacl/Release -lppapi -lpthread
+
+pnacl/Release/$(PROJECT)_x86_32.nexe : pnacl/Release/$(PROJECT).pexe
+	$(TRANSLATE) -arch x86-32 $< -o $@
+
+pnacl/Release/$(PROJECT)_x86_64.nexe : pnacl/Release/$(PROJECT).pexe
+	$(TRANSLATE) -arch x86-64 $< -o $@
+
+pnacl/Release/$(PROJECT)_arm.nexe : pnacl/Release/$(PROJECT).pexe
+	$(TRANSLATE) -arch arm $< -o $@
+
+ifeq "$(NACL_SDK_VERSION_GT_25)" "1"
+ALL_TARGETS+=pnacl/Release/$(PROJECT).nmf
+endif
+
+pnacl/Release/$(PROJECT).nmf : pnacl/Release/$(PROJECT)_x86_32.nexe pnacl/Release/$(PROJECT)_x86_64.nexe pnacl/Release/$(PROJECT)_arm.nexe
+	$(NMF) -o $@ $^ -s pnacl/Release
+
 
 #
 # Target to remove temporary files
