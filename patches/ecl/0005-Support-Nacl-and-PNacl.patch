@@ -1,22 +1,22 @@
-From 7af14b8a6e0c7e54ed853d02744b75f10f86a445 Mon Sep 17 00:00:00 2001
+From 374cdb550903b5331c9e5c859ee1c71310afb9b4 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sat, 22 Dec 2012 00:54:47 -0300
-Subject: [PATCH 5/5] Nacl
+Subject: [PATCH 5/5] Support Nacl and PNacl
 
 ---
- src/aclocal.m4          |   28 ++++++++++++++++++++++++++++
- src/c/stacks.d          |    2 +-
- src/c/unixint.d         |    4 ++--
- src/c/unixsys.d         |   22 ++++++++++++++++++++--
- src/cmp/cmpdefs.lsp     |    8 ++++++--
- src/cmp/cmpmain.lsp     |    2 +-
- src/cmp/cmpname.lsp     |   21 +++++++++++++++++----
- src/cmp/crosscmp.lsp.in |    8 ++++++--
- src/compile.lsp.in      |   12 ++++++------
- src/configure           |   29 +++++++++++++++++++++++++++++
- src/h/config.h.in       |    4 ++++
- src/lsp/config.lsp.in   |    4 ++--
- 12 files changed, 122 insertions(+), 22 deletions(-)
+ src/aclocal.m4          | 28 ++++++++++++++++++++++++++++
+ src/c/stacks.d          |  2 +-
+ src/c/unixint.d         |  4 ++--
+ src/c/unixsys.d         | 22 ++++++++++++++++++++--
+ src/cmp/cmpdefs.lsp     |  8 ++++++--
+ src/cmp/cmpmain.lsp     |  2 +-
+ src/cmp/cmpname.lsp     | 21 +++++++++++++++++----
+ src/cmp/crosscmp.lsp.in |  8 ++++++--
+ src/compile.lsp.in      | 12 ++++++------
+ src/configure           | 29 +++++++++++++++++++++++++++++
+ src/h/config.h.in       | 12 ++++++++++++
+ src/lsp/config.lsp.in   |  4 ++--
+ 12 files changed, 130 insertions(+), 22 deletions(-)
 
 diff --git a/src/aclocal.m4 b/src/aclocal.m4
 index ba9790e..35b312d 100644
@@ -336,7 +336,7 @@ index cde1fd8..b75ea7f 100755
  
  case "${host_cpu}" in
 diff --git a/src/h/config.h.in b/src/h/config.h.in
-index 822e226..d0c3886 100644
+index 822e226..65be6db 100644
 --- a/src/h/config.h.in
 +++ b/src/h/config.h.in
 @@ -122,7 +122,9 @@
@@ -349,7 +349,38 @@ index 822e226..d0c3886 100644
  #if defined(ECL_MS_WINDOWS_HOST)
  # define ECL_USE_GUARD_PAGE
  #endif
-@@ -351,7 +353,9 @@ typedef unsigned char ecl_base_char;
+@@ -324,22 +326,30 @@ typedef unsigned char ecl_base_char;
+ /* float.h for epsilons, maximum real numbers, etc			*/
+ #undef HAVE_FLOAT_H
+ /* select()								*/
++#ifndef NACL
+ #undef HAVE_SELECT
++#endif
+ #undef HAVE_SYS_SELECT_H
+ #undef HAVE_SYS_IOCTL_H
+ /* putenv() or setenv()							*/
+ #undef HAVE_SETENV
+ #undef HAVE_PUTENV
+ /* times() and sys/times.h						*/
++#ifndef NACL
+ #undef HAVE_TIMES
++#endif
+ /* gettimeofday() and sys/time.h					*/
+ #undef HAVE_GETTIMEOFDAY
+ /* getrusage() and sys/resource.h					*/
++#ifndef NACL
+ #undef HAVE_GETRUSAGE
++#endif
+ /* user home directory, user name, etc...				*/
+ #undef HAVE_PW_H
+ /* symbolic links and checking their existence				*/
++#ifndef NACL
+ #undef HAVE_LSTAT
++#endif
+ /* safe creation of temporary files					*/
+ #undef HAVE_MKSTEMP
+ /* timer for userland threads						*/
+@@ -351,7 +361,9 @@ typedef unsigned char ecl_base_char;
  #undef HAVE_LINK_H
  #undef HAVE_MACH_O_DYLD_H
  /* POSIX signals							*/
@@ -379,5 +410,5 @@ index 42cb361..e191fcd 100644
   (ffi:c-inline () () :object "{
  	cl_object output;
 -- 
-1.7.10.4
+1.8.0.2
 

@@ -51,6 +51,7 @@ patch-mpir:
 
 patch-bdwgc:
 	cd bdwgc && git clean -dxf && git checkout HEAD . && for i in ../patches/bdwgc/*.patch; do patch -p1 < $$i; done
+	cp -f config.sub config.guess nacl/libgc/
 
 copy-slime:
 	-mkdir -p android/HelloEcl/assets/lisp/slime/contrib/

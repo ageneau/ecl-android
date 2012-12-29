@@ -372,13 +372,13 @@ pnacl/Debug/$(PROJECT).nmf : pnacl/Debug/$(PROJECT)_x86_32.nexe pnacl/Debug/$(PR
 	$(NMF) -o $@ $^ -s pnacl/Debug
 
 PPAPI_RELEASE:=$(abspath pnacl/Release/$(PROJECT).pexe);application/x-ppapi-release
-pnacl/Release/$(PROJECT).o : $(PROJECT).c $(THIS_MAKE) | pnacl/Release
-	$(PNACL_CC) -o $@ $< -O2  $(PNACL_CCFLAGS) $(PROJECT_CCFLAGS)  
+pnacl/Release/%.o : %.cc $(THIS_MAKE) | pnacl/Release
+	$(PNACL_CC) -o $@ $< -O2  $(PNACL_CXXFLAGS) $(PROJECT_CCFLAGS)
 
 
 PROJECT_PNACL_RELEASE_O:=$(patsubst %,pnacl/Release/%.o,$(PROJECT_OBJS))
 pnacl/Release/$(PROJECT).pexe : $(PROJECT_PNACL_RELEASE_O)
-	$(PNACL_LINK) -o $@ $^ $(PNACL_LDFLAGS) $(PROJECT_LDFLAGS) -L$(NACL_SDK_ROOT)/lib/pnacl/Release -lppapi -lpthread
+	$(PNACL_LINK) -o $@ $^ $(PNACL_LDFLAGS) $(PROJECT_LDFLAGS) -L$(NACL_SDK_ROOT)/lib/pnacl/Release $(PNACL_LIBS)
 
 pnacl/Release/$(PROJECT)_x86_32.nexe : pnacl/Release/$(PROJECT).pexe
 	$(TRANSLATE) -arch x86-32 $< -o $@
