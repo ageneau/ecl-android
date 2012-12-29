@@ -13,6 +13,11 @@ endif
 
 ifneq ($(NACL_SDK_ROOT),"")
 TARGETS+=nacl32 nacl64
+NACL_SDK_VER:=$(shell basename "$(NACL_SDK_ROOT)" | cut -d '_' -f2)
+NACL_SDK_VERSION_GT_25:=$(shell expr $(NACL_SDK_VER) \>= 25)
+ifeq "$(NACL_SDK_VERSION_GT_25)" "1"
+TARGETS+=pnacl
+endif
 endif
 
 TARGETS_ECL:=$(TARGETS:=.ecl)
@@ -64,7 +69,11 @@ nacl: nacl32.ecl nacl64.ecl
 
 nacl32.ecl: hostnothreads.ecl
 
-nacl64.ecl: host64nothreads.ecl
+nacl64.ecl: hostnothreads.ecl
+
+pnacl: pnacl.ecl
+
+pnacl.ecl: hostnothreads.ecl
 
 iPhoneUniversal.ecl: iPhoneOS iPhoneSimulator
 	-rm -rf $(ECL_INSTALL_ROOT_DIR)/iPhoneUniversal
@@ -107,6 +116,8 @@ iPhoneOS.ecl iPhoneSimulator.ecl android.ecl androidx86.ecl : host.ecl
 
 	touch $@
 
+pnacl.atomic:
+	touch $@
 
 clean:
 	rm -f *.ecl *.gmp *.atomic *.bdwgc

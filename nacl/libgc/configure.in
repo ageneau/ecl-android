@@ -96,7 +96,7 @@ case "$THREADS" in
 	fi
 	AC_DEFINE(THREAD_LOCAL_ALLOC)
 	;;
-     *-*-linux* | *-*-nacl*)
+     *-*-linux* | *-*-nacl* | *pnacl*)
 	AC_DEFINE(GC_LINUX_THREADS)
 	AC_DEFINE(_REENTRANT)
 	;;

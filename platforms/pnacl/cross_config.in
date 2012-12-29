@@ -32,7 +32,7 @@ ECL_NEWLINE=LF
 ###          1 = (f)->_IO_read_end - (f)->_IO_read_ptr
 ###          2 = (f)->_r
 ###          3 = (f)->_cnt
-ECL_FILE_CNT=1
+ECL_FILE_CNT=2
 
 ###
 ### 1.6) Other integer types (set to 'no' to disable)

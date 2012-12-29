@@ -65,9 +65,12 @@ case $project in
 	CFLAGS="$CFLAGS -I$PROJECT_INSTALL_DIR/include"
 
 	case $platform in
-	    nacl*|pnacl)
-		# For NACL we use Naclports libgc
-		export LIBS="$LIBS -lnosys -L$PROJECT_INSTALL_DIR/lib -lpthread"
+	    nacl*)
+#		export LIBS="$LIBS -lpthread -lnosys"
+		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -lnosys"
+		;;
+	    pnacl)
+		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -lnosys"
 		;;
 	    *)
 		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -latomic_ops"
@@ -176,8 +179,8 @@ case $project in
 		fi
 		;;
 	    pnacl)
-		# export ABI=32
-		host=none-pc-nacl # The ASM version compiles for nacl but not on 64 bits
+		export CFLAGS="$CFLAGS -DHAVE_DOUBLE_IEEE_LITTLE_ENDIAN=1"
+		host=none-pc-nacl
 
 		config_opts="\
 			--with-pic \
@@ -232,13 +235,20 @@ case $project in
 			--enable-handle-fork=no \
 			--enable-threads=posix"
 		;;
-	    nacl*|pnacl)
+	    nacl*)
 		config_opts="\
 			--disable-shared \
-			--disable-threads \
 			--enable-large-config \
 			--enable-handle-fork=no \
-			--enable-threads=posix"
+			--enable-threads=no"
+		srcdir=$PROJECT_ROOT/nacl/libgc
+		;;
+	    pnacl)
+		config_opts="\
+			--disable-shared \
+			--enable-large-config \
+			--enable-handle-fork=no \
+			--enable-threads=no"
 		srcdir=$PROJECT_ROOT/nacl/libgc
 		;;
 	esac

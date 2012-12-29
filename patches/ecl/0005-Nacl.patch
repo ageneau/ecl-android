@@ -1,22 +1,28 @@
-From 619dd45c1fc6079f74ef372a6c3b180d0b43bcbd Mon Sep 17 00:00:00 2001
+From 7af14b8a6e0c7e54ed853d02744b75f10f86a445 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sat, 22 Dec 2012 00:54:47 -0300
 Subject: [PATCH 5/5] Nacl
 
 ---
- src/aclocal.m4    | 14 ++++++++++++++
- src/c/stacks.d    |  2 +-
- src/c/unixint.d   |  4 ++--
- src/c/unixsys.d   | 22 ++++++++++++++++++++--
- src/configure     | 16 ++++++++++++++++
- src/h/config.h.in |  4 ++++
- 6 files changed, 57 insertions(+), 5 deletions(-)
+ src/aclocal.m4          |   28 ++++++++++++++++++++++++++++
+ src/c/stacks.d          |    2 +-
+ src/c/unixint.d         |    4 ++--
+ src/c/unixsys.d         |   22 ++++++++++++++++++++--
+ src/cmp/cmpdefs.lsp     |    8 ++++++--
+ src/cmp/cmpmain.lsp     |    2 +-
+ src/cmp/cmpname.lsp     |   21 +++++++++++++++++----
+ src/cmp/crosscmp.lsp.in |    8 ++++++--
+ src/compile.lsp.in      |   12 ++++++------
+ src/configure           |   29 +++++++++++++++++++++++++++++
+ src/h/config.h.in       |    4 ++++
+ src/lsp/config.lsp.in   |    4 ++--
+ 12 files changed, 122 insertions(+), 22 deletions(-)
 
 diff --git a/src/aclocal.m4 b/src/aclocal.m4
-index ba9790e..855b23d 100644
+index ba9790e..35b312d 100644
 --- a/src/aclocal.m4
 +++ b/src/aclocal.m4
-@@ -446,10 +446,24 @@ case "${host_os}" in
+@@ -446,10 +446,38 @@ case "${host_os}" in
  esac
  
  case "${host}" in
@@ -32,6 +38,20 @@ index ba9790e..855b23d 100644
 +		SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
 +		SONAME_LDFLAGS="-Wl,-soname,SONAME"
 +		ECL_ADD_FEATURE([nacl])
++                ;;
++	*-pnacl)
++		thehost='linux'
++		THREAD_CFLAGS='-D_THREAD_SAFE'
++		THREAD_LIBS='-lpthread'
++		dnl SHARED_LDFLAGS="-shared ${LDFLAGS}"
++		dnl BUNDLE_LDFLAGS="-shared ${LDFLAGS}"
++		ECL_GC_DIR=gc-unstable
++		dnl ECL_LDRPATH='-Wl,--rpath,~A'
++		CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 ${CFLAGS}"
++		dnl SONAME="${SHAREDPREFIX}ecl.${SHAREDEXT}.SOVERSION"
++		dnl SONAME_LDFLAGS="-Wl,-soname,SONAME"
++		ECL_ADD_FEATURE([nacl])
++		ECL_ADD_FEATURE([pnacl])
 +                ;;
  	i686*-android*)
  		THREAD_LIBS=''
@@ -145,11 +165,135 @@ index 15379a5..091bcc3 100644
  #endif /* mingw */
  	if (Null(pid)) {
  		if (parent_write) close(parent_write);
+diff --git a/src/cmp/cmpdefs.lsp b/src/cmp/cmpdefs.lsp
+index 61ad58b..f1f9188 100644
+--- a/src/cmp/cmpdefs.lsp
++++ b/src/cmp/cmpdefs.lsp
+@@ -43,8 +43,12 @@ coprocessor).")
+ (defvar *ld-format* #-msvc "~A -o ~S -L~S ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
+                     #+msvc "~A -Fe~S~* ~{~S ~} ~@[~S~]~{ '~A'~} ~A")
+ 
+-(defvar *cc-format* #-msvc "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}"
+-                    #+msvc "~A -I. -I\"~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -Fo\"~A\"~{ '~A'~}")
++(defvar *cc-format* (cond ((member :msvc *features*)
++			   "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}")
++			  ((member :nacl *features*) ;; pnacl-clang doesn't support -w
++			   "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -c \"~A\" -o \"~A\"~{ '~A'~}")
++			  (t
++			   "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}")))
+ 
+ #-dlopen
+ (defvar *ld-flags* "@LDFLAGS@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@")
+diff --git a/src/cmp/cmpmain.lsp b/src/cmp/cmpmain.lsp
+index e6fb582..c4b33a4 100755
+--- a/src/cmp/cmpmain.lsp
++++ b/src/cmp/cmpmain.lsp
+@@ -929,7 +929,7 @@ from the C language code.  NIL means \"do not create the file\"."
+      ,@(split-program-options *cc-flags*)
+      ,@(and (>= (cmp-env-optimization 'speed) 2)
+             (split-program-options *cc-optimize*))
+-     "-w" "-c"
++     #-nacl "-w" "-c"
+      ,(brief-namestring c-pathname)
+      #-msvc
+      ,@(list "-o" (brief-namestring o-pathname))
+diff --git a/src/cmp/cmpname.lsp b/src/cmp/cmpname.lsp
+index b9d06c3..4a4c3f4 100644
+--- a/src/cmp/cmpname.lsp
++++ b/src/cmp/cmpname.lsp
+@@ -86,10 +86,23 @@ initialization function in object files have more or less unpredictable
+ names, we store them in a string in the object file. This string is recognized
+ by the TAG it has at the beginning This function searches that tag and retrieves
+ the function name it precedes."
+-  (with-open-file (stream file :direction :input :element-type '(unsigned-byte 8))
+-    (when (search-tag stream tag)
+-      (let ((name (read-name stream)))
+-	name))))
++  (cond ((member :pnacl *features*)
++	 (let* ((pnacl-dis (or (ext:getenv "PNACL_DIS")
++			       (error "please set the PNACL_DIS environment variable to your toolchain's pnacl-dis location")))
++		(stream (ext:run-program
++			 pnacl-dis
++			 (list (namestring (translate-logical-pathname file)))
++			 :wait nil :input NIL :output :STREAM :error :OUTPUT)))
++	   (unless stream
++	     (error "Unable to disasemble file ~a" file))
++	   (when (search-tag stream tag)
++	     (let ((name (read-name stream)))
++	       name))))
++	(t
++	 (with-open-file (stream file :direction :input :element-type '(unsigned-byte 8))
++	   (when (search-tag stream tag)
++	     (let ((name (read-name stream)))
++	       name))))))
+ 
+ (defun remove-prefix (prefix name)
+   (if (equal 0 (search prefix name))
+diff --git a/src/cmp/crosscmp.lsp.in b/src/cmp/crosscmp.lsp.in
+index 3038a60..97f8553 100644
+--- a/src/cmp/crosscmp.lsp.in
++++ b/src/cmp/crosscmp.lsp.in
+@@ -29,8 +29,12 @@
+ 		     :ld-format #-msvc "~A -o ~S -L~S ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
+ 		     #+msvc "~A -Fe~S~* ~{~S ~} ~@[~S~]~{ '~A'~} ~A"
+       
+-		     :cc-format #-msvc "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}"
+-		     #+msvc "~A -I. -I\"~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -Fo\"~A\"~{ '~A'~}"
++		     :cc-format (cond ((member :msvc *features*)
++				       "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}")
++				      ((member :nacl *features*) ;; pnacl-clang doesn't support -w
++			   "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -c \"~A\" -o \"~A\"~{ '~A'~}")
++				      (t
++				       "~A -I. \"-I~A\" ~A ~:[~*~;~A~] -w -c \"~A\" -o \"~A\"~{ '~A'~}"))
+ 		      
+ 		     :ld-flags (if (member :dlopen *features*)
+ 				   "@LDFLAGS@ -L@libdir\@ -lecl @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
+diff --git a/src/compile.lsp.in b/src/compile.lsp.in
+index 6c8eb12..10d306c 100755
+--- a/src/compile.lsp.in
++++ b/src/compile.lsp.in
+@@ -52,22 +52,22 @@
+       c::*ecl-library-directory* "@true_builddir@/")
+ #-:wants-dlopen 
+ (setf c::*ld-flags*
+-      "@LDFLAGS@ @LIBPREFIX@ecl.@LIBEXT@ @CORE_LIBS@ @LIBS@ @FASL_LIBS@")
++      "@LDFLAGS@ @LIBPREFIX@ecl.@LIBEXT@ @CORE_LIBS@ @FASL_LIBS@ @LIBS@")
+ #+(and :wants-dlopen (not nonstop))
+ (setf c::*ld-flags*
+       "@LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@"
+       c::*ld-shared-flags*
+-      "@SHARED_LDFLAGS@ @LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@"
++      "@SHARED_LDFLAGS@ @LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @FASL_LIBS@ @LIBS@"
+       c::*ld-bundle-flags*
+-      "@BUNDLE_LDFLAGS@ @LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@")
++      "@BUNDLE_LDFLAGS@ @LDFLAGS@ @SHAREDPREFIX@ecl.@SHAREDEXT@ @FASL_LIBS@ @LIBS@")
+ ;;; FIXME: The nonstop platform does not support soname
+ #+(and :wants-dlopen nonstop)
+ (setf c::*ld-flags*
+       "@LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@"
+       c::*ld-shared-flags*
+-      "@SHARED_LDFLAGS@ @LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@"
++      "@SHARED_LDFLAGS@ @LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @FASL_LIBS@ @LIBS@"
+       c::*ld-bundle-flags*
+-      "@BUNDLE_LDFLAGS@ @LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @LIBS@ @FASL_LIBS@")
++      "@BUNDLE_LDFLAGS@ @LDFLAGS@ -Wld=-l@SHAREDPREFIX@ecl.@SHAREDEXT@ @FASL_LIBS@ @LIBS@")
+ 
+ ;;;
+ ;;; * Avoid name clashes with user supplied code.
+@@ -124,7 +124,7 @@
+ ;;;
+ ;;; We do not need the -rpath flag for the library, nor -lecl.
+ ;;;
+-(let* ((c::*ld-shared-flags* #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ @SONAME_LDFLAGS@ @CORE_LIBS@ @LIBS@ @FASL_LIBS@"
++(let* ((c::*ld-shared-flags* #-msvc "@SHARED_LDFLAGS@ @LDFLAGS@ @SONAME_LDFLAGS@ @CORE_LIBS@ @FASL_LIBS@ @LIBS@"
+ 			     #+msvc "@SHARED_LDFLAGS@ @LDFLAGS@ @STATICLIBS@ @CLIBS@")
+        (c::*cc-flags* (concatenate 'string "-DECL_API -I@true_builddir@/c " c::*cc-flags*))
+        (extra-args nil))
 diff --git a/src/configure b/src/configure
-index cde1fd8..f4d766a 100755
+index cde1fd8..b75ea7f 100755
 --- a/src/configure
 +++ b/src/configure
-@@ -5055,12 +5055,28 @@ LSP_FEATURES="(cons :android ${LSP_FEATURES})"
+@@ -5055,12 +5055,41 @@ LSP_FEATURES="(cons :android ${LSP_FEATURES})"
  esac
  
  case "${host}" in
@@ -166,6 +310,19 @@ index cde1fd8..f4d766a 100755
 +		SONAME_LDFLAGS="-Wl,-soname,SONAME"
 +
 +LSP_FEATURES="(cons :nacl ${LSP_FEATURES})"
++
++                ;;
++	*-pnacl)
++		thehost='linux'
++		THREAD_CFLAGS='-D_THREAD_SAFE'
++		THREAD_LIBS='-lpthread'
++						ECL_GC_DIR=gc-unstable
++				CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 ${CFLAGS}"
++
++LSP_FEATURES="(cons :nacl ${LSP_FEATURES})"
++
++
++LSP_FEATURES="(cons :pnacl ${LSP_FEATURES})"
 +
 +                ;;
  	i686*-android*)
@@ -202,6 +359,25 @@ index 822e226..d0c3886 100644
  /* isatty() checks whether a file is connected to a			*/
  #undef HAVE_ISATTY
  /* can manipulate floating point environment				*/
+diff --git a/src/lsp/config.lsp.in b/src/lsp/config.lsp.in
+index 42cb361..e191fcd 100644
+--- a/src/lsp/config.lsp.in
++++ b/src/lsp/config.lsp.in
+@@ -5,12 +5,12 @@
+ ;;
+ (in-package "LISP")
+ 
+-#+(and (not ecl-min) uname)
++#+(and (not ecl-min) (not nacl) uname)
+ (ffi:clines "
+ #include <sys/utsname.h>
+ ")
+ 
+-#+(and (not ecl-min) uname)
++#+(and (not ecl-min) (not nacl) uname)
+ (defun uname ()
+  (ffi:c-inline () () :object "{
+ 	cl_object output;
 -- 
-1.8.0.2
+1.7.10.4
 

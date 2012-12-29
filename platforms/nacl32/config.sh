@@ -75,6 +75,7 @@ case $platform in
     pnacl)
 	NACL_TOOLCHAIN=$NACL_SDK_ROOT/toolchain/${toolchain_dir}_pnacl/newlib
 
+	export PNACL_DIS=$(echo ${NACL_TOOLCHAIN}/bin/${arch}-dis)
 	export OBJCOPY=$(echo ${NACL_TOOLCHAIN}/bin/${arch}*-objcopy)
 	export STRIP=$(echo ${NACL_TOOLCHAIN}/bin/${arch}*-strip)
 	export AR=$(echo ${NACL_TOOLCHAIN}/bin/${arch}*-ar)
