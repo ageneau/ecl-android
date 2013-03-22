@@ -1,0 +1,25 @@
+From 1f09efe39f72a19300039298ee3cfdae15117bd9 Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Fri, 22 Mar 2013 19:05:53 -0300
+Subject: [PATCH] Fix autogen.sh error on MacOS
+
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 347c881..731d999 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,7 +8,7 @@ AC_CONFIG_MACRO_DIR([m4])
+ AM_INIT_AUTOMAKE([foreign dist-bzip2 nostdinc])
+ AM_MAINTAINER_MODE
+ 
+-AM_CONFIG_HEADER(src/config.h)
++AC_CONFIG_HEADER(src/config.h)
+ 
+ # Checks for programs.
+ AM_PROG_CC_C_O
+-- 
+1.8.1.3
+

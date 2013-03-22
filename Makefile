@@ -30,7 +30,7 @@ UNAME:=$(shell uname)
 
 all: $(TARGETS_ECL) $(TARGETS_GMP) $(TARGETS_ATOMIC) $(TARGETS_GMP)
 
-update: update-modules patch-ecl patch-mpir patch-bdwgc patch-cffi copy-slime
+update: update-modules patch-ecl patch-mpir patch-atomic patch-bdwgc patch-cffi copy-slime
 	echo "ECL directory patched for android"
 
 update-modules:
@@ -52,6 +52,9 @@ patch-mpir:
 patch-bdwgc:
 	cd bdwgc && git clean -dxf && git checkout HEAD . && for i in ../patches/bdwgc/*.patch; do patch -p1 < $$i; done
 	cp -f config.sub config.guess nacl/libgc/
+
+patch-atomic:
+	cd libatomic_ops && git clean -dxf && git checkout HEAD . && for i in ../patches/libatomic_ops/*.patch; do patch -p1 < $$i; done
 
 copy-slime:
 	-mkdir -p android/HelloEcl/assets/lisp/slime/contrib/

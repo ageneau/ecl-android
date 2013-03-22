@@ -1,10 +1,10 @@
-From 30869cc424dabe15083222d61653a6018d151f2a Mon Sep 17 00:00:00 2001
+From c1faf6207c51ca9f25ab72b022fb0dd7b7bb325d Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Sat, 22 Dec 2012 04:11:32 -0300
-Subject: [PATCH 2/2] NACL
+Subject: [PATCH 2/3] NACL
 
 ---
- configure.ac |    2 +-
+ configure.ac | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
@@ -21,5 +21,5 @@ index a33c21e..a7cada4 100644
          AC_DEFINE(_REENTRANT)
          if test "${enable_parallel_mark}" != no; then
 -- 
-1.7.10.4
+1.8.1.3
 
