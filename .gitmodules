@@ -9,7 +9,7 @@
 	url = git://common-lisp.net/projects/mirror/slime.git
 [submodule "lisp-packages/cl-opengl"]
 	path = lisp-packages/cl-opengl
-	url = git@github.com:ageneau/cl-opengl.git
+	url = git://github.com/ageneau/cl-opengl.git
 [submodule "lisp-packages/cffi"]
 	path = lisp-packages/cffi
 	url = https://github.com/cffi/cffi.git
