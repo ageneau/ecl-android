@@ -7,11 +7,11 @@ ifeq ($(UNAME),Darwin)
 TARGETS+=iPhoneOS iPhoneSimulator
 endif
 
-ifneq ($(ANDROID_NDK_ROOT),"")
+ifneq ($(ANDROID_NDK_ROOT),)
 TARGETS+=android androidx86
 endif
 
-ifneq ($(NACL_SDK_ROOT),"")
+ifneq ($(NACL_SDK_ROOT),)
 TARGETS+=nacl32 nacl64
 NACL_SDK_VER:=$(shell basename "$(NACL_SDK_ROOT)" | cut -d '_' -f2)
 NACL_SDK_VERSION_GT_25:=$(shell expr $(NACL_SDK_VER) \>= 25)
@@ -31,7 +31,7 @@ UNAME:=$(shell uname)
 all: $(TARGETS_ECL) $(TARGETS_GMP) $(TARGETS_ATOMIC) $(TARGETS_GMP)
 
 update: update-modules patch-ecl patch-mpir patch-atomic patch-bdwgc patch-cffi copy-slime
-	echo "ECL directory patched for android"
+	echo "ECL directory patched for android/iOS/NaCL"
 
 update-modules:
 	git submodule init
