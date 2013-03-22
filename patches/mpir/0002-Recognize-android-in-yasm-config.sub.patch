@@ -1,10 +1,10 @@
-From 337b150f3517143cb3f8072395faa6914794dc46 Mon Sep 17 00:00:00 2001
+From d17fd44979515de3ff44c121d258d29d1a0a2487 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Wed, 19 Dec 2012 18:07:43 -0300
 Subject: [PATCH 2/4] Recognize android in yasm config.sub
 
 ---
- yasm/config/config.sub |   10 +++++++---
+ yasm/config/config.sub | 10 +++++++---
  1 file changed, 7 insertions(+), 3 deletions(-)
  mode change 100644 => 100755 yasm/config/config.sub
 
@@ -49,5 +49,5 @@ index 8748d61..13a299f
  	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
  	      | -storm-chaos* | -tops10* | -tenex* | -tops20* | -its* \
 -- 
-1.7.10.4
+1.8.1.3
 
