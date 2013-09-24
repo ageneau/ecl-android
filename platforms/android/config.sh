@@ -40,12 +40,19 @@ if [[ ! -d "${ANDROID_NDK_ROOT}" ]]; then
 fi
 
 host_os=$(uname -s | sed -e 's/Linux/linux/;s/Darwin/mac/')
-
+host_platform=$(uname -i)
 
 case "${host_os}" in
   "linux")
-    toolchain_dir="linux-x86"
-    ;;
+        case "${host_platform}" in
+            "x86_64")
+                toolchain_dir="linux-x86_64"
+                ;;
+            *)
+                toolchain_dir="linux-x86"
+                ;;
+        esac
+        ;;
   "mac")
     toolchain_dir="darwin-x86"
     ;;
