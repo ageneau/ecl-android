@@ -12,7 +12,7 @@ TARGETS+=android androidx86
 endif
 
 ifneq ($(NACL_SDK_ROOT),)
-TARGETS+=nacl32 nacl64
+TARGETS+=nacl_x86_32_glibc nacl_x86_64_glibc nacl_x86_32_newlib nacl_x86_64_newlib
 NACL_SDK_VER:=$(shell basename "$(NACL_SDK_ROOT)" | cut -d '_' -f2)
 NACL_SDK_VERSION_GT_25:=$(shell expr $(NACL_SDK_VER) \>= 25)
 ifeq "$(NACL_SDK_VERSION_GT_25)" "1"
@@ -69,15 +69,9 @@ iPhoneOS: iPhoneOS.ecl
 
 ios: iPhoneUniversal.ecl
 
-nacl: nacl32.ecl nacl64.ecl
+nacl: nacl_x86_32_glibc.ecl nacl_x86_64_glibc.ecl
 
-nacl32.ecl: hostnothreads.ecl
-
-nacl64.ecl: hostnothreads.ecl
-
-pnacl: pnacl.ecl
-
-pnacl.ecl: hostnothreads.ecl
+nacl_x86_32_glibc.ecl nacl_x86_64_glibc.ecl nacl_x86_32_newlib.ecl nacl_x86_64_newlib.ecl pnacl: hostnothreads.ecl
 
 iPhoneUniversal.ecl: iPhoneOS iPhoneSimulator
 	-rm -rf $(ECL_INSTALL_ROOT_DIR)/iPhoneUniversal
@@ -120,7 +114,7 @@ iPhoneOS.ecl iPhoneSimulator.ecl android.ecl androidx86.ecl : host.ecl
 
 	touch $@
 
-pnacl.atomic:
+nacl_x86_32_glibc.atomic nacl_x86_64_glibc.atomic nacl_x86_32_newlib.atomic nacl_x86_64_newlib.atomic pnacl.atomic:
 	touch $@
 
 clean:

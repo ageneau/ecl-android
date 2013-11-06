@@ -1,5 +1,12 @@
 Install procedure:
 
+Linux:
+Make sure you have gcc installed and that it can create 32 bits binaries
+(sudo apt-get install gcc-multilib on Ubuntu/Debian)
+
+MacOS:
+Install XCode + Command line tools
+
 $ make update # This download and patches the externals needed by the project
 
 __Android__
@@ -33,11 +40,16 @@ $ ant debug install
 
 __Native client__
 
-export NACL_SDK_ROOT=/opt/nacl/pepper_23 # Adjust for your environment
+You need at least Chrome 31 + NACL sdk version 31
+Make sure you have NACL enable in "about:flags"
 
-You need to first compile "nacl-mounts" from naclports.
+export NACL_SDK_ROOT=/opt/nacl/pepper_31 # Adjust for your environment
+mkdir naclports; cd naclports
+gclient config http://naclports.googlecode.com/svn/trunk/src
+gclient sync -r 973
+export NACL_PORTS_ROOT=path_to_naclport_trunk
+
+In order to compile the example app, you need to compile some packages from naclports:
 cd $NACL_PORTS_ROOT/src
-NACL_GLIBC=1 make nacl-mounts
-NACL_GLIBC=1 NACL_PACKAGES_BITSIZE=64 make nacl-mounts
-
+./make_all.sh tar glibc-compat
 

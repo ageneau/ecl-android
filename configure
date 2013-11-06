@@ -5,7 +5,7 @@ usage()
     echo "Usage: `basename $0` project platform"
     echo ""
     echo " project     -- one of: ecl, mpir, libatomic_ops, bdwgc, libatomic_ops"
-    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86, nacl32, nacl64"
+    echo " platform    -- one of: host, iPhoneOS, iPhoneSimulator, android, androidx86, nacl_x86_32_glibc, nacl_x86_64_glibc"
 }
 
 [ $# == 2 ] || { usage; exit 1; }
@@ -20,7 +20,14 @@ ECL_INSTALL_ROOT_DIR=$PROJECT_ROOT/local-install
 PROJECT_INSTALL_DIR=$ECL_INSTALL_ROOT_DIR/$platform
 export PKG_CONFIG_PATH=$PROJECT_INSTALL_DIR/lib/pkgconfig
 
-template_config=platforms/$platform/cross_config.in
+case $platform in
+    nacl*|pnacl)
+        template_config=platforms/nacl/cross_config_$platform.in
+        ;;
+    *)
+        template_config=platforms/$platform/cross_config.in
+        ;;
+esac
 cross_compiler_platform=host
 host_platform=$($PROJECT_ROOT/config.guess)
 
@@ -48,7 +55,7 @@ case $platform in
 	CFLAGS="$CFLAGS -g -O2"
 	;;
     nacl*|pnacl)
-	. $PROJECT_ROOT/platforms/nacl32/config.sh $platform || exit 1
+	. $PROJECT_ROOT/platforms/nacl/config.sh $platform || exit 1
 	CFLAGS="$CFLAGS -g -O2 -DNACL"
 	;;
     *)
@@ -67,10 +74,10 @@ case $project in
 	case $platform in
 	    nacl*)
 #		export LIBS="$LIBS -lpthread -lnosys"
-		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -lnosys"
+		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -lpthread -lnosys"
 		;;
 	    pnacl)
-		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -lnosys"
+		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -lpthread -lnosys"
 		;;
 	    *)
 		export LIBS="$LIBS -L$PROJECT_INSTALL_DIR/lib -lgc -latomic_ops"
@@ -156,7 +163,7 @@ case $project in
 			--with-cmp=builtin \
     			--disable-shared"
 		;;
-	esac	
+	esac
 	;;
 
     mpir)
@@ -186,7 +193,7 @@ case $project in
 			--with-pic \
 			${base_config_opts}"
 		;;
-	    nacl32)
+	    nacl*x86_32*)
 		# export ABI=32
 		host=none-pc-nacl # The ASM version compiles for nacl but not on 64 bits
 
@@ -194,7 +201,7 @@ case $project in
 			--with-pic \
 			${base_config_opts}"
 		;;
-	    nacl64)
+	    nacl*x86_64*)
 		host=none-pc-nacl
 
 		config_opts="\
@@ -236,6 +243,7 @@ case $project in
 			--enable-threads=posix"
 		;;
 	    nacl*)
+                CFLAGS="$CFLAGS -D_GNU_SOURCE"
 		config_opts="\
 			--disable-shared \
 			--enable-large-config \
@@ -244,6 +252,7 @@ case $project in
 		srcdir=$PROJECT_ROOT/nacl/libgc
 		;;
 	    pnacl)
+                CFLAGS="$CFLAGS -D_GNU_SOURCE"
 		config_opts="\
 			--disable-shared \
 			--enable-large-config \

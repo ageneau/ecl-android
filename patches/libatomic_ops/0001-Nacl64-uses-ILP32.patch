@@ -1,0 +1,25 @@
+From eacfe91a7ec7fbb98a94950d26612a7f440e2cae Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Thu, 7 Nov 2013 13:39:44 -0300
+Subject: [PATCH] Nacl64 uses ILP32
+
+---
+ src/atomic_ops/sysdeps/standard_ao_double_t.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/atomic_ops/sysdeps/standard_ao_double_t.h b/src/atomic_ops/sysdeps/standard_ao_double_t.h
+index bf76979..2a2e639 100644
+--- a/src/atomic_ops/sysdeps/standard_ao_double_t.h
++++ b/src/atomic_ops/sysdeps/standard_ao_double_t.h
+@@ -27,7 +27,7 @@
+ /* Similar things could be done for PPC 64-bit using a VMX data type.   */
+ 
+ #if ((defined(__x86_64__) && __GNUC__ >= 4) || defined(_WIN64)) \
+-    && !defined(__ILP32__)
++  && !(defined(__ILP32__) || (defined(NACL) && defined(__x86_64__)))
+ # include <xmmintrin.h>
+   typedef __m128 double_ptr_storage;
+ #elif defined(_WIN32) && !defined(__GNUC__)
+-- 
+1.8.4
+
