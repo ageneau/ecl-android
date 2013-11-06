@@ -99,7 +99,7 @@ simulator()
     	-isysroot $SDKROOT \
 	-fexceptions \
 	-fvisibility=hidden \
-	-mmacosx-version-min=10.6 \
+	-mios-simulator-version-min=5.0 \
 	-gdwarf-2 \
 	-fobjc-abi-version=2 \
 	-D__IPHONE_OS_VERSION_MIN_REQUIRED=30000 \
@@ -107,7 +107,7 @@ simulator()
 	-DAPPLE -DIPHONE -DIPHONE_SIMULATOR \
 	-DIPHONE_SDK_VER=${int_sdk_ver})
     export LDFLAGS=$(echo -arch i386 \
-    	-isysroot $SDKROOT -mmacosx-version-min=10.6 \
+    	-isysroot $SDKROOT -mios-simulator-version-min=5.0 \
 	-all_load -Xlinker -objc_abi_version -Xlinker 2)
     # the following two definitions are required to force the
     # simulator config.h to match the device config.h

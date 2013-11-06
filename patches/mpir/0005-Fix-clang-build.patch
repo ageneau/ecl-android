@@ -1,0 +1,136 @@
+From cdf72fff890daf869ebffc1dfc237c9343772950 Mon Sep 17 00:00:00 2001
+From: Sylvain Ageneau <ageneau@gmail.com>
+Date: Wed, 6 Nov 2013 12:43:02 -0300
+Subject: [PATCH 5/5] Fix clang build
+
+---
+ acinclude.m4 | 10 +++++-----
+ configure    | 28 ++++++++++++++--------------
+ 2 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index 570ac01..a53ea50 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -480,9 +480,9 @@ gmp_prog_cc_works=yes
+ # first see a simple "main()" works, then go on to other checks
+ GMP_PROG_CC_WORKS_PART([$1], [])
+ 
+-GMP_PROG_CC_WORKS_PART_MAIN([$1], [gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags],
+-[/* The following aborts with gcc-4.3.2 on a 64bit system which is an unusable compiler */
+-#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
++GMP_PROG_CC_WORKS_PART_MAIN([$1], [gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags],
++[/* The following aborts with gcc-4.3.2 on a 64-bit system which is an unusable compiler */
++#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__clang__)
+ int __attribute__((noinline))
+ foo(int i)
+ {
+@@ -566,9 +566,9 @@ int foo ()
+ GMP_PROG_CC_WORKS_PART([$1], [long long reliability test 1],
+ [/* The following provokes a segfault in the compiler on powerpc-apple-darwin.
+    Extracted from tests/mpn/t-iord_u.c.  Causes Apple's gcc 3.3 build 1640 and
+-   1666 to segfault with e.g., -O2 -mpowerpc64.  */
++   1666 to segfault with, e.g., -O2 -mpowerpc64. */
+ 
+-#ifdef __GNUC__
++#if	defined(__GNUC__) && !defined(__clang__)
+ typedef unsigned long long t1;typedef t1*t2;
+ __inline__ t1 e(t2 rp,t2 up,int n,t1 v0)
+ {t1 c,x,r;int i;if(v0){c=1;for(i=1;i<n;i++){x=up[i];r=x+1;rp[i]=r;}}return c;}
+diff --git a/configure b/configure
+index 3959d91..011823e 100755
+--- a/configure
++++ b/configure
+@@ -5156,8 +5156,8 @@ if test "$gmp_prog_cc_works" = yes; then
+   # remove anything that might look like compiler output to our "||" expression
+   rm -f conftest* a.out b.out a.exe a_out.exe
+   cat >conftest.c <<EOF
+-/* The following aborts with gcc-4.3.2 on a 64bit system which is an unusable compiler */
+-#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
++/* The following aborts with gcc-4.3.2 on a 64-bit system which is an unusable compiler */
++#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__clang__)
+ int __attribute__((noinline))
+ foo(int i)
+ {
+@@ -5178,7 +5178,7 @@ int main(){return 0;}
+ #endif
+ 
+ EOF
+-  echo "Test compile: gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags" >&5
++  echo "Test compile: gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags" >&5
+   gmp_compile="$cc $cflags $cppflags conftest.c >&5"
+   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$gmp_compile\""; } >&5
+   (eval $gmp_compile) 2>&5
+@@ -5210,10 +5210,10 @@ EOF
+ 
+       ;;
+     no)
+-      gmp_prog_cc_works="no, gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags"
++      gmp_prog_cc_works="no, gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags"
+       ;;
+     norun)
+-      gmp_prog_cc_works="no, gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags, program does not run"
++      gmp_prog_cc_works="no, gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags, program does not run"
+       ;;
+   esac
+ fi
+@@ -5611,9 +5611,9 @@ if test "$gmp_prog_cc_works" = yes; then
+   cat >conftest.c <<EOF
+ /* The following provokes a segfault in the compiler on powerpc-apple-darwin.
+    Extracted from tests/mpn/t-iord_u.c.  Causes Apple's gcc 3.3 build 1640 and
+-   1666 to segfault with e.g., -O2 -mpowerpc64.  */
++   1666 to segfault with, e.g., -O2 -mpowerpc64. */
+ 
+-#ifdef __GNUC__
++#if	defined(__GNUC__) && !defined(__clang__)
+ typedef unsigned long long t1;typedef t1*t2;
+ __inline__ t1 e(t2 rp,t2 up,int n,t1 v0)
+ {t1 c,x,r;int i;if(v0){c=1;for(i=1;i<n;i++){x=up[i];r=x+1;rp[i]=r;}}return c;}
+@@ -6417,8 +6417,8 @@ if test "$gmp_prog_cc_works" = yes; then
+   # remove anything that might look like compiler output to our "||" expression
+   rm -f conftest* a.out b.out a.exe a_out.exe
+   cat >conftest.c <<EOF
+-/* The following aborts with gcc-4.3.2 on a 64bit system which is an unusable compiler */
+-#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
++/* The following aborts with gcc-4.3.2 on a 64-bit system which is an unusable compiler */
++#if defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__clang__)
+ int __attribute__((noinline))
+ foo(int i)
+ {
+@@ -6439,7 +6439,7 @@ int main(){return 0;}
+ #endif
+ 
+ EOF
+-  echo "Test compile: gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags" >&5
++  echo "Test compile: gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags" >&5
+   gmp_compile="$cc $cflags $cppflags $flag conftest.c >&5"
+   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$gmp_compile\""; } >&5
+   (eval $gmp_compile) 2>&5
+@@ -6471,10 +6471,10 @@ EOF
+ 
+       ;;
+     no)
+-      gmp_prog_cc_works="no, gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags"
++      gmp_prog_cc_works="no, gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags"
+       ;;
+     norun)
+-      gmp_prog_cc_works="no, gcc-4.3.2 on 64bit is bad , try -O1 or -fno-strict-aliasing for the flags, program does not run"
++      gmp_prog_cc_works="no, gcc-4.3.2 on 64-bit is bad, try -O1 or -fno-strict-aliasing for the flags, program does not run"
+       ;;
+   esac
+ fi
+@@ -6872,9 +6872,9 @@ if test "$gmp_prog_cc_works" = yes; then
+   cat >conftest.c <<EOF
+ /* The following provokes a segfault in the compiler on powerpc-apple-darwin.
+    Extracted from tests/mpn/t-iord_u.c.  Causes Apple's gcc 3.3 build 1640 and
+-   1666 to segfault with e.g., -O2 -mpowerpc64.  */
++   1666 to segfault with, e.g., -O2 -mpowerpc64. */
+ 
+-#ifdef __GNUC__
++#if	defined(__GNUC__) && !defined(__clang__)
+ typedef unsigned long long t1;typedef t1*t2;
+ __inline__ t1 e(t2 rp,t2 up,int n,t1 v0)
+ {t1 c,x,r;int i;if(v0){c=1;for(i=1;i<n;i++){x=up[i];r=x+1;rp[i]=r;}}return c;}
+-- 
+1.8.4
+

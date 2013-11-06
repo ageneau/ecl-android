@@ -1,7 +1,7 @@
-From 2c992ab9662f0e498839caa708b48f95a98c7882 Mon Sep 17 00:00:00 2001
+From 90a3047198a8793a9cbe263be76fd0606fa5c928 Mon Sep 17 00:00:00 2001
 From: Sylvain Ageneau <ageneau@gmail.com>
 Date: Wed, 19 Dec 2012 12:40:05 -0300
-Subject: [PATCH 1/4] Invert limb patch for iOS/android
+Subject: [PATCH 1/5] Invert limb patch for iOS/android
 
 ---
  mpn/arm/invert_limb.asm | 143 +++++++++++++++++++++++-------------------------
@@ -173,5 +173,5 @@ index cbfd6db..78ed37b 100644
 +ASM_END()
 \ No newline at end of file
 -- 
-1.8.1.3
+1.8.4
 
