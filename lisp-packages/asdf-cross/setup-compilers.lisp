@@ -138,7 +138,7 @@
 					       platform-dir)))
 	      (if (probe-file cross-cmp)
 		  (load cross-cmp)
-		  (warn "No cross-compiler found at ~a" cross-comp)))
+		  (warn "No cross-compiler found at ~a" cross-cmp)))
 	    (warn "Directory not found ~a" dir)))
 
   (loop
