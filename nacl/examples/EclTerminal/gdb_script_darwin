@@ -1,3 +1,0 @@
-nacl-manifest ./glibc/Debug/ecl_terminal.nmf
-nacl-irt /Applications/Google\ Chrome.app/Contents/Versions/23.0.1271.101/Google\ Chrome\ Framework.framework/Internet\ Plug-Ins/nacl_irt_x86_32.nexe
-target remote localhost:4014

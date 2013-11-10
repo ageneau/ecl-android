@@ -13,5 +13,5 @@ case $(uname) in
 	    ;;
 esac
 
-$NACL_SDK_ROOT/toolchain/$TOOLCHAIN/bin/x86_64-nacl-gdb -x $GDB_SCRIPT
-#$NACL_SDK_ROOT/toolchain/$TOOLCHAIN/bin/i686-nacl-gdb -x $GDB_SCRIPT
+#$NACL_SDK_ROOT/toolchain/$TOOLCHAIN/bin/x86_64-nacl-gdb -x $GDB_SCRIPT
+$NACL_SDK_ROOT/toolchain/$TOOLCHAIN/bin/i686-nacl-gdb -x $GDB_SCRIPT

@@ -1,17 +1,27 @@
 {
-  "name": "HTML5 Terminal",
-  "description": "Command-line terminal shell running on top of HTML5 APIs",
-  "version": "1.0.0",
+  "name": "Tinyscheme",
+  "description": "Tinyscheme interactive shell built with Native Client",
+  "version": "2.7.5.2",
+  "manifest_version": 2,
   "icons": {
-    "16": "terminal-icon.png",
-    "128": "terminal-icon.png"
+    "16": "icon_16.png",
+    "48": "icon_48.png",
+    "128": "icon_128.png"
   },
-  "minimum_chrome_version": "11",
-  /*"urls": [
-    "*://localhost/"
-  ],*/
-  "launch_url": "terminal.html",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
   "permissions": [
-    "unlimitedStorage"
+    "storage",
+    { "socket": [
+        "tcp-listen:*:*",
+        "tcp-connect",
+        "resolve-host",
+        "udp-bind:*:*",
+        "udp-send-to:*:*"
+      ]
+    }
   ]
 }
