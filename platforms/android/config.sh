@@ -40,7 +40,7 @@ if [[ ! -d "${ANDROID_NDK_ROOT}" ]]; then
 fi
 
 host_os=$(uname -s | sed -e 's/Linux/linux/;s/Darwin/mac/')
-host_platform=$(uname -i)
+host_platform=$(uname -m)
 
 case "${host_os}" in
   "linux")
