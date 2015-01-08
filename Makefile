@@ -38,7 +38,7 @@ update-modules:
 	git submodule update
 
 patch-ecl:
-	cd ecl && git clean -dxf && git checkout HEAD . && for i in ../patches/ecl/*.patch; do patch -p1 < $$i; done
+	cd ecl && git clean -dxf && git checkout master . && for i in ../patches/ecl/*.patch; do patch -p1 < $$i; done
 	cp config.sub config.guess ecl/src/
 	cp config.sub config.guess ecl/src/gmp/
 	chmod +x ecl/src/config.* ecl/src/gmp/config.*
