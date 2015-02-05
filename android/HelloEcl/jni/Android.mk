@@ -25,9 +25,9 @@ endif
 ECL_HOME := ../../local-install/$(PLATFORM)
 ECL_VER := $(shell basename $(ECL_HOME)/lib/ecl-* |cut -d "-" -f2)
 
-LOCAL_MODULE    := hello-ecl
+LOCAL_MODULE    := ecl_android
 LOCAL_PATH := $(BASE_PATH)
-LOCAL_SRC_FILES := hello-ecl.c ecl_boot.c
+LOCAL_SRC_FILES := org_lisp_ecl_EmbeddedCommonLisp.c ecl_boot.c
 LOCAL_CFLAGS += -I$(ECL_HOME)/include
 LOCAL_CFLAGS += -g -Wall -DANDROID
 LOCAL_LDLIBS := -L$(ECL_HOME)/lib -lecl -lgmp -L$(ECL_HOME)/lib/ecl-$(ECL_VER) -lasdf -lsockets -lsb-bsd-sockets -lserve-event -lecl-help -lecl-cdb -lgc -latomic_ops

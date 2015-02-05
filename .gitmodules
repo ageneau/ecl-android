@@ -4,9 +4,6 @@
 [submodule "ecl"]
 	path = ecl
 	url = git://git.code.sf.net/p/ecls/ecl
-[submodule "slime"]
-	path = slime
-	url = git://common-lisp.net/projects/mirror/slime.git
 [submodule "lisp-packages/cl-opengl"]
 	path = lisp-packages/cl-opengl
 	url = git://github.com/ageneau/cl-opengl.git
@@ -23,3 +20,7 @@
 [submodule "libatomic_ops"]
 	path = libatomic_ops
 	url = https://github.com/ivmai/libatomic_ops.git
+[submodule "slime"]
+	path = slime
+	url = https://github.com/slime/slime.git
+ 
