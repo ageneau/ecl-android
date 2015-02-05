@@ -44,7 +44,7 @@ Java_org_lisp_ecl_EmbeddedCommonLisp_start(JNIEnv *env, jobject this,
 /* This was fun to make UTF8 work across Java-C-Lisp boundaries.
    -evrim, 2014. */
 cl_object java_string_to_ecl_string(JNIEnv *env, jstring str) {
-  jchar *txt = (*env)->GetStringChars(env, str, NULL);
+  const jchar *txt = (*env)->GetStringChars(env, str, NULL);
   jsize len = (*env)->GetStringLength(env, str);
   cl_object ecl_txt = ecl_alloc_simple_extended_string(len);
   cl_index i;
@@ -120,8 +120,9 @@ Java_org_lisp_ecl_EmbeddedCommonLisp_exec(JNIEnv *env, jobject this, jstring str
 JNIEXPORT jstring JNICALL
 Java_org_lisp_ecl_EmbeddedCommonLisp_exec_(JNIEnv *env, jobject this, jstring str) {
   jstring ret;
-  char* cmd = (*env)->GetStringUTFChars(env, str, NULL);
-  cl_object result = si_safe_eval(3, c_string_to_object(cmd), Cnil, OBJNULL);
+  const char *cmd = (*env)->GetStringUTFChars(env, str, NULL);
+  cl_object result = si_safe_eval(3, c_string_to_object(cmd),
+				  Cnil, OBJNULL);
 
   if (result) {
     cl_object out = si_coerce_to_base_string(cl_princ_to_string(result));
