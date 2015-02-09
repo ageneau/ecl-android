@@ -1,18 +1,16 @@
-From 379bc4b4d32acf3da9729ad543c1b6b188d603c9 Mon Sep 17 00:00:00 2001
-From: Sylvain Ageneau <ageneau@gmail.com>
-Date: Mon, 4 Apr 2011 19:57:38 -0300
-Subject: [PATCH 1/5] Fix socket implementation on android (getprotobyname is
- not implemented in bionic libc)
+commit 93a172a7c1307ee1ed78272c7ccb9d92bca91946
+Author: Evrim Ulu <evrimulu@gmail.com>
+Date:   Thu Jan 8 15:21:04 2015 +0900
 
----
- contrib/sockets/sockets.lisp | 53 ++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 51 insertions(+), 2 deletions(-)
+    Fix socket implementation, getprotobyname not implemented in bionic.
 
 diff --git a/contrib/sockets/sockets.lisp b/contrib/sockets/sockets.lisp
-index e85df1f..184ca80 100755
+old mode 100755
+new mode 100644
+index 9202122..c3db029
 --- a/contrib/sockets/sockets.lisp
 +++ b/contrib/sockets/sockets.lisp
-@@ -109,6 +109,28 @@
+@@ -111,6 +111,28 @@
    +eagain+ "EAGAIN"
    +eintr+ "EINTR")
  
@@ -41,46 +39,50 @@ index e85df1f..184ca80 100755
  #+:wsock
  (defconstant +af-named-pipe+ -2)
  
-@@ -514,10 +536,37 @@ safe_buffer_pointer(cl_object x, cl_index size)
+@@ -516,6 +538,7 @@ safe_buffer_pointer(cl_object x, cl_index size)
  
  (defun get-protocol-by-name (string-or-symbol)
    "Calls getprotobyname"
-+  #-:android
++  #-android
    (let ((string (string string-or-symbol)))
-     (c-inline (string) (:cstring) :int
- 	      "getprotobyname(#0)->p_proto"
--	      :one-liner t)))
-+	      :one-liner t))
-+
+       (c-inline (string) (:cstring) :int
+                 "{
+@@ -524,7 +547,33 @@ safe_buffer_pointer(cl_object x, cl_index size)
+                  pe = getprotobyname(#0);
+                  @(return 0) = pe ? pe->p_proto : -1;
+                  }
+-               ")))
++               "))
++  #+android
 +  ;; getprotobyname is not yet implemented on bionic
-+  #+:android
-+  (let ((proto (string-downcase (if (symbolp string-or-symbol)
-+				    (symbol-name string-or-symbol)
-+				    string-or-symbol))))
++  (let ((proto (string-downcase
++		(if (symbolp string-or-symbol)
++		    (symbol-name string-or-symbol)
++		  string-or-symbol))))
 +    (cond
-+      ((string= proto "ip") +ipproto_ip+)
-+      ((string= proto "icmp") +ipproto_icmp+)
-+      ((string= proto "igmp") +ipproto_igmp+)
-+      ((string= proto "ipip") +ipproto_ipip+)
-+      ((string= proto "tcp") +ipproto_tcp+)
-+      ((string= proto "egp") +ipproto_egp+)
-+      ((string= proto "pup") +ipproto_pup+)
-+      ((string= proto "udp") +ipproto_udp+)
-+      ((string= proto "idp") +ipproto_idp+)
-+      ((string= proto "dccp") +ipproto_dccp+)
-+      ((string= proto "rsvp") +ipproto_rsvp+)
-+      ((string= proto "gre") +ipproto_gre+)
-+      ((string= proto "ipv6") +ipproto_ipv6+)
-+      ((string= proto "esp") +ipproto_esp+)
-+      ((string= proto "ah") +ipproto_ah+)
-+      ((string= proto "pim") +ipproto_pim+)
-+      ((string= proto "comp") +ipproto_comp+)
-+      ((string= proto "sctp") +ipproto_sctp+)
-+      ((string= proto "raw") +ipproto_raw+))))
++     ((string= proto "ip") +ipproto_ip+)
++     ((string= proto "icmp") +ipproto_icmp+)
++     ((string= proto "igmp") +ipproto_igmp+)
++     ((string= proto "ipip") +ipproto_ipip+)
++     ((string= proto "tcp") +ipproto_tcp+)
++     ((string= proto "egp") +ipproto_egp+)
++     ((string= proto "pup") +ipproto_pup+)
++     ((string= proto "udp") +ipproto_udp+)
++     ((string= proto "idp") +ipproto_idp+)
++     ((string= proto "dccp") +ipproto_dccp+)
++     ((string= proto "rsvp") +ipproto_rsvp+)
++     ((string= proto "gre") +ipproto_gre+)
++     ((string= proto "ipv6") +ipproto_ipv6+)
++     ((string= proto "esp") +ipproto_esp+)
++     ((string= proto "ah") +ipproto_ah+)
++     ((string= proto "pim") +ipproto_pim+)
++     ((string= proto "comp") +ipproto_comp+)
++     ((string= proto "sctp") +ipproto_sctp+)
++     ((string= proto "raw") +ipproto_raw+))))
+ 
  
  (defun make-inet-address (dotted-quads)
-   "Return a vector of octets given a string DOTTED-QUADS in the format
-@@ -1648,7 +1697,7 @@ GET-NAME-SERVICE-ERRNO")
+@@ -1656,7 +1705,7 @@ GET-NAME-SERVICE-ERRNO")
  (define-sockopt sockopt-dont-route "SOL_SOCKET" "SO_DONTROUTE" bool)
  (define-sockopt sockopt-linger "SOL_SOCKET" "SO_LINGER" linger)
  
@@ -89,6 +91,3 @@ index e85df1f..184ca80 100755
  (define-sockopt sockopt-reuse-port "SOL_SOCKET" "SO_REUSEPORT" bool)
  
  (define-sockopt sockopt-tcp-nodelay "IPPROTO_TCP" "TCP_NODELAY" bool)
--- 
-1.8.0.2
-
