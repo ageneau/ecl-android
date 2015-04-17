@@ -6,7 +6,7 @@
 	url = git://git.code.sf.net/p/ecls/ecl
 [submodule "slime"]
 	path = slime
-	url = git://common-lisp.net/projects/mirror/slime.git
+	url = https://github.com/slime/slime.git
 [submodule "lisp-packages/cl-opengl"]
 	path = lisp-packages/cl-opengl
 	url = git://github.com/ageneau/cl-opengl.git
