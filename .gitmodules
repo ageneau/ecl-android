@@ -3,7 +3,7 @@
 	url = https://chromium.googlesource.com/external/gyp
 [submodule "ecl"]
 	path = ecl
-	url = git://git.code.sf.net/p/ecls/ecl
+	url = https://gitlab.com/embeddable-common-lisp/ecl.git
 [submodule "slime"]
 	path = slime
 	url = https://github.com/slime/slime.git
