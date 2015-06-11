@@ -1,6 +1,6 @@
 [submodule "utils/gyp"]
 	path = utils/gyp
-	url = http://git.chromium.org/external/gyp.git
+	url = https://chromium.googlesource.com/external/gyp
 [submodule "ecl"]
 	path = ecl
 	url = git://git.code.sf.net/p/ecls/ecl
@@ -13,7 +13,6 @@
 [submodule "lisp-packages/cffi"]
 	path = lisp-packages/cffi
 	url = https://github.com/cffi/cffi.git
-
 [submodule "mpir"]
 	path = mpir
 	url = https://github.com/wbhart/mpir.git
